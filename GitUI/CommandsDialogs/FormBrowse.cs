@@ -163,13 +163,17 @@ namespace GitUI.CommandsDialogs
             filterRevisionsHelper.SetFilter(filter);
             DiffText.SetFileLoader(getNextPatchFile);
 
-            GitTree.ImageList = new ImageList();
-            GitTree.ImageList.Images.Add(Properties.Resources.New); //File
-            GitTree.ImageList.Images.Add(Properties.Resources.Folder); //Folder
-            GitTree.ImageList.Images.Add(Properties.Resources.IconFolderSubmodule); //Submodule
+            var treeImageList = new ImageList();
+            treeImageList.Images.Add(Properties.Resources.New); //File
+            treeImageList.Images.Add(Properties.Resources.Folder); //Folder
+            treeImageList.Images.Add(Properties.Resources.IconFolderSubmodule); //Submodule
+
+            GitTree.ImageList = treeImageList;
+            GitDiffTree.ImageList = treeImageList;
 
             GitTree.MouseDown += GitTree_MouseDown;
             GitTree.MouseMove += GitTree_MouseMove;
+            // DM: Need drag for GitDiffTree?
 
             this.HotkeysEnabled = true;
             this.Hotkeys = HotkeySettingsManager.LoadHotkeys(HotkeySettingsName);
@@ -826,7 +830,7 @@ namespace GitUI.CommandsDialogs
                 // Refresh tree
                 GitTree.Nodes.Clear();
                 //restore selected file and scroll position when new selection is done
-                if (RevisionGrid.GetSelectedRevisions().Count > 0)
+                if (RevisionGrid.GetSelectedRevisions().Any())
                 {
                     LoadInTree(RevisionGrid.GetSelectedRevisions()[0].SubItems, GitTree.Nodes);
                     //GitTree.Sort();
@@ -834,7 +838,7 @@ namespace GitUI.CommandsDialogs
                     // Load state
                     var currenNodes = GitTree.Nodes;
                     TreeNode matchedNode = null;
-                    while (lastSelectedNodes.Count > 0 && currenNodes != null)
+                    while (currenNodes != null && lastSelectedNodes.Any())
                     {
                         var next = lastSelectedNodes.Pop();
                         foreach (TreeNode node in currenNodes)
@@ -911,6 +915,50 @@ namespace GitUI.CommandsDialogs
                 default: // more than 2 revisions selected => no diff
                     DiffTabPage.Text = string.Format("{0} (not supported)", DiffTabPageTitleBase);
                     break;
+            }
+
+            bool treeViewOn = diffTreeViewToggleButton.Checked;
+            DiffFiles.Visible = !treeViewOn;
+            GitDiffTree.Visible = treeViewOn;
+
+            if (treeViewOn)
+            {
+                FillDiffFileTree();
+            }
+        }
+
+        private void FillDiffFileTree()
+        {
+            if (CommitInfoTabControl.SelectedTab != DiffTabPage)
+                return;
+
+            diffItems.Clear();
+            foreach (var item in DiffFiles.GitItemStatuses)
+            {
+                diffItems.Add(item.Name.Replace('/', '\\'));
+            }
+
+            try
+            {
+                GitDiffTree.SuspendLayout();
+
+                // Refresh tree
+                GitDiffTree.Nodes.Clear();
+                if (RevisionGrid.GetSelectedRevisions().Any())
+                {
+                    LoadInDiffTree(RevisionGrid.GetSelectedRevisions()[0].SubItems, GitDiffTree.Nodes);
+                }
+
+                if (GitDiffTree.SelectedNode == null)
+                {
+                    FileText.ViewText("", "");
+                }
+
+                GitDiffTree.ExpandAll();
+            }
+            finally
+            {
+                GitDiffTree.ResumeLayout();
             }
         }
 
@@ -1080,6 +1128,36 @@ namespace GitUI.CommandsDialogs
             }
         }
 
+        private readonly HashSet<string> diffItems = new HashSet<string>();
+        private void LoadInDiffTree(IEnumerable<IGitItem> items, TreeNodeCollection node)
+        {
+
+
+            LoadInTree(items.Where(gitItem => FilterGitItemForDiffTree(gitItem)), node);
+        }
+
+        private bool FilterGitItemForDiffTree(IGitItem item)
+        {
+            var gitItem = item as GitItem;
+
+            if (gitItem != null)
+            {
+                string fileName = gitItem.FileName;
+
+                if (gitItem.IsTree)
+                {
+                    string treeName = fileName + @"\";
+                    return diffItems.Any(di => di.StartsWith(treeName));
+                }
+                else if (gitItem.IsBlob)
+                {
+                    return diffItems.Contains(fileName);
+                }
+            }
+
+            return true;
+        }
+
         protected void LoadInTree(IEnumerable<IGitItem> items, TreeNodeCollection node)
         {
             var sortedItems = items.OrderBy(gi => gi, new GitFileTreeComparer());
@@ -1176,7 +1254,7 @@ namespace GitUI.CommandsDialogs
 
             if (item.IsBlob)
             {
-                UICommands.StartFileHistoryDialog(this, item.FileName, null);                
+                UICommands.StartFileHistoryDialog(this, item.FileName, null);
             }
             else if (item.IsCommit)
             {
@@ -1229,7 +1307,7 @@ namespace GitUI.CommandsDialogs
                     return;
                 }
                 else
-                { 
+                {
                     bSilent = true;
                     Module.LastPullActionToPullMerge();
                 }
@@ -1534,7 +1612,7 @@ namespace GitUI.CommandsDialogs
         {
             UICommands.StartSubmodulesDialog(this);
         }
-        
+
         private void UpdateSubmoduleToolStripMenuItemClick(object sender, EventArgs e)
         {
             var submodule = (sender as ToolStripMenuItem).Tag as string;
@@ -1882,6 +1960,17 @@ namespace GitUI.CommandsDialogs
             LoadInTree(item.SubItems, e.Node.Nodes);
         }
 
+        private void GitDiffTreeBeforeExpand(object sender, TreeViewCancelEventArgs e)
+        {
+            if (e.Node.IsExpanded)
+                return;
+
+            var item = (IGitItem)e.Node.Tag;
+
+            e.Node.Nodes.Clear();
+            LoadInDiffTree(item.SubItems, e.Node.Nodes);
+        }
+
         private void CreateBranchToolStripMenuItemClick(object sender, EventArgs e)
         {
             UICommands.StartCreateBranchDialog(this);
@@ -2168,7 +2257,7 @@ namespace GitUI.CommandsDialogs
                     UICommands.StartPullDialog(this, true);
                     break;
                 case Commands.QuickPush:
-                    UICommands.StartPushDialog(this, true);                   
+                    UICommands.StartPushDialog(this, true);
                     break;
                 case Commands.RotateApplicationIcon: RotateApplicationIcon(); break;
                 default: return base.ExecuteCommand(cmd);
@@ -2554,7 +2643,7 @@ namespace GitUI.CommandsDialogs
             bool pullCompelted;
 
             UICommands.StartPullDialog(this, true, out pullCompelted, true);
-            
+
             //restore Settings.PullMerge value
             if (Settings.DonSetAsLastPullAction)
                 Module.LastPullActionToPullMerge();
@@ -2842,11 +2931,23 @@ namespace GitUI.CommandsDialogs
                 issueData += ", " + GitCommandHelpers.VersionInUse.Full;
                 issueData += ", " + System.Environment.OSVersion.ToString();
             }
-            catch(Exception){}
+            catch (Exception) { }
 
-            Process.Start(@"https://github.com/gitextensions/gitextensions/issues/new?body=" + WebUtility.HtmlEncode(issueData));            
+            Process.Start(@"https://github.com/gitextensions/gitextensions/issues/new?body=" + WebUtility.HtmlEncode(issueData));
         }
 
-    }
+        private void DiffToggleTreeView(object sender, EventArgs e)
+        {
+            bool treeViewOn = !diffTreeViewToggleButton.Checked;
+            diffTreeViewToggleButton.Checked = treeViewOn;
 
+            DiffFiles.Visible = !treeViewOn;
+            GitDiffTree.Visible = treeViewOn;
+
+            if (treeViewOn)
+            {
+                FillDiffFileTree();
+            }
+        }
+    }
 }
