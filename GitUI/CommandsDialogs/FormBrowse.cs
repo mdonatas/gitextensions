@@ -117,7 +117,6 @@ namespace GitUI.CommandsDialogs
         {
         }
 
-
         public FormBrowse(GitUICommands aCommands, string filter)
             : base(true, aCommands)
         {
@@ -167,6 +166,11 @@ namespace GitUI.CommandsDialogs
             treeImageList.Images.Add(Properties.Resources.New); //File
             treeImageList.Images.Add(Properties.Resources.Folder); //Folder
             treeImageList.Images.Add(Properties.Resources.IconFolderSubmodule); //Submodule
+            treeImageList.Images.Add(Properties.Resources.Added); //Added blob
+            treeImageList.Images.Add(Properties.Resources.Modified); //Modified blob
+            treeImageList.Images.Add(Properties.Resources.Removed); //Removed blob
+            treeImageList.Images.Add(Properties.Resources.Renamed); //Renamed blob
+            treeImageList.Images.Add(Properties.Resources.Copied); //Copied blob
 
             GitTree.ImageList = treeImageList;
             GitDiffTree.ImageList = treeImageList;
@@ -191,6 +195,18 @@ namespace GitUI.CommandsDialogs
                 UICommands.PostRepositoryChanged += UICommands_PostRepositoryChanged;
             }
             dontSetAsDefaultToolStripMenuItem.Checked = Settings.DonSetAsLastPullAction;
+        }
+
+        internal enum GitTreeIcons
+        {
+            New = 0,
+            Folder = 1,
+            IconFolderSubmodule = 2,
+            Added = 3,
+            Modified = 4,
+            Removed = 5,
+            Renamed = 6,
+            Copied = 7
         }
 
         void UICommands_PostRepositoryChanged(object sender, GitUIBaseEventArgs e)
@@ -1189,17 +1205,48 @@ namespace GitUI.CommandsDialogs
                 {
                     if (gitItem.IsTree)
                     {
-                        subNode.ImageIndex = 1;
-                        subNode.SelectedImageIndex = 1;
+                        subNode.ImageIndex = (int)GitTreeIcons.Folder;
+                        subNode.SelectedImageIndex = (int)GitTreeIcons.Folder;
                         subNode.Nodes.Add(new TreeNode());
                     }
-                    else
-                        if (gitItem.IsCommit)
+                    else if (gitItem.IsBlob)
+                    {
+                        GitItemStatus status = item.Item2;
+                        if (status != null)
                         {
-                            subNode.ImageIndex = 2;
-                            subNode.SelectedImageIndex = 2;
-                            subNode.Text = item.Item1.Name + " (Submodule)";
+                            if (status.IsNew)
+                            {
+                                subNode.ImageIndex = (int)GitTreeIcons.Added;
+                                subNode.SelectedImageIndex = (int)GitTreeIcons.Added;
+                            }
+                            else if (status.IsChanged)
+                            {
+                                subNode.ImageIndex = (int)GitTreeIcons.Modified;
+                                subNode.SelectedImageIndex = (int)GitTreeIcons.Modified;
+                            }
+                            else if (status.IsDeleted)
+                            {
+                                subNode.ImageIndex = (int)GitTreeIcons.Removed;
+                                subNode.SelectedImageIndex = (int)GitTreeIcons.Removed;
+                            }
+                            else if (status.IsRenamed)
+                            {
+                                subNode.ImageIndex = (int)GitTreeIcons.Renamed;
+                                subNode.SelectedImageIndex = (int)GitTreeIcons.Renamed;
+                            }
+                            else if (status.IsCopied)
+                            {
+                                subNode.ImageIndex = (int)GitTreeIcons.Copied;
+                                subNode.SelectedImageIndex = (int)GitTreeIcons.Copied;
+                            }
                         }
+                    }
+                    else if (gitItem.IsCommit)
+                    {
+                        subNode.ImageIndex = (int)GitTreeIcons.IconFolderSubmodule;
+                        subNode.SelectedImageIndex = (int)GitTreeIcons.IconFolderSubmodule;
+                        subNode.Text = item.Item1.Name + " (Submodule)";
+                    }
                 }
             }
         }
