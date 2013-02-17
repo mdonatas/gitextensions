@@ -935,7 +935,7 @@ namespace GitUI.CommandsDialogs
             diffItems.Clear();
             foreach (var item in DiffFiles.GitItemStatuses)
             {
-                diffItems.Add(item.Name.Replace('/', '\\'));
+                diffItems.Add(item.Name.Replace('/', '\\'), item);
             }
 
             try
@@ -1128,18 +1128,27 @@ namespace GitUI.CommandsDialogs
             }
         }
 
-        private readonly HashSet<string> diffItems = new HashSet<string>();
+        private readonly Dictionary<string, GitItemStatus> diffItems = new Dictionary<string, GitItemStatus>();
         private void LoadInDiffTree(IEnumerable<IGitItem> items, TreeNodeCollection node)
         {
+            var diffItems1 = items
+                .Cast<GitItem>()
+                .Where(gitItem => FilterGitItemForDiffTree(gitItem))
+                .Select(gitItem => Tuple.Create((IGitItem)gitItem, DictionaryGetSafe(diffItems, gitItem.FileName)));
 
-
-            LoadInTree(items.Where(gitItem => FilterGitItemForDiffTree(gitItem)), node);
+            LoadInTree(diffItems1, node);
         }
 
-        private bool FilterGitItemForDiffTree(IGitItem item)
+        private static TValue DictionaryGetSafe<TKey, TValue>(IDictionary<TKey, TValue> dictionary, TKey key)
         {
-            var gitItem = item as GitItem;
+            TValue value;
+            dictionary.TryGetValue(key, out value);
 
+            return value;
+        }
+
+        private bool FilterGitItemForDiffTree(GitItem gitItem)
+        {
             if (gitItem != null)
             {
                 string fileName = gitItem.FileName;
@@ -1147,27 +1156,32 @@ namespace GitUI.CommandsDialogs
                 if (gitItem.IsTree)
                 {
                     string treeName = fileName + @"\";
-                    return diffItems.Any(di => di.StartsWith(treeName));
+                    return diffItems.Keys.Any(di => di.StartsWith(treeName));
                 }
-                else if (gitItem.IsBlob)
+                else if (gitItem.IsBlob || gitItem.IsCommit)
                 {
-                    return diffItems.Contains(fileName);
+                    return diffItems.ContainsKey(fileName);
                 }
             }
 
-            return true;
+            return false;
         }
 
         protected void LoadInTree(IEnumerable<IGitItem> items, TreeNodeCollection node)
         {
-            var sortedItems = items.OrderBy(gi => gi, new GitFileTreeComparer());
+            LoadInTree(items.Select(item => Tuple.Create(item, (GitItemStatus)null)), node);
+        }
+
+        protected void LoadInTree(IEnumerable<Tuple<IGitItem, GitItemStatus>> items, TreeNodeCollection node)
+        {
+            var sortedItems = items.OrderBy(gi => gi.Item1, new GitFileTreeComparer());
 
             foreach (var item in sortedItems)
             {
-                var subNode = node.Add(item.Name);
-                subNode.Tag = item;
+                var subNode = node.Add(item.Item1.Name);
+                subNode.Tag = item.Item1;
 
-                var gitItem = item as GitItem;
+                var gitItem = item.Item1 as GitItem;
 
                 if (gitItem == null)
                     subNode.Nodes.Add(new TreeNode());
@@ -1184,7 +1198,7 @@ namespace GitUI.CommandsDialogs
                         {
                             subNode.ImageIndex = 2;
                             subNode.SelectedImageIndex = 2;
-                            subNode.Text = item.Name + " (Submodule)";
+                            subNode.Text = item.Item1.Name + " (Submodule)";
                         }
                 }
             }
