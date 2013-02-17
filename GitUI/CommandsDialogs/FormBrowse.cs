@@ -1981,8 +1981,12 @@ namespace GitUI.CommandsDialogs
 
             var item = (IGitItem)e.Node.Tag;
 
+            GitDiffTree.SuspendLayout();
+
             e.Node.Nodes.Clear();
             LoadInDiffTree(item.SubItems, e.Node.Nodes);
+
+            GitDiffTree.ResumeLayout();
         }
 
         private void CreateBranchToolStripMenuItemClick(object sender, EventArgs e)
