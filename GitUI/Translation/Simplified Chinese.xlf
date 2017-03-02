@@ -10415,6 +10415,10 @@ If this is a central repository (bare repository without a working directory):
         <target>复位当前到这里</target>
         
       </trans-unit>
+      <trans-unit id="resetBranchToHereToolStripMenuItem.Text">
+        <source>Reset branch to here</source>
+        <target />
+      </trans-unit>
       <trans-unit id="revertCommitToolStripMenuItem.Text">
         <source>Revert commit</source>
         <target>还原提交</target>

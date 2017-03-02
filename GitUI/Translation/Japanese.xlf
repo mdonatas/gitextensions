@@ -10309,6 +10309,10 @@ If this is a central repository (bare repository without a working directory):
         <target>現在のブランチをここに移動</target>
         
       </trans-unit>
+      <trans-unit id="resetBranchToHereToolStripMenuItem.Text">
+        <source>Reset branch to here</source>
+        <target />
+      </trans-unit>
       <trans-unit id="revertCommitToolStripMenuItem.Text">
         <source>Revert commit</source>
         <target>このコミットを打ち消すコミットの作成</target>

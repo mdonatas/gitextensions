@@ -10223,6 +10223,10 @@ Si se trata de un repositorio central (repositorio sin un directorio de trabajo)
         <target>Restablecer la rama actual</target>
         
       </trans-unit>
+      <trans-unit id="resetBranchToHereToolStripMenuItem.Text">
+        <source>Reset branch to here</source>
+        <target />
+      </trans-unit>
       <trans-unit id="revertCommitToolStripMenuItem.Text">
         <source>Revert commit</source>
         <target>Revertir commit</target>

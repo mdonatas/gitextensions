@@ -10343,6 +10343,10 @@ Wenn dies ein zentralisiertes Repository ist (ein sogenanntes Bare Repository):
         <target>Aktuellen Branch hierhin zurücksetzen</target>
         
       </trans-unit>
+      <trans-unit id="resetBranchToHereToolStripMenuItem.Text">
+        <source>Reset branch to here</source>
+        <target />
+      </trans-unit>
       <trans-unit id="revertCommitToolStripMenuItem.Text">
         <source>Revert commit</source>
         <target>Commit zurücknehmen</target>

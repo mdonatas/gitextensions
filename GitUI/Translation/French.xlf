@@ -10442,6 +10442,10 @@ Si c'est un dépôt central (dépôt nu sans répertoire de travail) :
         <target>Réinitialiser la branche à ici</target>
         
       </trans-unit>
+      <trans-unit id="resetBranchToHereToolStripMenuItem.Text">
+        <source>Reset branch to here</source>
+        <target />
+      </trans-unit>
       <trans-unit id="revertCommitToolStripMenuItem.Text">
         <source>Revert commit</source>
         <target>Annuler le commit</target>
