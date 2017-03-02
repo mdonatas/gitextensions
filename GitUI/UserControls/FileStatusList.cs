@@ -46,9 +46,37 @@ namespace GitUI
         public DescribeRevisionDelegate DescribeRevision;
         private readonly IFullPathResolver _fullPathResolver;
 
+        public delegate void ListModeChangedEventHandler(object sender, EventArgs e);
+        public event ListModeChangedEventHandler ListModeChanged;
+
+        private FileStatusListMode _listMode;
+        public FileStatusListMode ListMode
+        {
+            get
+            {
+                return _listMode;
+            }
+
+            private set
+            {
+                _listMode = value;
+                ListModeChanged?.Invoke(this, null);
+            }
+        }
+
+        public enum FileStatusListMode
+        {
+            NoRevision = 0,
+            Detached = 9,
+            SingleRevision = 10,
+            TwoRevisions = 20,
+            InvalidRevisionCount = 30
+        }
+
         public FileStatusList()
         {
             InitializeComponent();
+            ListModeChanged += FileStatusList_ListModeChanged;
             CreateOpenSubmoduleMenuItem();
             Translate();
             FilterVisible = false;
@@ -76,6 +104,7 @@ namespace GitUI
                 _images.Images.Add(Resources.IconSubmoduleRevisionSemiDownDirty); // 13
                 _images.Images.Add(Resources.IconFileStatusUnknown); // 14
             }
+
             FileStatusListView.SmallImageList = _images;
             FileStatusListView.LargeImageList = _images;
 
@@ -765,9 +794,14 @@ namespace GitUI
             set
             {
                 if (value == null)
+                {
+                    ListMode = FileStatusListMode.NoRevision;
                     GitItemStatusesWithParents = null;
+                }
                 else
+                {
                     SetGitItemStatuses(null, value);
+                }
             }
         }
 
@@ -801,6 +835,7 @@ namespace GitUI
 
         public void SetGitItemStatuses(string parentRev, IList<GitItemStatus> items)
         {
+            ListMode = FileStatusListMode.Detached;
             var dictionary = new Dictionary<FileStatusListItemsInfo, IList<GitItemStatus>> { { new FileStatusListItemsInfo(parentRev ?? "", parentRev ?? ""), items } };
             GitItemStatusesWithParents = dictionary;
         }
@@ -1063,28 +1098,50 @@ namespace GitUI
 
         public void SetDiffs(List<GitRevision> revisions)
         {
-            HandleVisibility_NoFilesLabel_FilterComboBox(filesPresent: true);
             switch (revisions.Count)
             {
                 case 0:
                     NoFiles.Text = _noDiffFilesChangesDefaultText;
                     GitItemStatuses = null;
+                    ListMode = FileStatusListMode.NoRevision;
                     break;
 
                 case 1: // diff "parent" --> "selected revision"
                     SetDiff(revisions[0]);
+                    ListMode = FileStatusListMode.SingleRevision;
                     break;
 
                 case 2: // diff "first clicked revision" --> "second clicked revision"
                     NoFiles.Text = _noDiffFilesChangesDefaultText;
                     SetTwoRevDiff(revisions);
+                    ListMode = FileStatusListMode.TwoRevisions;
                     break;
 
                 default: // more than 2 revisions selected => no diff
                     NoFiles.Text = _UnsupportedMultiselectAction.Text;
                     GitItemStatuses = null;
+                    ListMode = FileStatusListMode.InvalidRevisionCount;
                     break;
             }
+        }
+
+        private void FileStatusList_ListModeChanged(object sender, EventArgs e)
+        {
+            FileStatusList fileStatusList = (FileStatusList)sender;
+
+            this.FilterToolStrip.SuspendLayout();
+            if (fileStatusList.ListMode == FileStatusListMode.TwoRevisions)
+            {
+                FilterOptionsComboBox.Visible = true;
+            }
+            else
+            {
+                FilterOptionsComboBox.Visible = false;
+            }
+
+            FilterToolStrip_Resize(null, null);
+            this.FilterToolStrip.ResumeLayout(true);
+
             UpdateNoFilesLabelVisibility();
         }
 
@@ -1137,7 +1194,9 @@ namespace GitUI
         private void UpdateNoFilesLabelVisibility()
         {
             if (GitItemStatusesWithParents == null && GitItemStatuses == null)
+            {
                 HandleVisibility_NoFilesLabel_FilterComboBox(filesPresent: false);
+            }
             else if (GitItemStatusesWithParents != null)
             {
                 List<FileStatusListItemsInfo> keys = GitItemStatusesWithParents.Keys.ToList();
@@ -1149,6 +1208,10 @@ namespace GitUI
             else if (GitItemStatuses?.Count == 0)
             {
                 HandleVisibility_NoFilesLabel_FilterComboBox(filesPresent: false);
+            }
+            else
+            {
+                HandleVisibility_NoFilesLabel_FilterComboBox(filesPresent: true);
             }
         }
 
