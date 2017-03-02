@@ -47,10 +47,38 @@ namespace GitUI
 
         public DescribeRevisionDelegate DescribeRevision { get; set; }
 
+        public delegate void ListModeChangedEventHandler(object sender, EventArgs e);
+        public event ListModeChangedEventHandler ListModeChanged;
+
+        private FileStatusListMode _listMode;
+        public FileStatusListMode ListMode
+        {
+            get
+            {
+                return _listMode;
+            }
+
+            private set
+            {
+                _listMode = value;
+                ListModeChanged?.Invoke(this, null);
+            }
+        }
+
+        public enum FileStatusListMode
+        {
+            NoRevision = 0,
+            Detached = 9,
+            SingleRevision = 10,
+            TwoRevisions = 20,
+            InvalidRevisionCount = 30
+        }
+
         public FileStatusList()
         {
             InitializeComponent();
             InitialiseFiltering();
+            ListModeChanged += FileStatusList_ListModeChanged;
             CreateOpenSubmoduleMenuItem();
             InitializeComplete();
             FilterVisible = false;
@@ -1186,6 +1214,7 @@ namespace GitUI
                 else
                 {
                     parentRevs = revisions.Skip(1).ToArray();
+                    ListMode = FileStatusListMode.TwoRevisions; // TODO: There can be more than two revisions
                 }
 
                 if (parentRevs == null || parentRevs.Length == 0)
@@ -1222,6 +1251,24 @@ namespace GitUI
             }
 
             GitItemStatusesWithParents = tuples;
+        }
+
+        private void FileStatusList_ListModeChanged(object sender, EventArgs e)
+        {
+            FileStatusList fileStatusList = (FileStatusList)sender;
+
+            FilterToolStrip.SuspendLayout();
+            if (fileStatusList.ListMode == FileStatusListMode.TwoRevisions)
+            {
+                FilterOptionsComboBox.Visible = true;
+            }
+            else
+            {
+                FilterOptionsComboBox.Visible = false;
+            }
+
+            FilterToolStrip_Resize(null, null);
+            FilterToolStrip.ResumeLayout(true);
         }
 
         private void HandleVisibility_NoFilesLabel_FilterComboBox(bool filesPresent)
