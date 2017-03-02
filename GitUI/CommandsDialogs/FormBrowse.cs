@@ -1835,8 +1835,8 @@ namespace GitUI.CommandsDialogs
                 return;
             }
 
-            IList<GitRevision> items = RevisionGrid.GetSelectedRevisions();
-            if (items.Count() == 1)
+            List<GitRevision> items = RevisionGrid.GetSelectedRevisions();
+            if (items.Count == 1)
             {
                 items.Add(new GitRevision(Module, DiffFiles.SelectedItemParent));
 
@@ -1855,7 +1855,21 @@ namespace GitUI.CommandsDialogs
                     return;
                 }
             }
-            DiffText.ViewChanges(items, DiffFiles.SelectedItem, String.Empty);
+
+            Tuple<GitItemStatus, FileStatusListItemsInfo> selectedItemInfo = DiffFiles.GetSelectedItemInfo();
+            if (selectedItemInfo.Item2.RevisionGuid != null)
+            {
+                GitRevision parentRevision = items.FirstOrDefault(rev => rev.Guid == selectedItemInfo.Item2.ParentRevisionGuid) ?? new GitRevision(Module, selectedItemInfo.Item2.ParentRevisionGuid);
+                GitRevision revision = items.FirstOrDefault(rev => rev.Guid == selectedItemInfo.Item2.RevisionGuid) ?? new GitRevision(Module, selectedItemInfo.Item2.RevisionGuid);
+                List<GitRevision> selectedItemRevisions = new List<GitRevision>(2)
+                {
+                    revision, parentRevision
+                };
+
+                items = selectedItemRevisions;
+            }
+
+            DiffText.ViewChanges(items, selectedItemInfo.Item1, string.Empty);
         }
 
         private void ChangelogToolStripMenuItemClick(object sender, EventArgs e)
@@ -2072,7 +2086,7 @@ namespace GitUI.CommandsDialogs
             UICommands.StartCleanupRepositoryDialog(this);
         }
 
-        private void openWithDifftoolToolStripMenuItem_Click(object sender, EventArgs e)
+        private void OpenWithDifftoolToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (DiffFiles.SelectedItem == null)
                 return;
@@ -2096,7 +2110,7 @@ namespace GitUI.CommandsDialogs
             foreach (var itemWithParent in DiffFiles.SelectedItemsWithParent)
             {
                 GitItemStatus selectedItem = itemWithParent.Item1;
-                string parentGuid = RevisionGrid.GetSelectedRevisions().Count() == 1 ? itemWithParent.Item2 : null;
+                string parentGuid = RevisionGrid.GetSelectedRevisions().Count == 1 ? itemWithParent.Item2 : null;
 
                 RevisionGrid.OpenWithDifftool(selectedItem.Name, selectedItem.OldName, diffKind, parentGuid);
             }
