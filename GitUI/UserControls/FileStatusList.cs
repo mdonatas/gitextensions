@@ -111,6 +111,9 @@ namespace GitUI
             this.Controls.SetChildIndex(NoFiles, 0);
             NoFiles.Font = new Font(SystemFonts.MessageBoxFont, FontStyle.Italic);
 
+            OnlyMatchingFilesToolStripMenuItem.Checked = AppSettings.ShowDiffForMatchingFilesOnly;
+            OnlyMatchingFilesFromBaseToolStripMenuItem.Checked = AppSettings.ShowDiffFromBaseForMatchingFilesOnly;
+
             _filter = new Regex(".*");
         }
 
@@ -1161,6 +1164,22 @@ namespace GitUI
             if (_filterVisible)
             {
                 FilterToolStrip.Visible = filesPresent;
+            }
+        }
+
+        private void OnlyMatchingFilesToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
+        {
+            if (OnlyMatchingFilesToolStripMenuItem.Checked != AppSettings.ShowDiffForMatchingFilesOnly)
+            {
+                AppSettings.ShowDiffForMatchingFilesOnly = OnlyMatchingFilesToolStripMenuItem.Checked;
+            }
+        }
+
+        private void OnlyMatchingFilesFromBaseToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
+        {
+            if (OnlyMatchingFilesFromBaseToolStripMenuItem.Checked != AppSettings.ShowDiffFromBaseForMatchingFilesOnly)
+            {
+                AppSettings.ShowDiffFromBaseForMatchingFilesOnly = OnlyMatchingFilesFromBaseToolStripMenuItem.Checked;
             }
         }
 

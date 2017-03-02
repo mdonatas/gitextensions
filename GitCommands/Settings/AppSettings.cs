@@ -951,6 +951,18 @@ namespace GitCommands
             set { SetBool("showdiffforallparents", value); }
         }
 
+        public static bool ShowDiffForMatchingFilesOnly
+        {
+            get { return GetBool("showdiffformatchingfilesonly", false); }
+            set { SetBool("showdiffformatchingfilesonly", value); }
+        }
+
+        public static bool ShowDiffFromBaseForMatchingFilesOnly
+        {
+            get { return GetBool("showdifffrombaseformatchingfilesonly", true); }
+            set { SetBool("showdifffrombaseformatchingfilesonly", value); }
+        }
+
         public static string RecentWorkingDir
         {
             get { return GetString("RecentWorkingDir", null); }
