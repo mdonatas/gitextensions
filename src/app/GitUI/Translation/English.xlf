@@ -8950,7 +8950,7 @@ Reset the filter via View &gt; Show all branches.</source>
         <target />
       </trans-unit>
       <trans-unit id="_firstRevision.Text">
-        <source>First: A </source>
+        <source>A: </source>
         <target />
       </trans-unit>
       <trans-unit id="_multipleDescription.Text">
@@ -8970,7 +8970,7 @@ Reset the filter via View &gt; Show all branches.</source>
         <target />
       </trans-unit>
       <trans-unit id="_selectedRevision.Text">
-        <source>Second: B </source>
+        <source>B: </source>
         <target />
       </trans-unit>
       <trans-unit id="blameToolStripMenuItem.Text">
@@ -9042,11 +9042,11 @@ Reset the filter via View &gt; Show all branches.</source>
         <target />
       </trans-unit>
       <trans-unit id="firstToLocalToolStripMenuItem.Text">
-        <source>First -&gt; &amp;Working directory</source>
+        <source>A -&gt; &amp;Working directory</source>
         <target />
       </trans-unit>
       <trans-unit id="firstToSelectedToolStripMenuItem.Text">
-        <source>&amp;First -&gt; Second</source>
+        <source>A -&gt; B</source>
         <target />
       </trans-unit>
       <trans-unit id="openContainingFolderToolStripMenuItem.Text">
@@ -9058,11 +9058,11 @@ Reset the filter via View &gt; Show all branches.</source>
         <target />
       </trans-unit>
       <trans-unit id="rememberFirstRevDiffToolStripMenuItem.Text">
-        <source>R&amp;emember First for diff</source>
+        <source>R&amp;emember A for diff</source>
         <target />
       </trans-unit>
       <trans-unit id="rememberSecondRevDiffToolStripMenuItem.Text">
-        <source>&amp;Remember Second for diff</source>
+        <source>&amp;Remember B for diff</source>
         <target />
       </trans-unit>
       <trans-unit id="resetFileToToolStripMenuItem.Text">
@@ -9082,7 +9082,7 @@ Reset the filter via View &gt; Show all branches.</source>
         <target />
       </trans-unit>
       <trans-unit id="selectedToLocalToolStripMenuItem.Text">
-        <source>&amp;Second -&gt; Working directory</source>
+        <source>B -&gt; Working directory</source>
         <target />
       </trans-unit>
       <trans-unit id="showFindInCommitFilesGitGrepDialogToolStripMenuItem.Text">

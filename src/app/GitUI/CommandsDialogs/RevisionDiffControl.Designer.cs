@@ -275,21 +275,21 @@ namespace GitUI.CommandsDialogs
             // 
             firstToSelectedToolStripMenuItem.Name = "firstToSelectedToolStripMenuItem";
             firstToSelectedToolStripMenuItem.Size = new Size(227, 22);
-            firstToSelectedToolStripMenuItem.Text = "&First -> Second";
+            firstToSelectedToolStripMenuItem.Text = "A -> B";
             firstToSelectedToolStripMenuItem.Click += firstToSelectedToolStripMenuItem_Click;
             // 
             // selectedToLocalToolStripMenuItem
             // 
             selectedToLocalToolStripMenuItem.Name = "selectedToLocalToolStripMenuItem";
             selectedToLocalToolStripMenuItem.Size = new Size(227, 22);
-            selectedToLocalToolStripMenuItem.Text = "&Second -> Working directory";
+            selectedToLocalToolStripMenuItem.Text = "B -> Working directory";
             selectedToLocalToolStripMenuItem.Click += selectedToLocalToolStripMenuItem_Click;
             // 
             // firstToLocalToolStripMenuItem
             // 
             firstToLocalToolStripMenuItem.Name = "firstToLocalToolStripMenuItem";
             firstToLocalToolStripMenuItem.Size = new Size(227, 22);
-            firstToLocalToolStripMenuItem.Text = "First -> &Working directory";
+            firstToLocalToolStripMenuItem.Text = "A -> &Working directory";
             firstToLocalToolStripMenuItem.Click += firstToLocalToolStripMenuItem_Click;
             // 
             // diffRememberStripSeparator
@@ -314,14 +314,14 @@ namespace GitUI.CommandsDialogs
             // 
             rememberSecondRevDiffToolStripMenuItem.Name = "rememberSecondRevDiffToolStripMenuItem";
             rememberSecondRevDiffToolStripMenuItem.Size = new Size(227, 22);
-            rememberSecondRevDiffToolStripMenuItem.Text = "&Remember Second for diff";
+            rememberSecondRevDiffToolStripMenuItem.Text = "&Remember B for diff";
             rememberSecondRevDiffToolStripMenuItem.Click += rememberSecondDiffToolToolStripMenuItem_Click;
             // 
             // rememberFirstRevDiffToolStripMenuItem
             // 
             rememberFirstRevDiffToolStripMenuItem.Name = "rememberFirstRevDiffToolStripMenuItem";
             rememberFirstRevDiffToolStripMenuItem.Size = new Size(227, 22);
-            rememberFirstRevDiffToolStripMenuItem.Text = "R&emember First for diff";
+            rememberFirstRevDiffToolStripMenuItem.Text = "R&emember A for diff";
             rememberFirstRevDiffToolStripMenuItem.Click += rememberFirstDiffToolToolStripMenuItem_Click;
             // 
             // diffOpenWorkingDirectoryFileWithToolStripMenuItem
