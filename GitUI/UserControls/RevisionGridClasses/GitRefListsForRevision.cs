@@ -16,13 +16,14 @@ namespace GitUI.UserControls.RevisionGridClasses
         {
             _allBranches = revision.Refs.Where(h => !h.IsTag && (h.IsHead || h.IsRemote)).ToArray();
             _localBranches = _allBranches.Where(b => !b.IsRemote).ToArray();
-            _branchesWithNoIdenticalRemotes = _allBranches.Where(b => !b.IsRemote || 
+            _branchesWithNoIdenticalRemotes = _allBranches.Where(b => !b.IsRemote ||
                                                                       !_localBranches.Any(lb => lb.TrackingRemote == b.Remote && lb.MergeWith == b.LocalName))
                                                           .ToArray();
 
             _tags = revision.Refs.Where(h => h.IsTag).ToArray();
         }
 
+        public IEnumerable<IGitRef> LocalBranches => _localBranches.AsEnumerable();
 
         public IEnumerable<IGitRef> AllBranches => _allBranches.AsEnumerable();
 

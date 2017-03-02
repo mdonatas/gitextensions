@@ -2145,6 +2145,17 @@ namespace GitUI
             frm.ShowDialog(this);
         }
 
+        private void ResetBranchToHereToolStripMenuItemClick(object sender, EventArgs e)
+        {
+            var branchRef = ((ToolStripItem)sender).Tag as GitRef;
+
+            if (Revisions.RowCount <= LatestSelectedRowIndex || LatestSelectedRowIndex < 0 || branchRef == null)
+                return;
+
+            var frm = new FormResetBranch(UICommands, GetRevision(LatestSelectedRowIndex), branchRef);
+            frm.ShowDialog(this);
+        }
+
         private void CreateNewBranchToolStripMenuItemClick(object sender, EventArgs e)
         {
             if (LatestSelectedRevision == null)
@@ -2301,6 +2312,7 @@ namespace GitUI
             var deleteTagDropDown = new ContextMenuStrip();
             var deleteBranchDropDown = new ContextMenuStrip();
             var checkoutBranchDropDown = new ContextMenuStrip();
+            var resetBranchDropDown = new ContextMenuStrip();
             var mergeBranchDropDown = new ContextMenuStrip();
             var renameDropDown = new ContextMenuStrip();
 
@@ -2322,6 +2334,7 @@ namespace GitUI
 
             //For now there is no action that could be done on currentBranch
             string currentBranchRef = GitRef.RefsHeadsPrefix + Module.GetSelectedBranch();
+            var localBranches = gitRefListsForRevision.LocalBranches.ToList();
             var branchesWithNoIdenticalRemotes = gitRefListsForRevision.BranchesWithNoIdenticalRemotes;
 
             bool currentBranchPointsToRevision = false;
@@ -2430,6 +2443,40 @@ namespace GitUI
                 }
             }
 
+            {
+                bool currentBranchInCurrentRevision = localBranches.Any(gitRef => gitRef.CompleteName == currentBranchRef);
+                bool addSeparator = false;
+                if (currentBranchInCurrentRevision == false)
+                {
+                    ToolStripItem toolStripItem = new ToolStripMenuItem(string.Format("{0} (current)", currentBranchRef));
+                    toolStripItem.Click += ResetCurrentBranchToHereToolStripMenuItemClick;
+
+                    resetBranchDropDown.Items.Add(toolStripItem);
+                    addSeparator = true;
+                }
+
+                IList<IGitRef> localBranchRefs = Module.GetRefs(false);
+                foreach (GitRef gitRef in localBranchRefs)
+                {
+                    if (localBranches.Any(b => b.Guid == gitRef.Guid) || gitRef.CompleteName == currentBranchRef)
+                    {
+                        continue;
+                    }
+
+                    if (addSeparator)
+                    {
+                        addSeparator = false;
+                        resetBranchDropDown.Items.Add(new ToolStripSeparator());
+                    }
+
+                    ToolStripItem toolStripItem = new ToolStripMenuItem(gitRef.Name);
+
+                    toolStripItem.Tag = gitRef;
+                    toolStripItem.Click += ResetBranchToHereToolStripMenuItemClick;
+                    resetBranchDropDown.Items.Add(toolStripItem); //Add to reset branch
+                }
+            }
+
             bool bareRepositoryOrArtificial = Module.IsBareRepository() || revision.IsArtificial;
             deleteTagToolStripMenuItem.DropDown = deleteTagDropDown;
             deleteTagToolStripMenuItem.Enabled = deleteTagDropDown.Items.Count > 0;
@@ -2442,6 +2489,8 @@ namespace GitUI
 
             mergeBranchToolStripMenuItem.DropDown = mergeBranchDropDown;
             mergeBranchToolStripMenuItem.Enabled = !bareRepositoryOrArtificial && mergeBranchDropDown.Items.Count > 0 && !Module.IsBareRepository();
+
+            resetCurrentBranchToHereToolStripMenuItem.DropDown = resetBranchDropDown;
 
             rebaseOnToolStripMenuItem.Enabled = !bareRepositoryOrArtificial && !Module.IsBareRepository();
 
