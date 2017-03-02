@@ -834,21 +834,21 @@ partial class FileStatusList
         // 
         tsmiDiffFirstToSelected.Name = "tsmiDiffFirstToSelected";
         tsmiDiffFirstToSelected.Size = new Size(227, 22);
-        tsmiDiffFirstToSelected.Text = "&First -> Second";
+        tsmiDiffFirstToSelected.Text = "A -> B";
         tsmiDiffFirstToSelected.Click += DiffFirstToSelected_Click;
         // 
         // tsmiDiffSelectedToLocal
         // 
         tsmiDiffSelectedToLocal.Name = "tsmiDiffSelectedToLocal";
         tsmiDiffSelectedToLocal.Size = new Size(227, 22);
-        tsmiDiffSelectedToLocal.Text = "&Second -> Working directory";
+        tsmiDiffSelectedToLocal.Text = "B -> Working directory";
         tsmiDiffSelectedToLocal.Click += DiffSelectedToLocal_Click;
         // 
         // tsmiDiffFirstToLocal
         // 
         tsmiDiffFirstToLocal.Name = "tsmiDiffFirstToLocal";
         tsmiDiffFirstToLocal.Size = new Size(227, 22);
-        tsmiDiffFirstToLocal.Text = "First -> &Working directory";
+        tsmiDiffFirstToLocal.Text = "A -> Working directory";
         tsmiDiffFirstToLocal.Click += DiffFirstToLocal_Click;
         // 
         // sepDifftoolRemember
@@ -873,14 +873,14 @@ partial class FileStatusList
         // 
         tsmiRememberSecondRevDiff.Name = "tsmiRememberSecondRevDiff";
         tsmiRememberSecondRevDiff.Size = new Size(227, 22);
-        tsmiRememberSecondRevDiff.Text = "&Remember Second for diff";
+        tsmiRememberSecondRevDiff.Text = "&Remember B for diff";
         tsmiRememberSecondRevDiff.Click += RememberSecondRevDiff_Click;
         // 
         // tsmiRememberFirstRevDiff
         // 
         tsmiRememberFirstRevDiff.Name = "tsmiRememberFirstRevDiff";
         tsmiRememberFirstRevDiff.Size = new Size(227, 22);
-        tsmiRememberFirstRevDiff.Text = "R&emember First for diff";
+        tsmiRememberFirstRevDiff.Text = "R&emember A for diff";
         tsmiRememberFirstRevDiff.Click += RememberFirstRevDiff_Click;
         // 
         // tsmiOpenWorkingDirectoryFile

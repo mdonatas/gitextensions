@@ -1538,7 +1538,7 @@ Git will never check if the file has changed that will improve status check perf
         <target />
       </trans-unit>
       <trans-unit id="_firstRevision.Text">
-        <source>First: A </source>
+        <source>A: </source>
         <target />
       </trans-unit>
       <trans-unit id="_multipleDescription.Text">
@@ -1566,7 +1566,7 @@ Git will never check if the file has changed that will improve status check perf
         <target />
       </trans-unit>
       <trans-unit id="_selectedRevision.Text">
-        <source>Second: B </source>
+        <source>B: </source>
         <target />
       </trans-unit>
       <trans-unit id="_skipWorktreeToolTip.Text">
@@ -1691,15 +1691,15 @@ Suitable for some config files modified locally.</source>
         <target />
       </trans-unit>
       <trans-unit id="tsmiDiffFirstToLocal.Text">
-        <source>First -&gt; &amp;Working directory</source>
+        <source>A -&gt; &amp;Working directory</source>
         <target />
       </trans-unit>
       <trans-unit id="tsmiDiffFirstToSelected.Text">
-        <source>&amp;First -&gt; Second</source>
+        <source>&amp;A -&gt; B</source>
         <target />
       </trans-unit>
       <trans-unit id="tsmiDiffSelectedToLocal.Text">
-        <source>&amp;Second -&gt; Working directory</source>
+        <source>&amp;B -&gt; Working directory</source>
         <target />
       </trans-unit>
       <trans-unit id="tsmiDiffTwoSelected.Text">
@@ -1815,11 +1815,11 @@ Suitable for some config files modified locally.</source>
         <target />
       </trans-unit>
       <trans-unit id="tsmiRememberFirstRevDiff.Text">
-        <source>R&amp;emember First for diff</source>
+        <source>R&amp;emember A for diff</source>
         <target />
       </trans-unit>
       <trans-unit id="tsmiRememberSecondRevDiff.Text">
-        <source>&amp;Remember Second for diff</source>
+        <source>&amp;Remember B for diff</source>
         <target />
       </trans-unit>
       <trans-unit id="tsmiResetChunkOfFile.Text">

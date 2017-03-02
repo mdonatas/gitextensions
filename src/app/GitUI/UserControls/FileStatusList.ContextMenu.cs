@@ -80,13 +80,13 @@ partial class FileStatusList
     private readonly TranslationString _deleteSelectedFilesCaption = new("Delete");
     private readonly TranslationString _deleteSelectedFiles = new("Are you sure you want to delete the selected file(s)?");
     private readonly TranslationString _deleteFailed = new("Delete file failed");
-    private readonly TranslationString _firstRevision = new("First: A ");
+    private readonly TranslationString _firstRevision = new("A: ");
     private readonly TranslationString _multipleDescription = new("<multiple>");
     private readonly TranslationString _newName = new("New name");
     private readonly TranslationString _resetSelectedChangesText = new("Are you sure you want to reset all selected files to {0}?");
     private readonly TranslationString _saveFileFilterAllFiles = new("All files");
     private readonly TranslationString _saveFileFilterCurrentFormat = new("Current format");
-    private readonly TranslationString _selectedRevision = new("Second: B ");
+    private readonly TranslationString _selectedRevision = new("B: ");
     private readonly TranslationString _stopTrackingFail = new("Fail to stop tracking the file '{0}'.");
 
     private readonly TranslationString _skipWorktreeToolTip = new("Hide already tracked files that will change but that you don\'t want to commit."
