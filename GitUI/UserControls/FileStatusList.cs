@@ -150,7 +150,7 @@ namespace GitUI
             set
             {
                 _filterVisible = value;
-                FilterComboBox.Visible = _filterVisible;
+                FilterToolStrip.Visible = _filterVisible;
                 FilterWatermarkLabel.Visible = _filterVisible;
             }
         }
@@ -1229,7 +1229,7 @@ namespace GitUI
             NoFiles.Visible = !filesPresent;
             if (_filterVisible)
             {
-                FilterComboBox.Visible = filesPresent;
+                FilterToolStrip.Visible = filesPresent;
             }
         }
 
@@ -1305,9 +1305,19 @@ namespace GitUI
             _filterSubject.OnNext(filterText);
         }
 
+        private void FilterToolStrip_Resize(object sender, EventArgs e)
+        {
+            int usedSpace =
+                (FilterOptionsComboBox.Visible ?
+                    FilterOptionsComboBox.Width +
+                    FilterOptionsComboBox.Margin.Left + FilterOptionsComboBox.Margin.Right : -3) +
+                FilterComboBox.Margin.Left + FilterComboBox.Margin.Right;
+            FilterComboBox.Width = FilterToolStrip.Width - usedSpace - 4;
+        }
+
         private void FilterComboBox_MouseEnter(object sender, EventArgs e)
         {
-            FilterToolTip.SetToolTip(FilterComboBox, _toolTipText);
+            FilterToolTip.SetToolTip(FilterToolStrip, _toolTipText);
         }
 
         private void FilterComboBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -1330,6 +1340,7 @@ namespace GitUI
 
         private void FilterWatermarkLabel_Click(object sender, EventArgs e)
         {
+            FilterWatermarkLabel.Visible = false;
             FilterComboBox.Focus();
         }
 
