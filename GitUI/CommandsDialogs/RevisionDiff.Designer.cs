@@ -211,28 +211,28 @@ namespace GitUI.CommandsDialogs
             // 
             this.resetFileToFirstToolStripMenuItem.Name = "resetFileToFirstToolStripMenuItem";
             this.resetFileToFirstToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
-            this.resetFileToFirstToolStripMenuItem.Text = "First";
+            this.resetFileToFirstToolStripMenuItem.Text = "A";
             this.resetFileToFirstToolStripMenuItem.Click += new System.EventHandler(this.resetFileToFirstToolStripMenuItem_Click);
             // 
             // resetFileToSecondToolStripMenuItem
             // 
             this.resetFileToSecondToolStripMenuItem.Name = "resetFileToSecondToolStripMenuItem";
             this.resetFileToSecondToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
-            this.resetFileToSecondToolStripMenuItem.Text = "Second";
+            this.resetFileToSecondToolStripMenuItem.Text = "B";
             this.resetFileToSecondToolStripMenuItem.Click += new System.EventHandler(this.resetFileToSecondToolStripMenuItem_Click);
             // 
             // resetFileToSelectedToolStripMenuItem
             // 
             this.resetFileToSelectedToolStripMenuItem.Name = "resetFileToSelectedToolStripMenuItem";
             this.resetFileToSelectedToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
-            this.resetFileToSelectedToolStripMenuItem.Text = "Selected";
+            this.resetFileToSelectedToolStripMenuItem.Text = "B";
             this.resetFileToSelectedToolStripMenuItem.Click += new System.EventHandler(this.resetFileToSelectedToolStripMenuItem_Click);
             // 
             // resetFileToParentToolStripMenuItem
             // 
             this.resetFileToParentToolStripMenuItem.Name = "resetFileToParentToolStripMenuItem";
             this.resetFileToParentToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
-            this.resetFileToParentToolStripMenuItem.Text = "Parent";
+            this.resetFileToParentToolStripMenuItem.Text = "A";
             this.resetFileToParentToolStripMenuItem.Click += new System.EventHandler(this.resetFileToParentToolStripMenuItem_Click);
             // 
             // stageFileToolStripMenuItem
