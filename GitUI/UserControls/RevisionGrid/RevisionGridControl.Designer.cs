@@ -202,7 +202,7 @@ namespace GitUI
             this.mergeBranchToolStripMenuItem.Size = new System.Drawing.Size(264, 24);
             this.mergeBranchToolStripMenuItem.Text = "Merge into current branch...";
             this.mergeBranchToolStripMenuItem.Click += new System.EventHandler(this.deleteBranchTagToolStripMenuItem_Click);
-            // 
+            //
             // rebaseOnToolStripMenuItem
             // 
             this.rebaseOnToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -218,7 +218,7 @@ namespace GitUI
             // resetCurrentBranchToHereToolStripMenuItem
             // 
             this.resetCurrentBranchToHereToolStripMenuItem.Image = global::GitUI.Properties.Images.ResetCurrentBranchToHere;
-            this.resetCurrentBranchToHereToolStripMenuItem.Name = "resetCurrentBranchToHereToolStripMenuItem";
+            this.resetCurrentBranchToHereToolStripMenuItem.Name = "resetBranchToHereToolStripMenuItem";
             this.resetCurrentBranchToHereToolStripMenuItem.Size = new System.Drawing.Size(223, 22);
             this.resetCurrentBranchToHereToolStripMenuItem.Text = "Reset branch to here";
             // 
