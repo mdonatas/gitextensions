@@ -74,7 +74,7 @@ namespace GitUI.CommandsDialogs
 
         public bool ShouldShowDifftoolMenus(ContextMenuSelectionInfo selectionInfo)
         {
-            return selectionInfo.IsAnyItemSelected && !selectionInfo.IsAnyCombinedDiff && selectionInfo.IsAnyTracked;
+            return selectionInfo.IsAnyItemSelected && selectionInfo.IsAnyTracked;
         }
 
         public bool ShouldShowResetFileMenus(ContextMenuSelectionInfo selectionInfo)
