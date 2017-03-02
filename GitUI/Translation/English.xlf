@@ -7799,7 +7799,7 @@ To show all branches, right click the revision grid, select 'view' and then the 
         <target />
       </trans-unit>
       <trans-unit id="_firstRevision.Text">
-        <source>First</source>
+        <source>A</source>
         <target />
       </trans-unit>
       <trans-unit id="_multipleDescription.Text">
@@ -7815,7 +7815,7 @@ To show all branches, right click the revision grid, select 'view' and then the 
         <target />
       </trans-unit>
       <trans-unit id="_selectedRevision.Text">
-        <source>Selected</source>
+        <source>B</source>
         <target />
       </trans-unit>
       <trans-unit id="blameToolStripMenuItem.Text">
@@ -7871,15 +7871,15 @@ To show all branches, right click the revision grid, select 'view' and then the 
         <target />
       </trans-unit>
       <trans-unit id="firstParentToLocalToolStripMenuItem.Text">
-        <source>Parent to first -&gt; Working directory</source>
+        <source>Parent to A -&gt; Working directory</source>
         <target />
       </trans-unit>
       <trans-unit id="firstToLocalToolStripMenuItem.Text">
-        <source>First -&gt; Working directory</source>
+        <source>A -&gt; Working directory</source>
         <target />
       </trans-unit>
       <trans-unit id="firstToSelectedToolStripMenuItem.Text">
-        <source>First -&gt; Selected</source>
+        <source>A -&gt; B</source>
         <target />
       </trans-unit>
       <trans-unit id="openContainingFolderToolStripMenuItem.Text">
@@ -7903,11 +7903,11 @@ To show all branches, right click the revision grid, select 'view' and then the 
         <target />
       </trans-unit>
       <trans-unit id="selectedParentToLocalToolStripMenuItem.Text">
-        <source>Parent to selected -&gt; Working directory</source>
+        <source>Parent to B -&gt; Working directory</source>
         <target />
       </trans-unit>
       <trans-unit id="selectedToLocalToolStripMenuItem.Text">
-        <source>Selected -&gt; Working directory</source>
+        <source>B -&gt; Working directory</source>
         <target />
       </trans-unit>
       <trans-unit id="stageFileToolStripMenuItem.Text">
