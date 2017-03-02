@@ -542,11 +542,11 @@ namespace GitCommands
             var executionStartTimestamp = DateTime.Now;
 
             var startInfo = new ProcessStartInfo
-                                {
-                                    FileName = fileName,
-                                    Arguments = arguments,
-                                    WorkingDirectory = workingDir
-                                };
+            {
+                FileName = fileName,
+                Arguments = arguments,
+                WorkingDirectory = workingDir
+            };
             if (!showConsole)
             {
                 startInfo.UseShellExecute = false;
@@ -1980,12 +1980,12 @@ namespace GitCommands
 
                 var patchFile =
                     new PatchFile
-                        {
-                            Name = file,
-                            FullName = fullFileName,
-                            IsNext = n == next,
-                            IsSkipped = n < next
-                        };
+                    {
+                        Name = file,
+                        FullName = fullFileName,
+                        IsNext = n == next,
+                        IsSkipped = n < next
+                    };
 
                 if (File.Exists(GetRebaseDir() + file))
                 {
@@ -2258,14 +2258,14 @@ namespace GitCommands
 
         public List<GitItemStatus> GetDiffFiles(string from, string to, bool noCache = false)
         {
-            string cmd = DiffCommandWithStandardArgs + "-M -C -z --name-status \"" + to + "\" \"" + from + "\"";
+            string cmd = DiffCommandWithStandardArgs + "-M -C -z --name-status \"" + from + "\" \"" + to + "\"";
             string result = noCache ? RunGitCmd(cmd) : this.RunCacheableCmd(AppSettings.GitCommand, cmd, SystemEncoding);
             return GitCommandHelpers.GetAllChangedFilesFromString(this, result, true);
         }
 
         public IList<GitItemStatus> GetStashDiffFiles(string stashName)
         {
-            var resultCollection = GetDiffFiles(stashName, stashName + "^", true);
+            var resultCollection = GetDiffFiles(stashName + "^", stashName, true);
 
             // shows untracked files
             string untrackedTreeHash = RunGitCmd("log " + stashName + "^3 --pretty=format:\"%T\" --max-count=1");
