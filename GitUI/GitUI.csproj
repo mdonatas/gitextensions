@@ -468,9 +468,9 @@
     <Compile Include="SpellChecker\WordAtCursorExtractor.cs" />
     <Compile Include="Strings.cs" />
     <Compile Include="TaskbarProgress.cs" />
-    <Compile Include="UserControls\GitItemStatusWithParent.cs" />
     <Compile Include="UserControls\NativeTreeViewDoubleClickDecorator.cs" />
     <Compile Include="UserControls\NativeTreeViewExplorerNavigationDecorator.cs" />
+    <Compile Include="UserControls\FileStatusItem.cs" />
     <Compile Include="UserControls\RevisionGrid\CellStyle.cs" />
     <Compile Include="UserControls\ListViewGroupHitInfo.cs" />
     <Compile Include="UserControls\RevisionGrid\Graph\LaneInfoProvider.cs" />
@@ -555,6 +555,7 @@
     <Compile Include="UserControls\ExListView.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="UserControls\FileStatusListItemsInfo.cs" />
     <Compile Include="UserControls\GotoUserManualControl.cs">
       <SubType>UserControl</SubType>
     </Compile>

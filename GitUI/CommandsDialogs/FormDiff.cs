@@ -146,10 +146,10 @@ namespace GitUI.CommandsDialogs
 
             var diffKind = GetDiffKind();
 
-            foreach (var itemWithParent in DiffFiles.SelectedItemsWithParent)
+            foreach (var itemWithParent in DiffFiles.SelectedItems)
             {
                 var revs = new[] { DiffFiles.Revision, itemWithParent.ParentRevision };
-                UICommands.OpenWithDifftool(this, revs, itemWithParent.Item.Name, itemWithParent.Item.OldName, diffKind, itemWithParent.Item.IsTracked);
+                UICommands.OpenWithDifftool(this, revs, itemWithParent.Name, itemWithParent.OldName, diffKind, itemWithParent.IsTracked);
             }
 
             RevisionDiffKind GetDiffKind()
@@ -210,12 +210,12 @@ namespace GitUI.CommandsDialogs
 
         private void findInDiffToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var candidates = DiffFiles.GitItemStatuses;
+            var candidates = DiffFiles.FileStatusItems;
 
             IEnumerable<GitItemStatus> FindDiffFilesMatches(string name)
             {
                 var predicate = _findFilePredicateProvider.Get(name, Module.WorkingDir);
-                return candidates.Where(item => predicate(item.Name) || predicate(item.OldName));
+                return candidates.Where(item => predicate(item.Name) || predicate(item.OldName)).Select(c => c.GitItemStatus);
             }
 
             GitItemStatus selectedItem;
@@ -230,7 +230,7 @@ namespace GitUI.CommandsDialogs
 
             if (selectedItem != null)
             {
-                DiffFiles.SelectedItem = selectedItem;
+                DiffFiles.SetSelectedItem(selectedItem);
             }
         }
 
@@ -277,11 +277,11 @@ namespace GitUI.CommandsDialogs
         private ContextMenuDiffToolInfo GetContextMenuDiffToolInfo()
         {
             bool firstIsParent = _revisionTester.AllFirstAreParentsToSelected(DiffFiles.SelectedItemParents, DiffFiles.Revision);
-            bool localExists = _revisionTester.AnyLocalFileExists(DiffFiles.SelectedItemsWithParent.Select(i => i.Item));
+            bool localExists = _revisionTester.AnyLocalFileExists(DiffFiles.SelectedItems.Select(i => i.GitItemStatus));
 
             var selectedItemParentRevs = DiffFiles.SelectedItemParents.Select(i => i.ObjectId).ToList();
-            bool allAreNew = DiffFiles.SelectedItemsWithParent.All(i => i.Item.IsNew);
-            bool allAreDeleted = DiffFiles.SelectedItemsWithParent.All(i => i.Item.IsDeleted);
+            bool allAreNew = DiffFiles.SelectedItems.All(i => i.IsNew);
+            bool allAreDeleted = DiffFiles.SelectedItems.All(i => i.IsDeleted);
 
             return new ContextMenuDiffToolInfo(
                 _headRevision,
