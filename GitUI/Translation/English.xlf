@@ -2551,19 +2551,19 @@ Do you want to abort and remove it from the recent repositories list?</source>
         <target />
       </trans-unit>
       <trans-unit id="resetFileToFirstToolStripMenuItem.Text">
-        <source>First</source>
+        <source>A</source>
         <target />
       </trans-unit>
       <trans-unit id="resetFileToParentToolStripMenuItem.Text">
-        <source>Parent</source>
+        <source>A</source>
         <target />
       </trans-unit>
       <trans-unit id="resetFileToSecondToolStripMenuItem.Text">
-        <source>Second</source>
+        <source>B</source>
         <target />
       </trans-unit>
       <trans-unit id="resetFileToSelectedToolStripMenuItem.Text">
-        <source>Selected</source>
+        <source>B</source>
         <target />
       </trans-unit>
       <trans-unit id="resetFileToToolStripMenuItem.Text">
