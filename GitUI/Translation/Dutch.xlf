@@ -9424,6 +9424,10 @@ Als dit een centrale opslagplaats is (zonder werk directory)
         <target>Reset huidige vertakking naar hier</target>
 
       </trans-unit>
+      <trans-unit id="resetBranchToHereToolStripMenuItem.Text">
+        <source>Reset branch to here</source>
+        <target />
+      </trans-unit>
       <trans-unit id="revertCommitToolStripMenuItem.Text">
         <source>Revert commit</source>
         <target>Commit ongedaan maken</target>

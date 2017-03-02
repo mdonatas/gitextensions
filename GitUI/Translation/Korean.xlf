@@ -9013,6 +9013,10 @@ If this is a central repository (bare repository without a working directory):
         <target>현재 작업 브랜치를 여기에서 리셋</target>
 
       </trans-unit>
+      <trans-unit id="resetBranchToHereToolStripMenuItem.Text">
+        <source>Reset branch to here</source>
+        <target />
+      </trans-unit>
       <trans-unit id="revertCommitToolStripMenuItem.Text">
         <source>Revert commit</source>
         <target>커밋 되돌리기</target>

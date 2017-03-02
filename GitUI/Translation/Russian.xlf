@@ -9473,6 +9473,10 @@ If this is a central repository (bare repository without a working directory):
         <target>Откатить текущую ветку сюда</target>
 
       </trans-unit>
+      <trans-unit id="resetBranchToHereToolStripMenuItem.Text">
+        <source>Reset branch to here</source>
+        <target />
+      </trans-unit>
       <trans-unit id="revertCommitToolStripMenuItem.Text">
         <source>Revert commit</source>
         <target>Отменить коммит</target>
