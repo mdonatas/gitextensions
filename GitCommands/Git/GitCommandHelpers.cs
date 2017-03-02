@@ -474,6 +474,11 @@ namespace GitCommands
             return "reset --hard \"" + commit + "\"";
         }
 
+        public static string PushLocalCmd(string source, string target, bool? force = false)
+        {
+            return string.Format("push ./ \"{1}\":\"{0}\"{2}", source, target, force.GetValueOrDefault(false) ? " -f" : string.Empty);
+        }
+
         public static string CloneCmd(string fromPath, string toPath)
         {
             return CloneCmd(fromPath, toPath, false, false, string.Empty, null);
