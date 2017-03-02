@@ -135,6 +135,7 @@ namespace GitUI
             this.OnlyMatchingFilesToolStripMenuItem.Name = "OnlyMatchingFilesToolStripMenuItem";
             this.OnlyMatchingFilesToolStripMenuItem.Size = new System.Drawing.Size(205, 22);
             this.OnlyMatchingFilesToolStripMenuItem.Text = "Matching files";
+            this.OnlyMatchingFilesToolStripMenuItem.CheckedChanged += new System.EventHandler(this.OnlyMatchingFilesToolStripMenuItem_CheckedChanged);
             // 
             // FilterOptionsMenuSeparator
             // 
@@ -147,6 +148,7 @@ namespace GitUI
             this.OnlyMatchingFilesFromBaseToolStripMenuItem.Name = "OnlyMatchingFilesFromBaseToolStripMenuItem";
             this.OnlyMatchingFilesFromBaseToolStripMenuItem.Size = new System.Drawing.Size(205, 22);
             this.OnlyMatchingFilesFromBaseToolStripMenuItem.Text = "Matching files from base";
+            this.OnlyMatchingFilesFromBaseToolStripMenuItem.CheckedChanged += new System.EventHandler(this.OnlyMatchingFilesFromBaseToolStripMenuItem_CheckedChanged);
             // 
             // FilterWatermarkLabel
             // 

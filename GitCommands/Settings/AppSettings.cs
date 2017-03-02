@@ -1072,6 +1072,18 @@ namespace GitCommands
             set => SetInt("diffverticalrulerposition", value);
         }
 
+        public static bool ShowDiffForMatchingFilesOnly
+        {
+            get { return GetBool("showdiffformatchingfilesonly", false); }
+            set { SetBool("showdiffformatchingfilesonly", value); }
+        }
+
+        public static bool ShowDiffFromBaseForMatchingFilesOnly
+        {
+            get { return GetBool("showdifffrombaseformatchingfilesonly", true); }
+            set { SetBool("showdifffrombaseformatchingfilesonly", value); }
+        }
+
         public static string RecentWorkingDir
         {
             get => GetString("RecentWorkingDir", null);
