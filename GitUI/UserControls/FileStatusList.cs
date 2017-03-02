@@ -152,7 +152,7 @@ namespace GitUI
             set
             {
                 _filterVisible = value;
-                FilterComboBox.Visible = _filterVisible;
+                FilterToolStrip.Visible = _filterVisible;
                 FilterWatermarkLabel.Visible = _filterVisible;
             }
         }
@@ -971,8 +971,9 @@ namespace GitUI
                         GitItemStatuses = null;
                     }
                     else
-                        //SetGitItemStatuses(revisions[1].Guid, Module.GetDiffFilesWithSubmodulesStatus(revisions[0].Guid, revisions[1].Guid));
+                    {
                         SetTwoRevDiff(revisions);
+                    }
                     break;
 
                 default: // more than 2 revisions selected => no diff
@@ -1095,7 +1096,7 @@ namespace GitUI
             NoFiles.Visible = !filesPresent;
             if (_filterVisible)
             {
-                FilterComboBox.Visible = filesPresent;
+                FilterToolStrip.Visible = filesPresent;
             }
         }
 
@@ -1181,9 +1182,19 @@ namespace GitUI
             }
         }
 
+        private void FilterToolStrip_Resize(object sender, EventArgs e)
+        {
+            int usedSpace =
+                (FilterOptionsComboBox.Visible ?
+                    FilterOptionsComboBox.Width +
+                    FilterOptionsComboBox.Margin.Left + FilterOptionsComboBox.Margin.Right : -3) +
+                FilterComboBox.Margin.Left + FilterComboBox.Margin.Right;
+            FilterComboBox.Width = FilterToolStrip.Width - usedSpace - 4;
+        }
+
         private void FilterComboBox_MouseEnter(object sender, EventArgs e)
         {
-            FilterToolTip.SetToolTip(FilterComboBox, _ToolTipText);
+            FilterToolTip.SetToolTip(FilterToolStrip, _ToolTipText);
         }
 
         private void FilterComboBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -1204,9 +1215,14 @@ namespace GitUI
             }
         }
 
+        private void FilterWatermarkLabel_Click(object sender, EventArgs e)
+        {
+            FilterWatermarkLabel.Visible = false;
+            FilterComboBox.Focus();
+        }
+
         private Regex _filter;
 
         #endregion Filtering
     }
-
 }
