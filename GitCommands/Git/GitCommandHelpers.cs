@@ -222,6 +222,11 @@ namespace GitCommands
             };
         }
 
+        public static string PushLocalCmd(string source, string target, bool? force = false)
+        {
+            return string.Format("push ./ \"{1}\":\"{0}\"{2}", source, target, force.GetValueOrDefault(false) ? " -f" : string.Empty);
+        }
+
         /// <summary>
         /// Git Clone.
         /// </summary>
