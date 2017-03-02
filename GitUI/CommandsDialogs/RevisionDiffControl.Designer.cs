@@ -215,21 +215,21 @@ namespace GitUI.CommandsDialogs
             // 
             this.firstToSelectedToolStripMenuItem.Name = "firstToSelectedToolStripMenuItem";
             this.firstToSelectedToolStripMenuItem.Size = new System.Drawing.Size(282, 22);
-            this.firstToSelectedToolStripMenuItem.Text = "First -> Second";
+            this.firstToSelectedToolStripMenuItem.Text = "A -> B";
             this.firstToSelectedToolStripMenuItem.Click += new System.EventHandler(this.firstToSelectedToolStripMenuItem_Click);
             // 
             // firstToLocalToolStripMenuItem
             // 
             this.firstToLocalToolStripMenuItem.Name = "firstToLocalToolStripMenuItem";
             this.firstToLocalToolStripMenuItem.Size = new System.Drawing.Size(282, 22);
-            this.firstToLocalToolStripMenuItem.Text = "First -> Working directory";
+            this.firstToLocalToolStripMenuItem.Text = "A -> Working directory";
             this.firstToLocalToolStripMenuItem.Click += new System.EventHandler(this.firstToLocalToolStripMenuItem_Click);
             // 
             // selectedToLocalToolStripMenuItem
             // 
             this.selectedToLocalToolStripMenuItem.Name = "selectedToLocalToolStripMenuItem";
             this.selectedToLocalToolStripMenuItem.Size = new System.Drawing.Size(282, 22);
-            this.selectedToLocalToolStripMenuItem.Text = "Second -> Working directory";
+            this.selectedToLocalToolStripMenuItem.Text = "B -> Working directory";
             this.selectedToLocalToolStripMenuItem.Click += new System.EventHandler(this.selectedToLocalToolStripMenuItem_Click);
             // 
             // saveAsToolStripMenuItem1
