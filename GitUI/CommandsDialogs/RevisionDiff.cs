@@ -240,13 +240,13 @@ namespace GitUI.CommandsDialogs
         private async Task ShowSelectedFileDiff()
         {
             var items = _revisionGrid.GetSelectedRevisions();
-            if (DiffFiles.SelectedItem == null || items.Count() == 0)
+            if (DiffFiles.SelectedItem == null || !items.Any())
             {
                 DiffText.ViewPatch("");
                 return;
             }
 
-            if (items.Count() == 1)
+            if (items.Count == 1)
             {
                 items.Add(new GitRevision(DiffFiles.SelectedItemParent));
 
@@ -265,7 +265,21 @@ namespace GitUI.CommandsDialogs
                     return;
                 }
             }
-            await DiffText.ViewChanges(items, DiffFiles.SelectedItem, String.Empty);
+
+            Tuple<GitItemStatus, FileStatusListItemsInfo> selectedItemInfo = DiffFiles.GetSelectedItemInfo();
+            if (selectedItemInfo.Item2?.RevisionGuid != null)
+            {
+                GitRevision parentRevision = items.FirstOrDefault(rev => rev.Guid == selectedItemInfo.Item2.ParentRevisionGuid) ?? new GitRevision(selectedItemInfo.Item2.ParentRevisionGuid);
+                GitRevision revision = items.FirstOrDefault(rev => rev.Guid == selectedItemInfo.Item2.RevisionGuid) ?? new GitRevision(selectedItemInfo.Item2.RevisionGuid);
+                List<GitRevision> selectedItemRevisions = new List<GitRevision>(2)
+                {
+                    revision, parentRevision
+                };
+
+                items = selectedItemRevisions;
+            }
+
+            await DiffText.ViewChanges(items, selectedItemInfo.Item1, string.Empty);
         }
 
 

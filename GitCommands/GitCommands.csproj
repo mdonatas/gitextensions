@@ -125,6 +125,7 @@
     <Compile Include="Settings\BranchOrdering.cs" />
     <Compile Include="Git\GitGpgController.cs" />
     <Compile Include="SshPathLocator.cs" />
+    <Compile Include="Git\GitItemStatusNameEqualityComparer.cs" />
     <Compile Include="Git\IndexLockManager.cs" />
     <Compile Include="Git\GitTreeParser.cs" />
     <Compile Include="Logging\CommandLogEntry.cs" />

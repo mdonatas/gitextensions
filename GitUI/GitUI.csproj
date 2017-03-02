@@ -384,6 +384,7 @@
     <Compile Include="UserControls\ExListView.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="UserControls\FileStatusListItemsInfo.cs" />
     <Compile Include="UserControls\GotoUserManualControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
