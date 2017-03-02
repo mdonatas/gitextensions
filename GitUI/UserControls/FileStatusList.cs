@@ -32,6 +32,10 @@ namespace GitUI
         private readonly TranslationString _diffWithParent = new TranslationString("Diff with a/");
         private readonly TranslationString _diffWithBase = new TranslationString("Diff with BASE a/");
         public readonly TranslationString CombinedDiff = new TranslationString("Combined Diff");
+        public readonly TranslationString BaseToADiff = new TranslationString("Base to A");
+        public readonly TranslationString BaseToBDiff = new TranslationString("Base to B");
+        public readonly TranslationString CommonFilesDiff = new TranslationString("Common files Diff");
+
         private readonly IGitRevisionTester _revisionTester;
         private readonly IFullPathResolver _fullPathResolver;
         private readonly SortDiffListContextMenuItem _sortByContextMenu;
@@ -41,8 +45,8 @@ namespace GitUI
         private bool _mouseEntered;
         private ToolStripItem _openSubmoduleMenuItem;
         private Rectangle _dragBoxFromMouseDown;
-        private IReadOnlyList<(GitRevision revision, IReadOnlyList<GitItemStatus> statuses)> _itemsWithParent = Array.Empty<(GitRevision, IReadOnlyList<GitItemStatus>)>();
-        private IReadOnlyList<(GitRevision revision, string description, IReadOnlyList<GitItemStatus> statuses)> _itemsWithDescription = Array.Empty<(GitRevision, string, IReadOnlyList<GitItemStatus>)>();
+        private IReadOnlyList<(FileStatusListItemsInfo revision, IReadOnlyList<FileStatusItem> statuses)> _itemsWithParent = Array.Empty<(FileStatusListItemsInfo, IReadOnlyList<FileStatusItem>)>();
+        private IReadOnlyList<(FileStatusListItemsInfo revision, string description, IReadOnlyList<FileStatusItem> statuses)> _itemsWithDescription = Array.Empty<(FileStatusListItemsInfo, string, IReadOnlyList<FileStatusItem>)>();
         [CanBeNull] private IDisposable _selectedIndexChangeSubscription;
         [CanBeNull] private IDisposable _diffListSortSubscription;
 
@@ -190,8 +194,8 @@ namespace GitUI
         // Properties
 
         [Browsable(false)]
-        public IEnumerable<GitItemStatus> AllItems =>
-            FileStatusListView.ItemTags<GitItemStatus>();
+        public IEnumerable<FileStatusItem> AllItems =>
+            FileStatusListView.ItemTags<FileStatusItem>();
 
         public int AllItemsCount => FileStatusListView.Items.Count;
 
@@ -261,33 +265,31 @@ namespace GitUI
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         [Browsable(false)]
         public IReadOnlyList<GitItemStatus> GitItemFilteredStatuses =>
-            AllItems.AsReadOnlyList();
+            AllItems.Select(i => i.GitItemStatus).AsReadOnlyList();
 
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         [Browsable(false)]
-        public IReadOnlyList<GitItemStatus> GitItemStatuses
+        public IReadOnlyList<FileStatusItem> FileStatusItems
         {
             get
             {
                 return GitItemStatusesWithParents?.SelectMany(tuple => tuple.statuses).AsReadOnlyList()
-                       ?? Array.Empty<GitItemStatus>();
+                       ?? Array.Empty<FileStatusItem>();
             }
         }
 
         // Parents is used as the "first selected" (not always the parent) for GitItemStatus
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         [Browsable(false)]
-        public IReadOnlyList<(GitRevision revision, IReadOnlyList<GitItemStatus> statuses)> GitItemStatusesWithParents => _itemsWithParent;
+        public IReadOnlyList<(FileStatusListItemsInfo revision, IReadOnlyList<FileStatusItem> statuses)> GitItemStatusesWithParents => _itemsWithParent;
 
-        private IReadOnlyList<(GitRevision revision, string description, IReadOnlyList<GitItemStatus> statuses)> GitItemStatusesWithDescription
+        private IReadOnlyList<(FileStatusListItemsInfo revision, string description, IReadOnlyList<FileStatusItem> statuses)> GitItemStatusesWithDescription
         {
             get { return _itemsWithDescription; }
             set
             {
                 _itemsWithDescription = value ?? throw new ArgumentNullException(nameof(value));
                 _itemsWithParent = _itemsWithDescription
-                    .Select(i => new { i.revision, i.statuses })
-                    .AsEnumerable()
                     .Select(i => (revision: i.revision, statuses: i.statuses))
                     .ToList();
                 UpdateFileStatusListView();
@@ -309,7 +311,7 @@ namespace GitUI
 
         [Browsable(false)]
         [DefaultValue(true)]
-        public bool IsEmpty => GitItemStatuses == null || !GitItemStatuses.Any();
+        public bool IsEmpty => FileStatusItems == null || !FileStatusItems.Any();
 
         /// <summary>
         /// Gets or sets the revision.
@@ -338,42 +340,45 @@ namespace GitUI
         [CanBeNull]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         [Browsable(false)]
-        public GitItemStatus SelectedItem
+        public FileStatusItem SelectedItem => FileStatusListView.LastSelectedItem()?.Tag<FileStatusItem>();
+
+        public void SetSelectedItem(FileStatusItem itemToSelect)
         {
-            get => FileStatusListView.LastSelectedItem()?.Tag<GitItemStatus>();
-            set
+            SetSelectedItem(itemToSelect.GitItemStatus);
+        }
+
+        public void SetSelectedItem(GitItemStatus itemToSelect)
+        {
+            var itemToBeSelected = GetItemByStatus(itemToSelect);
+            SelectItems(item => item == itemToBeSelected);
+            return;
+
+            ListViewItem GetItemByStatus(GitItemStatus status)
             {
-                var itemToBeSelected = GetItemByStatus(value);
-                SelectItems(item => item == itemToBeSelected);
-                return;
-
-                ListViewItem GetItemByStatus(GitItemStatus status)
+                if (status == null)
                 {
-                    if (status == null)
-                    {
-                        return null;
-                    }
+                    return null;
+                }
 
-                    ListViewItem newSelected = null;
-                    foreach (ListViewItem item in FileStatusListView.Items)
-                    {
-                        var gitItemStatus = item.Tag<GitItemStatus>();
+                ListViewItem newSelected = null;
+                foreach (ListViewItem item in FileStatusListView.Items)
+                {
+                    var gitItemStatus = item.Tag<FileStatusItem>().GitItemStatus;
 
-                        if (status.CompareTo(gitItemStatus) == 0)
+                    if (status.CompareTo(gitItemStatus) == 0)
+                    {
+                        if (newSelected == null)
                         {
-                            if (newSelected == null)
-                            {
-                                newSelected = item;
-                            }
-                            else if (gitItemStatus == status)
-                            {
-                                return item;
-                            }
+                            newSelected = item;
+                        }
+                        else if (gitItemStatus == status)
+                        {
+                            return item;
                         }
                     }
-
-                    return newSelected;
                 }
+
+                return newSelected;
             }
         }
 
@@ -381,39 +386,35 @@ namespace GitUI
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         [Browsable(false)]
         public GitRevision SelectedItemParent
-            => FileStatusListView.LastSelectedItem()?.Group?.Tag<GitRevision>();
+            => FileStatusListView.LastSelectedItem()?.Group?.Tag<FileStatusListItemsInfo>()?.ParentRevision;
 
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         [Browsable(false)]
         public IEnumerable<GitRevision> SelectedItemParents
             => FileStatusListView.SelectedItems()
-                .Select(i => i.Group?.Tag<GitRevision>())
+                .Select(i => i.Group?.Tag<FileStatusListItemsInfo>()?.ParentRevision)
                 .Where(r => r != null)
                 .Distinct(); // Parents should be distinct to avoid iterating same items
 
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         [Browsable(false)]
-        public IEnumerable<GitItemStatus> SelectedItems
-        {
-            get => FileStatusListView.SelectedItemTags<GitItemStatus>();
-            set
-            {
-                if (value == null)
-                {
-                    ClearSelected();
-                    return;
-                }
+        public IEnumerable<FileStatusItem> SelectedItems => FileStatusListView.SelectedItemTags<FileStatusItem>();
 
-                SelectItems(item => value.Contains(item.Tag<GitItemStatus>()));
-            }
+        public void SetSelectedItems(IEnumerable<FileStatusItem> fileStatusItems)
+        {
+            SetSelectedItems(fileStatusItems.Select(fsi => fsi.GitItemStatus));
         }
 
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        [Browsable(false)]
-        public IEnumerable<GitItemStatusWithParent> SelectedItemsWithParent
-            => FileStatusListView.SelectedItems()
-                .Where(i => i.Group?.Tag is GitRevision)
-                .Select(i => new GitItemStatusWithParent(i.Group.Tag<GitRevision>(), i.Tag<GitItemStatus>()));
+        public void SetSelectedItems(IEnumerable<GitItemStatus> gitItemStatuses)
+        {
+            if (gitItemStatuses == null)
+            {
+                ClearSelected();
+                return;
+            }
+
+            SelectItems(item => gitItemStatuses.Contains(((FileStatusItem)item.Tag).GitItemStatus));
+        }
 
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         [Browsable(false)]
@@ -428,7 +429,7 @@ namespace GitUI
 
                 foreach (ListViewItem item in FileStatusListView.Groups[0].Items)
                 {
-                    yield return item.Tag<GitItemStatus>();
+                    yield return item.Tag<FileStatusItem>().GitItemStatus;
                 }
             }
         }
@@ -464,7 +465,7 @@ namespace GitUI
         private static (Image image, string prefix, string text, string suffix, int prefixTextStartX, int textWidth, int textMaxWidth)
             FormatListViewItem(ListViewItem item, PathFormatter formatter, int itemWidth)
         {
-            var gitItemStatus = item.Tag<GitItemStatus>();
+            var gitItemStatus = item.Tag<FileStatusItem>();
             var image = item.Image();
             int itemLeft = item.Position.X;
 
@@ -655,7 +656,7 @@ namespace GitUI
         {
             Revision = revisions.FirstOrDefault();
 
-            var tuples = new List<(GitRevision revision, string summary, IReadOnlyList<GitItemStatus> statuses)>();
+            var tuples = new List<(FileStatusListItemsInfo revision, string summary, IReadOnlyList<FileStatusItem> statuses)>();
             ObjectId baseRevGuid = null;
 
             if (Revision != null)
@@ -668,6 +669,13 @@ namespace GitUI
                 }
                 else
                 {
+                    if (revisions.Count(rev => rev.IsArtificial == false) == 2)
+                    {
+                        SetTwoRevDiff(revisions);
+
+                        return;
+                    }
+
                     // With more than 4, only first -> selected is interesting
                     // Limited selections: Show multi selection if more than two selected
                     var i = revisions.Count <= 4 ? revisions.Count : 2;
@@ -696,7 +704,7 @@ namespace GitUI
                 if (parentRevs == null || parentRevs.Length == 0)
                 {
                     // No parent, will set null as parent
-                    tuples.Add((null, string.Empty, Module.GetTreeFiles(Revision.TreeGuid, full: true)));
+                    tuples.Add((new FileStatusListItemsInfo(null, null, Revision), string.Empty, Module.GetTreeFiles(Revision.TreeGuid, full: true).Select(a => new FileStatusItem(a, Revision, null)).ToList()));
                 }
                 else
                 {
@@ -705,12 +713,12 @@ namespace GitUI
                         parentRevs = new[] { parentRevs[0] };
                     }
 
-                    foreach (var rev in parentRevs)
+                    foreach (var parentRev in parentRevs)
                     {
-                        var desc = (rev.ObjectId != baseRevGuid ? _diffWithParent.Text : _diffWithBase.Text)
-                                   + GetDescriptionForRevision(rev.ObjectId);
-                        var status = Module.GetDiffFilesWithSubmodulesStatus(rev.ObjectId, Revision.ObjectId, Revision.FirstParentGuid);
-                        tuples.Add((rev, desc, status));
+                        var desc = (parentRev.ObjectId != baseRevGuid ? _diffWithParent.Text : _diffWithBase.Text)
+                                   + GetDescriptionForRevision(parentRev.ObjectId);
+                        var status = Module.GetDiffFilesWithSubmodulesStatus(parentRev.ObjectId, Revision.ObjectId, Revision.FirstParentGuid).Select(a => new FileStatusItem(a, Revision, parentRev)).ToList();
+                        tuples.Add((new FileStatusListItemsInfo(parentRev.Guid, parentRev, Revision, FileStatusListItemsInfo.ListType.SimpleRevision), desc, status));
                     }
 
                     // Show combined (merge conflicts) only when all first (A) are parents to selected (B)
@@ -724,8 +732,9 @@ namespace GitUI
                         if (conflicts.Count != 0)
                         {
                             // Create an artificial commit
+                            var rev = new GitRevision(ObjectId.CombinedDiffId);
                             var desc = CombinedDiff.Text;
-                            tuples.Add((new GitRevision(ObjectId.CombinedDiffId), desc, conflicts));
+                            tuples.Add((new FileStatusListItemsInfo(CombinedDiff.Text, rev, new GitRevision(ObjectId.CombinedDiffId), FileStatusListItemsInfo.ListType.CombinedDiff), desc, conflicts.Select(a => new FileStatusItem(a, new GitRevision(ObjectId.CombinedDiffId), rev)).ToList()));
                         }
                     }
                 }
@@ -745,8 +754,8 @@ namespace GitUI
         {
             Revision = selectedRev;
             GitItemStatusesWithDescription = items == null
-                ? Array.Empty<(GitRevision, string, IReadOnlyList<GitItemStatus>)>()
-                : new[] { (parentRev, _diffWithParent.Text + GetDescriptionForRevision(parentRev?.ObjectId), items) };
+                ? Array.Empty<(FileStatusListItemsInfo, string, IReadOnlyList<FileStatusItem>)>()
+                : new[] { (new FileStatusListItemsInfo("", parentRev, selectedRev), _diffWithParent.Text + GetDescriptionForRevision(parentRev?.ObjectId), (IReadOnlyList<FileStatusItem>)items.Select(a => new FileStatusItem(a, selectedRev, parentRev)).ToList()) };
         }
 
         private string GetDescriptionForRevision(ObjectId objectId)
@@ -757,6 +766,58 @@ namespace GitUI
             }
 
             return objectId?.ToShortString();
+        }
+
+        private void SetTwoRevDiff(IReadOnlyList<GitRevision> revisions)
+        {
+            var revA = revisions[1];
+            var revB = revisions[0];
+            ObjectId baseRevGuid = Module.GetMergeBase(revA.ObjectId, revB.ObjectId);
+
+            var desc = (revA.ObjectId != baseRevGuid ? _diffWithParent.Text : _diffWithBase.Text)
+                       + GetDescriptionForRevision(revA.ObjectId);
+
+            var firstParentSha1 = Revision.FirstParentGuid;
+            IReadOnlyList<GitItemStatus> revAToRevB = Module.GetDiffFilesWithSubmodulesStatus(revA.ObjectId, revB.ObjectId, firstParentSha1);
+
+            List<(FileStatusListItemsInfo revision, string, IReadOnlyList<FileStatusItem> statuses)> list;
+            if (baseRevGuid == null || revA.ObjectId == baseRevGuid || revB.ObjectId == baseRevGuid)
+            {
+                list = new List<(FileStatusListItemsInfo revision, string, IReadOnlyList<FileStatusItem> statuses)>(1) { (new FileStatusListItemsInfo(revA.ToString(), revA, revB, FileStatusListItemsInfo.ListType.SimpleRevision), desc, revAToRevB.Select(a => new FileStatusItem(a, revB, revA)).ToList()) };
+            }
+            else
+            {
+                IReadOnlyList<GitItemStatus> baseToA = Module.GetDiffFilesWithSubmodulesStatus(baseRevGuid, revB.ObjectId, firstParentSha1);
+                IReadOnlyList<GitItemStatus> baseToB = Module.GetDiffFilesWithSubmodulesStatus(baseRevGuid, revA.ObjectId, firstParentSha1);
+                var commonBaseToBFiles = baseToA.Intersect(baseToB, GitItemStatusNameEqualityComparer.Instance).ToList();
+                var commonBaseToAFiles = baseToB.Intersect(baseToA, GitItemStatusNameEqualityComparer.Instance).ToList();
+
+                for (int i = commonBaseToBFiles.Count - 1; i >= 0; i--)
+                {
+                    if (!revAToRevB.Contains(commonBaseToBFiles[i], GitItemStatusNameEqualityComparer.Instance))
+                    {
+                        commonBaseToBFiles.RemoveAt(i);
+                        commonBaseToAFiles.RemoveAt(i);
+                    }
+                }
+
+                if (commonBaseToBFiles.Count == 0 || !AppSettings.ShowDiffForAllParents)
+                {
+                    list = new List<(FileStatusListItemsInfo revision, string, IReadOnlyList<FileStatusItem> statuses)>(1) { (new FileStatusListItemsInfo(revA.Guid, revA, revB, FileStatusListItemsInfo.ListType.SimpleRevision), desc, revAToRevB.Select(a => new FileStatusItem(a, revB, revA)).ToList()) };
+                }
+                else
+                {
+                    list = new List<(FileStatusListItemsInfo revision, string, IReadOnlyList<FileStatusItem> statuses)>(4)
+                        {
+                            (new FileStatusListItemsInfo(revA.Guid, revA, revB, FileStatusListItemsInfo.ListType.SimpleRevision), desc, revAToRevB.Select(a => new FileStatusItem(a, revB, revA)).ToList()),
+                            (new FileStatusListItemsInfo(BaseToBDiff.Text, new GitRevision(baseRevGuid), revB, FileStatusListItemsInfo.ListType.BaseToBDiff), null, commonBaseToBFiles.Select(a => new FileStatusItem(a, revB, new GitRevision(baseRevGuid))).ToList()),
+                            (new FileStatusListItemsInfo(BaseToADiff.Text, new GitRevision(baseRevGuid), revA, FileStatusListItemsInfo.ListType.BaseToADiff), null, commonBaseToAFiles.Select(a => new FileStatusItem(a, revA, new GitRevision(baseRevGuid))).ToList()),
+                            (new FileStatusListItemsInfo(CommonFilesDiff.Text, revA, revB, FileStatusListItemsInfo.ListType.CommonFilesDiff), null, commonBaseToBFiles.Select(a => new FileStatusItem(a, revB, revA)).ToList())
+                        };
+                }
+            }
+
+            GitItemStatusesWithDescription = list;
         }
 
         public void SetNoFilesText(string text)
@@ -848,7 +909,7 @@ namespace GitUI
         {
             var submoduleName = SelectedItem.Name;
 
-            var status = await SelectedItem.GetSubmoduleStatusAsync().ConfigureAwait(false);
+            var status = await SelectedItem.GitItemStatus.GetSubmoduleStatusAsync().ConfigureAwait(false);
 
             var process = new Process
             {
@@ -905,7 +966,7 @@ namespace GitUI
 
         private void UpdateFileStatusListView(bool updateCausedByFilter = false)
         {
-            if (!GitItemStatuses.Any())
+            if (!FileStatusItems.Any())
             {
                 HandleVisibility_NoFilesLabel_FilterComboBox(filesPresent: false);
             }
@@ -920,7 +981,7 @@ namespace GitUI
             if (updateCausedByFilter)
             {
                 previouslySelectedItems = FileStatusListView.SelectedItems()
-                    .ToHashSet(i => i.Tag<GitItemStatus>());
+                    .ToHashSet(i => i.Tag<FileStatusItem>().GitItemStatus);
 
                 DataSourceChanged?.Invoke(this, EventArgs.Empty);
             }
@@ -931,11 +992,25 @@ namespace GitUI
             FileStatusListView.Items.Clear();
 
             var list = new List<ListViewItem>();
-            foreach (var (revision, groupName, statuses) in GitItemStatusesWithDescription)
+            foreach (var (revision, groupNameEx, statuses) in GitItemStatusesWithDescription)
             {
                 ListViewGroup group = null;
-                if (revision != null)
+                if (!string.IsNullOrEmpty(revision.GroupName))
                 {
+                    string groupName;
+
+                    switch (revision.Type)
+                    {
+                        case FileStatusListItemsInfo.ListType.SimpleRevision:
+                            groupName = groupNameEx;
+                            break;
+
+                        case FileStatusListItemsInfo.ListType.CombinedDiff:
+                        default:
+                            groupName = revision.GroupName;
+                            break;
+                    }
+
                     group = new ListViewGroup(groupName)
                     {
                         Tag = revision
@@ -956,14 +1031,15 @@ namespace GitUI
                         ImageIndex = GetItemImageIndex(item)
                     };
 
-                    if (item.GetSubmoduleStatusAsync() != null && !item.GetSubmoduleStatusAsync().IsCompleted)
+                    var submoduleStatus = item.GitItemStatus.GetSubmoduleStatusAsync();
+                    if (submoduleStatus != null && !submoduleStatus.IsCompleted)
                     {
                         var capturedItem = item;
 
                         ThreadHelper.JoinableTaskFactory.RunAsync(
                             async () =>
                             {
-                                await capturedItem.GetSubmoduleStatusAsync();
+                                await capturedItem.GitItemStatus.GetSubmoduleStatusAsync();
 
                                 await this.SwitchToMainThreadAsync();
 
@@ -1314,7 +1390,7 @@ namespace GitUI
                 {
                     var fileList = new StringCollection();
 
-                    foreach (GitItemStatus item in SelectedItems)
+                    foreach (FileStatusItem item in SelectedItems)
                     {
                         string fileName = _fullPathResolver.Resolve(item.Name);
 
@@ -1344,7 +1420,7 @@ namespace GitUI
                     hoveredItem = null;
                 }
 
-                var gitItemStatus = hoveredItem?.Tag<GitItemStatus>();
+                var gitItemStatus = hoveredItem?.Tag<FileStatusItem>().GitItemStatus;
 
                 if (gitItemStatus != null)
                 {
@@ -1484,10 +1560,10 @@ namespace GitUI
                     return;
                 }
 
-                const int SelectionFilterMaxLength = 10;
-                if (FilterComboBox.Items.Count == SelectionFilterMaxLength)
+                const int selectionFilterMaxLength = 10;
+                if (FilterComboBox.Items.Count == selectionFilterMaxLength)
                 {
-                    FilterComboBox.Items.RemoveAt(SelectionFilterMaxLength - 1);
+                    FilterComboBox.Items.RemoveAt(selectionFilterMaxLength - 1);
                 }
 
                 FilterComboBox.Items.Insert(0, filter);

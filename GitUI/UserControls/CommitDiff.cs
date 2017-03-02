@@ -45,7 +45,7 @@ namespace GitUI.UserControls
                     var itemToSelect = DiffFiles.AllItems.FirstOrDefault(i => i.Name == fileToSelect);
                     if (itemToSelect != null)
                     {
-                        DiffFiles.SelectedItem = itemToSelect;
+                        DiffFiles.SetSelectedItem(itemToSelect);
                     }
                 }
 
