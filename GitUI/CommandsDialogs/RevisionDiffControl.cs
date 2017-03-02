@@ -28,8 +28,8 @@ namespace GitUI.CommandsDialogs
             new TranslationString("Are you sure you want to delete the selected file(s)?");
         private readonly TranslationString _deleteFailed = new TranslationString("Delete file failed");
         private readonly TranslationString _multipleDescription = new TranslationString("<multiple>");
-        private readonly TranslationString _selectedRevision = new TranslationString("Selected: b/");
-        private readonly TranslationString _firstRevision = new TranslationString("First: a/");
+        private readonly TranslationString _selectedRevision = new TranslationString("B: ");
+        private readonly TranslationString _firstRevision = new TranslationString("A: ");
 
         private RevisionGridControl _revisionGrid;
         private RevisionFileTreeControl _revisionFileTree;
