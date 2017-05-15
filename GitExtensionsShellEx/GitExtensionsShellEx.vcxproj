@@ -22,6 +22,8 @@
     <ProjectGuid>{BBE7B8AD-D175-4679-A614-38BFF28B0269}</ProjectGuid>
     <RootNamespace>GitExtensionsShellEx</RootNamespace>
     <Keyword>AtlProj</Keyword>
+    <VCTargetsPath Condition="'$(VCTargetsPath11)' != '' and '$(VSVersion)' == '' and $(VisualStudioVersion) == ''">$(VCTargetsPath11)</VCTargetsPath>
+    <VCTargetsPath>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V140</VCTargetsPath>
     <ProjectName>GitExtensionsShellEx</ProjectName>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
