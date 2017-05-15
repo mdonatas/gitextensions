@@ -1373,7 +1373,7 @@ namespace GitUI.CommandsDialogs
             {
                 openSubmoduleMenuItem.Visible = false;
             }
-            
+
             saveAsToolStripMenuItem.Visible = enableItems;
             openFileToolStripMenuItem.Visible = enableItems;
             openFileWithToolStripMenuItem.Visible = enableItems;
@@ -1868,7 +1868,7 @@ namespace GitUI.CommandsDialogs
             if (DiffFiles.SelectedItem == null)
                 return;
 
-            if ( AppSettings.OpenSubmoduleDiffInSeparateWindow && DiffFiles.SelectedItem.IsSubmodule)
+            if (AppSettings.OpenSubmoduleDiffInSeparateWindow && DiffFiles.SelectedItem.IsSubmodule)
             {
                 var submoduleName = DiffFiles.SelectedItem.Name;
                 DiffFiles.SelectedItem.SubmoduleStatus.ContinueWith(
@@ -2005,7 +2005,8 @@ namespace GitUI.CommandsDialogs
             Repositories.RepositoryHistory.Repositories.Clear();
             Repositories.SaveSettings();
             // Force clear recent repositories list from dashboard.
-            if (this._dashboard != null) {
+            if (this._dashboard != null)
+            {
                 _dashboard.ShowRecentRepositories();
             }
         }
@@ -2201,7 +2202,12 @@ namespace GitUI.CommandsDialogs
         {
             try
             {
-                Process.Start(Module.WorkingDir);
+                Task.Factory.StartNew(() =>
+                {
+                    Thread.Sleep(300);
+
+                    Process.Start(Module.WorkingDir);
+                });
             }
             catch (Exception ex)
             {
@@ -2220,9 +2226,9 @@ namespace GitUI.CommandsDialogs
             var item = GitTree.SelectedNode.Tag as GitItem;
 
             if (item.IsCommit)
-	        {
+            {
                 SpawnCommitBrowser(item);
-	        }
+            }
         }
 
         public void SaveAsOnClick(object sender, EventArgs e)
@@ -3779,7 +3785,8 @@ namespace GitUI.CommandsDialogs
                 }
 
                 string cmdPath = exeList.
-                      Select(shell => {
+                      Select(shell =>
+                      {
                           string shellPath;
                           if (PathUtil.TryFindShellPath(shell, out shellPath))
                               return shellPath;
