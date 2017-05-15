@@ -1922,7 +1922,12 @@ namespace GitUI.CommandsDialogs
         {
             try
             {
-                Process.Start(Module.WorkingDir);
+                Task.Factory.StartNew(() =>
+                {
+                    Thread.Sleep(300);
+
+                    Process.Start(Module.WorkingDir);
+                }, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default);
             }
             catch (Exception ex)
             {
