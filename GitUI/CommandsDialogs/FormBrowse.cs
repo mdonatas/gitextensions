@@ -2039,7 +2039,12 @@ namespace GitUI.CommandsDialogs
 
         private void FileExplorerToolStripMenuItemClick(object sender, EventArgs e)
         {
-            OsShellUtil.OpenWithFileExplorer(Module.WorkingDir);
+            Task.Factory.StartNew(() =>
+            {
+                Thread.Sleep(10);
+
+                OsShellUtil.OpenWithFileExplorer(Module.WorkingDir);
+            }, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default);
         }
 
         private void CreateBranchToolStripMenuItemClick(object sender, EventArgs e)
