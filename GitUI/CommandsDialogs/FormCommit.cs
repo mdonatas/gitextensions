@@ -1178,12 +1178,10 @@ namespace GitUI.CommandsDialogs
                     if (!item.IsNew)
                     {
                         toolStripProgressBar1.Value = Math.Min(toolStripProgressBar1.Maximum - 1, toolStripProgressBar1.Value + 1);
-                        //Module.UnstageFileToRemove(item.Name);
                         existingFiles.Add(item.Name);
 
                         if (item.IsRenamed)
                         {
-                            //Module.UnstageFileToRemove(item.OldName);
                             existingFiles.Add(item.OldName);
                         }
                     }
@@ -1503,6 +1501,7 @@ namespace GitUI.CommandsDialogs
                     }
                     else
                     {
+                        // TODO: Don't use loop here
                         output.Append(Module.ResetFile(item.Name));
                     }
                 }
@@ -1576,6 +1575,7 @@ namespace GitUI.CommandsDialogs
 
             foreach (var gitItemStatus in Unstaged.SelectedItems)
             {
+                // TODO: Don't use loop here
                 Module.ResetFile(gitItemStatus.Name);
             }
             Initialize();
