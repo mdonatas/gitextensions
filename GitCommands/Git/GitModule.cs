@@ -2480,6 +2480,36 @@ namespace GitCommands
             return RunGitCmd("reset HEAD -- \"" + file.ToPosixPath() + "\"");
         }
 
+        public string UnstageFilesToRemove(List<string> files)
+        {
+            return UnstageFilesToRemove(files, 0);
+        }
+
+        private string UnstageFilesToRemove(List<string> files, int startAtIndex)
+        {
+            string subsequentResult = string.Empty;
+
+            StringBuilder sb = new StringBuilder();
+            sb.Append("reset HEAD --");
+
+            int totalFiles = files.Count;
+            for (int i = startAtIndex; i < totalFiles; i++)
+            {
+                string file = files[i];
+                string filePosixPath = file.ToPosixPath();
+
+                if (sb.Length + filePosixPath.Length > 8170)
+                {
+                    subsequentResult = UnstageFilesToRemove(files, i);
+                    break;
+                }
+
+                sb.Append(" \"").Append(filePosixPath).Append("\"");
+            }
+
+            return RunGitCmd(sb.ToString()) + subsequentResult;
+        }
+
         /// <summary>Dirty but fast. This sometimes fails.</summary>
         public static string GetSelectedBranchFast(string repositoryPath)
         {
