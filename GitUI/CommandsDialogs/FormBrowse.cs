@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
@@ -80,10 +81,10 @@ namespace GitUI.CommandsDialogs
             new TranslationString("Configure this menu");
 
         // ReSharper disable InconsistentNaming
-        private readonly TranslationString directoryIsNotAValidRepositoryCaption =
+        private readonly TranslationString _directoryIsNotAValidRepositoryCaption =
             new TranslationString("Open");
 
-        private readonly TranslationString directoryIsNotAValidRepository =
+        private readonly TranslationString _directoryIsNotAValidRepository =
             new TranslationString("The selected item is not a valid git repository.\n\nDo you want to abort and remove it from the recent repositories list?");
         // ReSharper restore InconsistentNaming
 
@@ -1481,7 +1482,7 @@ namespace GitUI.CommandsDialogs
 
         private void FileToolStripMenuItemDropDownOpening(object sender, EventArgs e)
         {
-            if (Repositories.RepositoryHistory.Repositories.Count() == 0)
+            if (!Repositories.RepositoryHistory.Repositories.Any())
             {
                 recentToolStripMenuItem.Enabled = false;
                 return;
@@ -1513,8 +1514,8 @@ namespace GitUI.CommandsDialogs
 
             if (!module.IsValidGitWorkingDir())
             {
-                DialogResult dialogResult = MessageBox.Show(this, directoryIsNotAValidRepository.Text,
-                    directoryIsNotAValidRepositoryCaption.Text, MessageBoxButtons.YesNoCancel,
+                DialogResult dialogResult = MessageBox.Show(this, _directoryIsNotAValidRepository.Text,
+                    _directoryIsNotAValidRepositoryCaption.Text, MessageBoxButtons.YesNoCancel,
                     MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button1);
                 if (dialogResult == DialogResult.Yes)
                 {
@@ -1641,7 +1642,7 @@ namespace GitUI.CommandsDialogs
             ToolStripMenuItem toolStripItem = new ToolStripMenuItem(openToolStripMenuItem.Text);
             toolStripItem.ShortcutKeys = openToolStripMenuItem.ShortcutKeys;
             _NO_TRANSLATE_Workingdir.DropDownItems.Add(toolStripItem);
-            toolStripItem.Click += (hs, he) => OpenToolStripMenuItemClick(hs, he);
+            toolStripItem.Click += OpenToolStripMenuItemClick;
 
             toolStripItem = new ToolStripMenuItem(_configureWorkingDirMenu.Text);
             _NO_TRANSLATE_Workingdir.DropDownItems.Add(toolStripItem);
@@ -2292,7 +2293,7 @@ namespace GitUI.CommandsDialogs
             return string.Format("[{0}]", GitModule.IsDetachedHead(branch) ? _noBranchTitle.Text : branch);
         }
 
-        private ToolStripMenuItem CreateSubmoduleMenuItem(SubmoduleInfo info, string textFormat)
+        private ToolStripMenuItem CreateSubmoduleMenuItem(SubmoduleInfo info, string textFormat = "{0}")
         {
             var spmenu = new ToolStripMenuItem(string.Format(textFormat, info.Text));
             spmenu.Click += SubmoduleToolStripButtonClick;
@@ -2302,11 +2303,6 @@ namespace GitUI.CommandsDialogs
                 spmenu.Font = new Font(spmenu.Font, FontStyle.Bold);
             spmenu.Image = GetItemImage(info);
             return spmenu;
-        }
-
-        private ToolStripMenuItem CreateSubmoduleMenuItem(SubmoduleInfo info)
-        {
-            return CreateSubmoduleMenuItem(info, "{0}");
         }
 
         DateTime _previousUpdateTime;
@@ -2448,7 +2444,7 @@ namespace GitUI.CommandsDialogs
                         GetSubmoduleStatusAsync(result.Superproject, cancelToken);
                     }
 
-                    var submodules = supersuperproject.GetSubmodulesLocalPaths().OrderBy(submoduleName => submoduleName);
+                    var submodules = supersuperproject.GetSubmodulesLocalPaths().OrderBy(submoduleName => submoduleName).ToList();
                     if (submodules.Any())
                     {
                         string localpath = threadModule.WorkingDir.Substring(supersuperproject.WorkingDir.Length);
@@ -2713,6 +2709,7 @@ namespace GitUI.CommandsDialogs
             _terminal.RunningSession.WriteInputText(command + Environment.NewLine);
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Clean up any resources being used.
         /// </summary>

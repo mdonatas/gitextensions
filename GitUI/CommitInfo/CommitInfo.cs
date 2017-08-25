@@ -413,7 +413,7 @@ namespace GitUI.CommitInfo
                         _branches[MaximumDisplayedRefs - 1] = _branches[_branches.Count - 1];
                         _branches.RemoveRange(MaximumDisplayedRefs, _branches.Count - MaximumDisplayedRefs);
                     }
-                    _branchInfo = GetBranchesWhichContainsThisCommit(_branches, ShowBranchesAsLinks);
+                    _branchInfo = GetBranchesWhichContainThisCommit(_branches, ShowBranchesAsLinks);
                 }
             }
 
@@ -481,7 +481,7 @@ namespace GitUI.CommitInfo
             }
         }
 
-        private string GetBranchesWhichContainsThisCommit(IEnumerable<string> branches, bool showBranchesAsLinks)
+        private string GetBranchesWhichContainThisCommit(IEnumerable<string> branches, bool showBranchesAsLinks)
         {
             const string remotesPrefix = "remotes/";
             // Include local branches if explicitly requested or when needed to decide whether to show remotes
