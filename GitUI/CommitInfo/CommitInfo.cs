@@ -554,7 +554,7 @@ namespace GitUI.CommitInfo
                         _branches.RemoveRange(MaximumDisplayedRefs, _branches.Count - MaximumDisplayedRefs);
                     }
 
-                    _branchInfo = GetBranchesWhichContainsThisCommit(_branches, ShowBranchesAsLinks);
+                    _branchInfo = GetBranchesWhichContainThisCommit(_branches, ShowBranchesAsLinks);
                 }
             }
 
@@ -582,7 +582,7 @@ namespace GitUI.CommitInfo
                 return result.ToString();
             }
 
-            string GetBranchesWhichContainsThisCommit(IEnumerable<string> branches, bool showBranchesAsLinks)
+            string GetBranchesWhichContainThisCommit(IEnumerable<string> branches, bool showBranchesAsLinks)
             {
                 const string remotesPrefix = "remotes/";
 
