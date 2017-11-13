@@ -67,18 +67,18 @@ namespace GitUI.RevisionGridClasses
 
         private readonly Color[] _possibleColors =
             {
-                Color.Red,
-                Color.MistyRose,
-                Color.Magenta,
-                Color.Violet,
-                Color.Blue,
+                /*Color.Red, */Color.FromArgb(241, 58, 19),
+                /*Color.MistyRose,*/ Color.FromArgb(240, 92, 117),
+                /*Color.Magenta,*/ Color.FromArgb(132, 187, 198),
+                /*Color.Violet,*/ Color.FromArgb(101, 73, 130),
+                /*Color.Blue,*/ Color.FromArgb(53, 114, 176),
                 Color.Azure,
-                Color.Cyan,
-                Color.SpringGreen,
+                /*Color.Cyan,*/ Color.FromArgb(89, 175, 225),
+                /*Color.SpringGreen,*/ Color.FromArgb(103, 171, 73),
                 Color.Green,
                 Color.Chartreuse,
-                Color.Gold,
-                Color.Orange
+                /*Color.Gold,*/ Color.FromArgb(246, 195, 66),
+                /*Color.Orange,*/ Color.FromArgb(247, 146, 50)
             };
 
         private int _backgroundScrollTo;
