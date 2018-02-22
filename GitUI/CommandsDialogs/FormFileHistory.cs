@@ -305,6 +305,10 @@ namespace GitUI.CommandsDialogs
                 file.IsSubmodule = GitModule.IsValidGitWorkingDir(_fullPathResolver.Resolve(fileName));
                 Diff.ViewChanges(FileChanges.GetSelectedRevisions(), file, "You need to select at least one revision to view diff.");
             }
+            else if (tabControl1.SelectedTab == CommitInfoTabPage)
+            {
+                CommitDiff.SetRevision(revision.Guid, revision.Name);
+            }
 
             if (_buildReportTabPageExtension == null)
                 _buildReportTabPageExtension = new BuildReportTabPageExtension(tabControl1, _buildReportTabCaption.Text);
@@ -421,11 +425,6 @@ namespace GitUI.CommandsDialogs
             }
         }
 
-        private void viewCommitToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            FileChanges.ViewSelectedRevisions();
-        }
-
         private void FileHistoryContextMenuOpening(object sender, CancelEventArgs e)
         {
             var selectedRevisions = FileChanges.GetSelectedRevisions();
@@ -435,8 +434,7 @@ namespace GitUI.CommandsDialogs
                 File.Exists(_fullPathResolver.Resolve(FileName));
             openWithDifftoolToolStripMenuItem.Enabled =
                 selectedRevisions.Count >= 1 && selectedRevisions.Count <= 2;
-            manipuleerCommitToolStripMenuItem.Enabled =
-                viewCommitToolStripMenuItem.Enabled =
+            manipulateCommitToolStripMenuItem.Enabled =
                 selectedRevisions.Count == 1 && !selectedRevisions[0].IsArtificial;
             saveAsToolStripMenuItem.Enabled = selectedRevisions.Count == 1;
         }
