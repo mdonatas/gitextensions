@@ -192,7 +192,13 @@ namespace GitUI.CommandsDialogs
             }
             else if (parents == 1)
             {
-                return DescribeRevision(DiffFiles.SelectedItemParent?.Guid, 50);
+                string parentGuid = DiffFiles.SelectedItemParent?.Guid;
+                if (parentGuid == DiffFiles.CombinedDiffGuid)
+                {
+                    parentGuid = DiffFiles.Revision.ParentGuids[1];
+                }
+
+                return DescribeRevision(parentGuid, 50);
             }
             else
             {
@@ -571,7 +577,16 @@ namespace GitUI.CommandsDialogs
 
             foreach (var itemWithParent in DiffFiles.SelectedItemsWithParent)
             {
-                var revs = new[] { DiffFiles.Revision, itemWithParent.ParentRevision };
+                GitRevision[] revs;
+                if (itemWithParent.ParentRevision.Guid == DiffFiles.CombinedDiffGuid)
+                {
+                    revs = new[] { new GitRevision(DiffFiles.Revision.ParentGuids[0]), new GitRevision(DiffFiles.Revision.ParentGuids[1]) };
+                }
+                else
+                {
+                    revs = new[] { DiffFiles.Revision, itemWithParent.ParentRevision };
+                }
+
                 UICommands.OpenWithDifftool(this, revs, itemWithParent.Item.Name, itemWithParent.Item.OldName, diffKind, itemWithParent.Item.IsTracked);
             }
         }
@@ -653,7 +668,7 @@ namespace GitUI.CommandsDialogs
                 resetFileToSelectedToolStripMenuItem.Text = _selectedRevision + " (" + _revisionGrid.DescribeRevision(DiffFiles.Revision, 50) + ")";
             }
 
-            var parentDesc = DescribeSelectedParentRevision(false);
+            var parentDesc = DescribeSelectedParentRevision(true);
             if (parentDesc.IsNullOrWhiteSpace())
             {
                 resetFileToParentToolStripMenuItem.Visible = false;

@@ -37,7 +37,7 @@ namespace GitUI
 
         private bool _filterVisible;
         private ToolStripItem _openSubmoduleMenuItem;
-        private bool _alwaysRevisionGroups = false;
+        private bool _alwaysRevisionGroups;
 
         private readonly IGitRevisionTester _revisionTester;
         private readonly IFullPathResolver _fullPathResolver;
@@ -109,7 +109,7 @@ namespace GitUI
                 Text = "Open with Git Extensions",
                 Image = Resources.gitex
             };
-            _openSubmoduleMenuItem.Click += (s, ea) => { ThreadHelper.JoinableTaskFactory.RunAsync(() => OpenSubmoduleAsync()); };
+            _openSubmoduleMenuItem.Click += (s, ea) => { ThreadHelper.JoinableTaskFactory.RunAsync(OpenSubmoduleAsync); };
         }
 
         protected override void DisposeCustomResources()
@@ -320,7 +320,7 @@ namespace GitUI
 
         private void FileStatusListView_DrawItem(object sender, DrawListViewItemEventArgs e)
         {
-            if (e?.Item?.Tag is GitItemStatus gitItemStatus)
+            if (e.Item?.Tag is GitItemStatus gitItemStatus)
             {
                 var imageWidth = 0;
                 if (e.Item.ImageList != null && e.Item.ImageIndex != -1)
@@ -592,8 +592,8 @@ namespace GitUI
             get
             {
                 return FileStatusListView.SelectedItems.Cast<ListViewItem>()
-                    .Where(i => i.Group?.Tag as GitRevision != null)
-                    .Select(i => i.Group.Tag as GitRevision);
+                    .Select(i => i.Group?.Tag as GitRevision)
+                    .Where(r => r != null);
             }
         }
 
@@ -604,7 +604,7 @@ namespace GitUI
             get
             {
                 return FileStatusListView.SelectedItems.Cast<ListViewItem>()
-                    .Where(i => i.Group?.Tag as GitRevision != null)
+                    .Where(i => i.Group?.Tag is GitRevision)
                     .Select(i => new GitItemStatusWithParent(i.Group.Tag as GitRevision, i.Tag as GitItemStatus));
             }
         }
@@ -686,7 +686,7 @@ namespace GitUI
             {
                 if (AppSettings.OpenSubmoduleDiffInSeparateWindow && SelectedItem.IsSubmodule)
                 {
-                    ThreadHelper.JoinableTaskFactory.RunAsync(() => OpenSubmoduleAsync());
+                    ThreadHelper.JoinableTaskFactory.RunAsync(OpenSubmoduleAsync);
                 }
                 else
                 {
@@ -720,7 +720,7 @@ namespace GitUI
 
         private void FileStatusListView_ContextMenu_Opening(object sender, CancelEventArgs e)
         {
-            var cm = sender as ContextMenuStrip;
+            var cm = (ContextMenuStrip)sender;
             if (!cm.Items.Find(_openSubmoduleMenuItem.Name, true).Any())
             {
                 cm.Items.Insert(1, _openSubmoduleMenuItem);
@@ -1139,17 +1139,10 @@ namespace GitUI
 
         public void SetDiffs(IReadOnlyList<GitRevision> revisions)
         {
-            if (revisions == null || revisions.Count == 0)
-            {
-                Revision = null;
-            }
-            else
-            {
-                Revision = revisions[0];
-            }
+            Revision = revisions?.FirstOrDefault();
 
             var dictionary = new GitItemsWithParents();
-            if (Revision != null)
+            if (Revision != null && revisions != null)
             {
                 GitRevision[] parentRevs;
                 if (revisions.Count == 1)
@@ -1182,7 +1175,7 @@ namespace GitUI
 
                     // Show combined (merge conflicts) only when all first (A) are parents to selected (B)
                     var isMergeCommit = AppSettings.ShowDiffForAllParents &&
-                                        Revision.ParentGuids != null && Revision.ParentGuids.Count() > 1 &&
+                                        Revision.ParentGuids != null && Revision.ParentGuids.Length > 1 &&
                                         _revisionTester.AllFirstAreParentsToSelected(parentRevs, Revision);
                     if (isMergeCommit)
                     {
@@ -1240,7 +1233,7 @@ namespace GitUI
             if (_lastUserInputTime == 0)
             {
                 long timerLastChanged = currentTime;
-                var timer = new System.Windows.Forms.Timer { Interval = 250 };
+                var timer = new Timer { Interval = 250 };
                 timer.Tick += (s, a) =>
                 {
                     if (NoUserInput(timerLastChanged))
@@ -1283,10 +1276,10 @@ namespace GitUI
         {
             if (!FilterComboBox.Items.Cast<string>().Any(candiate => candiate == filter))
             {
-                const int SelectionFilterMaxLength = 10;
-                if (FilterComboBox.Items.Count == SelectionFilterMaxLength)
+                const int selectionFilterMaxLength = 10;
+                if (FilterComboBox.Items.Count == selectionFilterMaxLength)
                 {
-                    FilterComboBox.Items.RemoveAt(SelectionFilterMaxLength - 1);
+                    FilterComboBox.Items.RemoveAt(selectionFilterMaxLength - 1);
                 }
 
                 FilterComboBox.Items.Insert(0, filter);
