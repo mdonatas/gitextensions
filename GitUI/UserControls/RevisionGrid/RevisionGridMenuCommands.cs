@@ -115,6 +115,13 @@ namespace GitUI.UserControls.RevisionGrid
                     ShortcutKeyDisplayString = GetShortcutKeyDisplayStringFromRevisionGridIfAvailable(RevisionGridControl.Commands.GoToMergeBaseCommit),
                     ExecuteAction = () => _revisionGrid.ExecuteCommand(RevisionGridControl.Commands.GoToMergeBaseCommit)
                 },
+                new MenuCommand
+                {
+                    Name = "GotoCommonParentCommit",
+                    Text = "Go to common parent commit",
+                    ShortcutKeyDisplayString = GetShortcutKeyDisplayStringFromRevisionGridIfAvailable(RevisionGridControl.Commands.GoToCommonParent),
+                    ExecuteAction = () => _revisionGrid.ExecuteCommand(RevisionGridControl.Commands.GoToCommonParent)
+                },
                 MenuCommand.CreateSeparator(),
                 new MenuCommand
                 {
