@@ -2334,6 +2334,17 @@ namespace GitUI
             SetSelectedRevision(ObjectId.Parse(mergeBaseCommitId));
         }
 
+        private void goToCommonParentToolStripMenuItem_Click()
+        {
+            var selectedRevisions = GetSelectedRevisions();
+            if (selectedRevisions.Count != 2)
+            {
+                return;
+            }
+
+            SetSelectedRevision(Module.GetMergeBase(selectedRevisions[0].ObjectId, selectedRevisions[1].ObjectId));
+        }
+
         private void goToChildToolStripMenuItem_Click()
         {
             var r = LatestSelectedRevision;
@@ -2665,6 +2676,7 @@ namespace GitUI
             ShowFirstParent = 13,
             GoToParent = 14,
             GoToChild = 15,
+            GoToCommonParent = 32,
             ToggleHighlightSelectedBranch = 16,
             NextQuickSearch = 17,
             PrevQuickSearch = 18,
@@ -2710,6 +2722,7 @@ namespace GitUI
                 case Commands.GoToCommit: MenuCommands.GotoCommitExecute(); break;
                 case Commands.GoToParent: goToParentToolStripMenuItem_Click(); break;
                 case Commands.GoToMergeBaseCommit: goToMergeBaseCommitToolStripMenuItem_Click(null, null); break;
+                case Commands.GoToCommonParent: goToCommonParentToolStripMenuItem_Click(); break;
                 case Commands.GoToChild: goToChildToolStripMenuItem_Click(); break;
                 case Commands.ToggleHighlightSelectedBranch: ToggleHighlightSelectedBranch(); break;
                 case Commands.NextQuickSearch: _quickSearchProvider.NextResult(down: true); break;
