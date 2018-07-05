@@ -27,6 +27,14 @@ namespace GitUI.CommandsDialogs
         private readonly TranslationString _multipleDescription = new TranslationString("<multiple>");
         private readonly TranslationString _selectedRevision = new TranslationString("Selected");
         private readonly TranslationString _firstRevision = new TranslationString("First");
+        private readonly TranslationString _openingLargeNumberOfFilesTitle =
+            new TranslationString("Opening large number of folders");
+        private readonly TranslationString _openingLargeNumberOfFilesWarning =
+            new TranslationString("You are about to open {0} folders. Do you want to continue?");
+        private readonly TranslationString _openingLargeNumberOfFiles2Title =
+            new TranslationString("Opening VERY large number of folders");
+        private readonly TranslationString _openingLargeNumberOfFiles2Warning =
+            new TranslationString("Are you really sure you want to open {0} folders? This will most likely make your computer unresponsive!");
 
         private RevisionGrid _revisionGrid;
         private RevisionFileTree _revisionFileTree;
@@ -551,6 +559,27 @@ namespace GitUI.CommandsDialogs
 
         private void openContainingFolderToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            int count = DiffFiles.SelectedItems.Count();
+            if (count > 2)
+            {
+                DialogResult result = MessageBox.Show(this, string.Format(_openingLargeNumberOfFilesWarning.Text, count), _openingLargeNumberOfFilesTitle.Text, MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                if (result == DialogResult.Yes)
+                {
+                    if (count > 5)
+                    {
+                        result = MessageBox.Show(this, string.Format(_openingLargeNumberOfFiles2Warning.Text, count), _openingLargeNumberOfFiles2Title.Text, MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                        if (result != DialogResult.Yes)
+                        {
+                            return;
+                        }
+                    }
+                }
+                else
+                {
+                    return;
+                }
+            }
+
             FormBrowse.OpenContainingFolder(DiffFiles, Module);
         }
 

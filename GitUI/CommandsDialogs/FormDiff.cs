@@ -25,12 +25,18 @@ namespace GitUI.CommandsDialogs
 
         private readonly ToolTip _toolTipControl = new ToolTip();
 
-        private readonly TranslationString _anotherBranchTooltip =
-            new TranslationString("Select another branch");
-        private readonly TranslationString _anotherCommitTooltip =
-            new TranslationString("Select another commit");
-        private readonly TranslationString _btnSwapTooltip =
-            new TranslationString("Swap BASE and Compare commits");
+        private readonly TranslationString _anotherBranchTooltip = new TranslationString("Select another branch");
+        private readonly TranslationString _anotherCommitTooltip = new TranslationString("Select another commit");
+        private readonly TranslationString _btnSwapTooltip = new TranslationString("Swap BASE and Compare commits");
+
+        private readonly TranslationString _openingLargeNumberOfFilesTitle =
+            new TranslationString("Opening large number of folders");
+        private readonly TranslationString _openingLargeNumberOfFilesWarning =
+            new TranslationString("You are about to open {0} folders. Do you want to continue?");
+        private readonly TranslationString _openingLargeNumberOfFiles2Title =
+            new TranslationString("Opening VERY large number of folders");
+        private readonly TranslationString _openingLargeNumberOfFiles2Warning =
+            new TranslationString("Are you really sure you want to open {0} folders? This will most likely make your computer unresponsive!");
 
         public FormDiff(GitUICommands commands, bool firstParentIsValid, string baseCommitSha,
             string headCommitSha, string baseCommitDisplayStr, string headCommitDisplayStr) : base(commands)
@@ -172,6 +178,27 @@ namespace GitUI.CommandsDialogs
 
         private void openContainingFolderToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            int count = DiffFiles.SelectedItems.Count();
+            if (count > 2)
+            {
+                DialogResult result = MessageBox.Show(this, string.Format(_openingLargeNumberOfFilesWarning.Text, count), _openingLargeNumberOfFilesTitle.Text, MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                if (result == DialogResult.Yes)
+                {
+                    if (count > 5)
+                    {
+                        result = MessageBox.Show(this, string.Format(_openingLargeNumberOfFiles2Warning.Text, count), _openingLargeNumberOfFiles2Title.Text, MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                        if (result != DialogResult.Yes)
+                        {
+                            return;
+                        }
+                    }
+                }
+                else
+                {
+                    return;
+                }
+            }
+
             FormBrowse.OpenContainingFolder(DiffFiles, Module);
         }
 

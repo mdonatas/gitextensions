@@ -3086,10 +3086,7 @@ namespace GitUI.CommandsDialogs
         {
             foreach (var item in list.SelectedItems)
             {
-                var fileNames = new StringBuilder();
-                fileNames.Append(_fullPathResolver.Resolve(item.Name).ToNativePath());
-
-                string filePath = fileNames.ToString();
+                var filePath = _fullPathResolver.Resolve(item.Name).ToNativePath();
                 if (File.Exists(filePath))
                 {
                     OsShellUtil.SelectPathInFileExplorer(filePath);

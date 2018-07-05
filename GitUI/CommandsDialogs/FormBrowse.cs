@@ -2085,11 +2085,6 @@ namespace GitUI.CommandsDialogs
 
         public static void OpenContainingFolder(FileStatusList diffFiles, GitModule module)
         {
-            if (!diffFiles.SelectedItems.Any())
-            {
-                return;
-            }
-
             foreach (var item in diffFiles.SelectedItems)
             {
                 string filePath = Path.Combine(module.WorkingDir, item.Name.ToNativePath());
