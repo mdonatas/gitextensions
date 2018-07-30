@@ -70,7 +70,7 @@ namespace GitCommands.Git
                 throw new ArgumentNullException(nameof(repositoryPath));
             }
 
-            if (string.IsNullOrWhiteSpace(repositoryPath))
+            if (string.IsNullOrWhiteSpace(repositoryPath) || repositoryPath.StartsWith("\\\\"))
             {
                 return string.Empty;
             }
