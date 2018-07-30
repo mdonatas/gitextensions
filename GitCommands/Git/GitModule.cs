@@ -274,7 +274,7 @@ namespace GitCommands
         /// <summary>Indicates whether the specified directory contains a git repository.</summary>
         public static bool IsValidGitWorkingDir(string? dir)
         {
-            if (Strings.IsNullOrEmpty(dir))
+            if (Strings.IsNullOrEmpty(dir) || dir.StartsWith("\\\\"))
             {
                 return false;
             }
