@@ -18,6 +18,8 @@ internal interface IWindowPositionManager
     /// </summary>
     /// <param name="form">The form to save the position for.</param>
     void SavePosition(Form form);
+
+    WindowPosition? LookupWindowPosition(string name);
 }
 
 internal sealed class WindowPositionManager : IWindowPositionManager
@@ -190,11 +192,55 @@ internal sealed class WindowPositionManager : IWindowPositionManager
 
             WindowPosition position = new(rectangle, DpiUtil.DpiX, formWindowState, name);
             _windowPositionList.AddOrUpdate(position);
+            CollectChildControlPositions(form.Controls).ForEach(pos => _windowPositionList.AddOrUpdate(pos));
             _windowPositionList.Save();
         }
         catch
         {
             // TODO: how to restore a corrupted config?
+        }
+    }
+
+    public WindowPosition? LookupWindowPosition(string name)
+    {
+        try
+        {
+            if (_windowPositionList == null)
+            {
+                _windowPositionList = WindowPositionList.Load();
+            }
+
+            WindowPosition position = _windowPositionList?.Get(name);
+
+            if (position != null && !position.Rect.IsEmpty)
+            {
+                return position;
+            }
+        }
+        catch
+        {
+            // TODO: how to restore a corrupted config?
+        }
+
+        return null;
+    }
+
+    private IEnumerable<WindowPosition> CollectChildControlPositions(Control.ControlCollection controls)
+    {
+        foreach (Control control in controls)
+        {
+            if (control is IControlPositionProvider ctrl)
+            {
+                foreach (WindowPosition position in ctrl.GetPositions())
+                {
+                    yield return position;
+                }
+            }
+
+            foreach (WindowPosition position in CollectChildControlPositions(control.Controls))
+            {
+                yield return position;
+            }
         }
     }
 
