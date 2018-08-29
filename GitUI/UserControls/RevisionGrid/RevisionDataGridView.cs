@@ -26,7 +26,7 @@ namespace GitUI.UserControls.RevisionGrid
         OnlyFirstParent = 4
     }
 
-    public sealed class RevisionDataGridView : DataGridView
+    public sealed class RevisionDataGridView : DataGridView, IControlPositionProvider
     {
         private static readonly SolidBrush _alternatingRowBackgroundBrush = new SolidBrush(Color.FromArgb(250, 250, 250));
 
@@ -37,6 +37,7 @@ namespace GitUI.UserControls.RevisionGrid
         private Thread _backgroundThread;
         private volatile bool _shouldRun = LicenseManager.UsageMode != LicenseUsageMode.Designtime;
         private int _backgroundScrollTo;
+        private bool _restoredColumnWidth;
 
         private int _rowHeight; // Height of elements in the cache. Is equal to the control's row height.
         private VisibleRowRange _visibleRowRange;
@@ -517,10 +518,37 @@ namespace GitUI.UserControls.RevisionGrid
             // Refresh column providers
             foreach (var columnProvider in _columnProviders)
             {
+                RestoreColumnWidth(columnProvider);
+
                 columnProvider.Refresh(_rowHeight, _visibleRowRange);
             }
 
+            _restoredColumnWidth = true;
+
             base.Refresh();
+        }
+
+        private void RestoreColumnWidth(ColumnProvider columnProvider)
+        {
+            if (_restoredColumnWidth)
+            {
+                return;
+            }
+
+            if (FindForm() is GitExtensionsForm form)
+            {
+                if (columnProvider is RevisionGraphColumnProvider)
+                {
+                    return;
+                }
+
+                string positionName = $"{Name} {columnProvider.Name}";
+                var position = form.LookupWindowPosition(positionName);
+                if (position != null)
+                {
+                    columnProvider.Column.Width = position.Rect.Width;
+                }
+            }
         }
 
         private void UpdateRowHeight()
@@ -643,6 +671,23 @@ namespace GitUI.UserControls.RevisionGrid
             else
             {
                 base.OnMouseWheel(e);
+            }
+        }
+
+        IEnumerable<WindowPosition> IControlPositionProvider.GetPositions()
+        {
+            foreach (DataGridViewColumn column in Columns)
+            {
+                if (column.Tag is ColumnProvider columnProvider && string.IsNullOrWhiteSpace(columnProvider.Name) == false)
+                {
+                    if (columnProvider is RevisionGraphColumnProvider)
+                    {
+                        continue;
+                    }
+
+                    string positionName = $"{Name} {columnProvider.Name}";
+                    yield return new WindowPosition(new Rectangle(0, 0, column.Width, 0), 0, FormWindowState.Normal, positionName);
+                }
             }
         }
     }
