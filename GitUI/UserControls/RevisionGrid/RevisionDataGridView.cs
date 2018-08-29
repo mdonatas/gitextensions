@@ -14,7 +14,7 @@ using GitUIPluginInterfaces;
 
 namespace GitUI.UserControls.RevisionGrid
 {
-    public sealed partial class RevisionDataGridView : DataGridView
+    public sealed partial class RevisionDataGridView : DataGridView, IControlPositionProvider
     {
         private const int BackgroundThreadUpdatePeriod = 25;
         private const int MouseWheelDeltaTimeout = 1500; // Mouse wheel idle time in milliseconds after which unconsumed wheel delta will be dropped.
@@ -39,6 +39,8 @@ namespace GitUI.UserControls.RevisionGrid
         private long _lastMouseWheelTickCount; // Timestamp of the last vertical scroll via mouse wheel.
         private int _mouseWheelDeltaRemainder; // Corresponds to unconsumed scroll distance while scrolling via mouse wheel, see OnMouseWheel().
         private int _rowHeight; // Height of elements in the cache. Is equal to the control's row height.
+
+        private bool _restoredColumnWidth;
 
         private VisibleRowRange _visibleRowRange;
 
@@ -748,10 +750,37 @@ namespace GitUI.UserControls.RevisionGrid
             // Refresh column providers
             foreach (ColumnProvider columnProvider in _columnProviders)
             {
+                RestoreColumnWidth(columnProvider);
+
                 columnProvider.Refresh(_rowHeight, _visibleRowRange);
             }
 
+            _restoredColumnWidth = true;
+
             base.Refresh();
+        }
+
+        private void RestoreColumnWidth(ColumnProvider columnProvider)
+        {
+            if (_restoredColumnWidth)
+            {
+                return;
+            }
+
+            if (FindForm() is GitExtensionsForm form)
+            {
+                if (columnProvider is RevisionGraphColumnProvider)
+                {
+                    return;
+                }
+
+                string positionName = $"{Name} {columnProvider.Name}";
+                var position = form.LookupWindowPosition(positionName);
+                if (position != null)
+                {
+                    columnProvider.Column.Width = position.Rect.Width;
+                }
+            }
         }
 
         private void UpdateRowHeight()
@@ -955,5 +984,22 @@ namespace GitUI.UserControls.RevisionGrid
 
         private static Color getGrayTextColor(float degreeOfGrayness = 1f) =>
             ColorHelper.GetGrayTextColor(textColorName: KnownColor.ControlText, degreeOfGrayness);
+
+        IEnumerable<WindowPosition> IControlPositionProvider.GetPositions()
+        {
+            foreach (DataGridViewColumn column in Columns)
+            {
+                if (column.Tag is ColumnProvider columnProvider && string.IsNullOrWhiteSpace(columnProvider.Name) == false)
+                {
+                    if (columnProvider is RevisionGraphColumnProvider)
+                    {
+                        continue;
+                    }
+
+                    string positionName = $"{Name} {columnProvider.Name}";
+                    yield return new WindowPosition(new Rectangle(0, 0, column.Width, 0), 0, FormWindowState.Normal, positionName);
+                }
+            }
+        }
     }
 }
