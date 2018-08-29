@@ -16,7 +16,7 @@ using GitUIPluginInterfaces;
 
 namespace GitUI.UserControls.RevisionGrid
 {
-    public sealed partial class RevisionDataGridView : DataGridView
+    public sealed partial class RevisionDataGridView : DataGridView, IControlPositionProvider
     {
         private const int BackgroundThreadUpdatePeriod = 25;
         private const int MouseWheelDeltaTimeout = 1500; // Mouse wheel idle time in milliseconds after which unconsumed wheel delta will be dropped.
@@ -43,6 +43,8 @@ namespace GitUI.UserControls.RevisionGrid
         private long _lastMouseWheelTickCount; // Timestamp of the last vertical scroll via mouse wheel.
         private int _mouseWheelDeltaRemainder; // Corresponds to unconsumed scroll distance while scrolling via mouse wheel, see OnMouseWheel().
         private int _rowHeight; // Height of elements in the cache. Is equal to the control's row height.
+
+        private bool _restoredColumnWidth;
 
         private VisibleRowRange _visibleRowRange;
 
@@ -759,8 +761,12 @@ namespace GitUI.UserControls.RevisionGrid
 
             foreach (ColumnProvider columnProvider in _columnProviders)
             {
+                RestoreColumnWidth(columnProvider);
+
                 columnProvider.ApplySettings();
             }
+
+            _restoredColumnWidth = true;
 
             Refresh();
         }
@@ -771,6 +777,57 @@ namespace GitUI.UserControls.RevisionGrid
             UpdateVisibleRowRange();
 
             base.Refresh();
+        }
+
+        private void RestoreColumnWidth(ColumnProvider columnProvider)
+        {
+            if (_restoredColumnWidth)
+            {
+                return;
+            }
+
+            if (ShouldSaveColumnWidth(columnProvider) && FindForm() is GitExtensionsForm form)
+            {
+                string positionName = GetColumnPositionName(columnProvider);
+                if (form.LookupWindowPosition(positionName) is WindowPosition position)
+                {
+                    columnProvider.Column.Width = DpiUtil.Scale(position.Rect.Width,
+                        originalDpi: position.DeviceDpi < 1
+                            ? DeviceDpi
+                            : position.DeviceDpi);
+                }
+            }
+        }
+
+        IEnumerable<WindowPosition> IControlPositionProvider.GetPositions()
+        {
+            foreach (DataGridViewColumn column in Columns)
+            {
+                if (column.Tag is ColumnProvider columnProvider
+                    && ShouldSaveColumnWidth(columnProvider))
+                {
+                    string positionName = GetColumnPositionName(columnProvider);
+                    yield return new WindowPosition(new Rectangle(0, 0, column.Width, 0), DeviceDpi, FormWindowState.Normal, positionName);
+                }
+            }
+        }
+
+        private string GetColumnPositionName(ColumnProvider columnProvider)
+            => $"{Name} {columnProvider.Name}";
+
+        private static bool ShouldSaveColumnWidth(ColumnProvider columnProvider)
+        {
+            if (string.IsNullOrWhiteSpace(columnProvider.Name))
+            {
+                return false;
+            }
+
+            if (columnProvider is RevisionGraphColumnProvider)
+            {
+                return false;
+            }
+
+            return true;
         }
 
         private void UpdateRowHeight()
