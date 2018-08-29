@@ -372,6 +372,7 @@
     <Compile Include="Infrastructure\Telemetry\AppEnvironmentTelemetryInitializer.cs" />
     <Compile Include="Infrastructure\Telemetry\DiagnosticsClient.cs" />
     <Compile Include="Infrastructure\Telemetry\FormBrowseDiagnosticsReporter.cs" />
+    <Compile Include="IControlPositionProvider.cs" />
     <Compile Include="Properties\Images.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
