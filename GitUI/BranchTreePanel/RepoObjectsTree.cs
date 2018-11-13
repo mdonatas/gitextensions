@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using GitCommands;
 using GitCommands.Git;
@@ -216,6 +217,20 @@ namespace GitUI.BranchTreePanel
             _ = UICommandsSource;
         }
 
+        private const int WM_HSCROLL = 0x0114;
+
+        private const int SB_LEFT = 6;
+
+        [System.Runtime.InteropServices.DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = false)]
+
+        private static extern IntPtr SendMessage(IntPtr hwnd, uint msg, int wparam, int lparam);
+
+        private void EnsureVisible(TreeNode node)
+        {
+            node.EnsureVisible();
+            SendMessage(treeMain.Handle, WM_HSCROLL, SB_LEFT, 0);
+        }
+
         protected override void OnUICommandsSourceSet(IGitUICommandsSource source)
         {
             base.OnUICommandsSourceSet(source);
@@ -352,7 +367,7 @@ namespace GitUI.BranchTreePanel
                 return;
             }
 
-            node.EnsureVisible();
+            EnsureVisible(node);
             treeMain.SelectedNode = node;
 
             return;
