@@ -144,14 +144,14 @@ namespace GitUI.BranchTreePanel
                 Checkout();
             }
 
-            internal override void OnSelected()
+            internal override void OnClick()
             {
                 if (Tree.IgnoreSelectionChangedEvent)
                 {
                     return;
                 }
 
-                base.OnSelected();
+                base.OnClick();
                 SelectRevision();
             }
 
