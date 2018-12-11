@@ -23,14 +23,14 @@ namespace GitUI.BranchTreePanel
                 _tagInfo = tagInfo;
             }
 
-            internal override void OnSelected()
+            internal override void OnClick()
             {
                 if (Tree.IgnoreSelectionChangedEvent)
                 {
                     return;
                 }
 
-                base.OnSelected();
+                base.OnClick();
                 SelectRevision();
             }
 
