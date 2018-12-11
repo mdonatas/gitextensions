@@ -526,12 +526,17 @@ namespace GitUI
             {
                 if (_gridView.Rows[index].Selected)
                 {
-                    return;
+                    ////return;
                 }
 
                 _gridView.ClearSelection();
 
                 _gridView.Rows[index].Selected = true;
+                if (_gridView.Rows.Count > index + 1)
+                {
+                    _gridView.CurrentCell = _gridView.Rows[index + 1].Cells[1];
+                }
+
                 _gridView.CurrentCell = _gridView.Rows[index].Cells[1];
 
                 _gridView.Select();
