@@ -14,11 +14,13 @@ namespace GitUITests.CommandsDialogs
         public ReferenceRepository()
         {
             _moduleTestHelper = new GitModuleTestHelper();
+            ModuleTestHelper = _moduleTestHelper;
 
             using (var repository = new LibGit2Sharp.Repository(_moduleTestHelper.Module.WorkingDir))
             {
                 _moduleTestHelper.CreateRepoFile("A.txt", "A");
                 repository.Index.Add("A.txt");
+                repository.Index.Write();
 
                 var message = "A commit message";
                 var author = new LibGit2Sharp.Signature("GitUITests", "unittests@gitextensions.com", DateTimeOffset.Now);
@@ -28,6 +30,8 @@ namespace GitUITests.CommandsDialogs
                 _commitHash = commit.Id.Sha;
             }
         }
+
+        public GitModuleTestHelper ModuleTestHelper { get; }
 
         public GitModule Module => _moduleTestHelper.Module;
 
