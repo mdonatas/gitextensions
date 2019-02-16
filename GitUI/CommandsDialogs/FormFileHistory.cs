@@ -6,6 +6,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using GitCommands;
 using GitExtUtils.GitUI;
@@ -29,6 +30,7 @@ namespace GitUI.CommandsDialogs
         private readonly FormFileHistoryController _controller = new FormFileHistoryController();
 
         private BuildReportTabPageExtension _buildReportTabPageExtension;
+        private Task<(string revision, string path)> _fileChangesFilterBuildTask;
 
         private string FileName { get; set; }
 
@@ -193,7 +195,7 @@ namespace GitUI.CommandsDialogs
                 return;
             }
 
-            _asyncLoader.LoadAsync(
+            _fileChangesFilterBuildTask = _asyncLoader.LoadAsync(
                 () => BuildFilter(),
                 filter =>
                 {
@@ -689,6 +691,18 @@ namespace GitUI.CommandsDialogs
             AppSettings.BlameShowOriginalFilePath = !AppSettings.BlameShowOriginalFilePath;
             showOriginalFilePathToolStripMenuItem.Checked = AppSettings.BlameShowOriginalFilePath;
             UpdateSelectedFileViewers(true);
+        }
+
+        internal TestAccessor GetTestAccessor() => new TestAccessor(this);
+
+        public readonly struct TestAccessor
+        {
+            public TestAccessor(FormFileHistory form)
+            {
+                FileChangesFilterBuildTask = form._fileChangesFilterBuildTask;
+            }
+
+            public Task<(string revision, string path)> FileChangesFilterBuildTask { get; }
         }
     }
 }

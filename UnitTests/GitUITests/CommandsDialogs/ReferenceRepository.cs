@@ -17,8 +17,9 @@ namespace GitUITests.CommandsDialogs
 
             using (var repository = new LibGit2Sharp.Repository(_moduleTestHelper.Module.WorkingDir))
             {
-                _moduleTestHelper.CreateRepoFile("A.txt", "A");
+                CreateRepoFile("A.txt", "A");
                 repository.Index.Add("A.txt");
+                repository.Index.Write();
 
                 var message = "A commit message";
                 var author = new LibGit2Sharp.Signature("GitUITests", "unittests@gitextensions.com", DateTimeOffset.Now);
@@ -62,6 +63,11 @@ namespace GitUITests.CommandsDialogs
                     b => b.Remote = remote.Name,
                     b => b.UpstreamBranch = masterBranch.CanonicalName);
             }
+        }
+
+        public string CreateRepoFile(string fileName, string fileContent)
+        {
+            return _moduleTestHelper.CreateRepoFile("", fileName, fileContent);
         }
 
         public void Reset()

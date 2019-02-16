@@ -70,6 +70,7 @@
     <Compile Include="CommandsDialogs\FormBrowseTests.LeftPanel.Submodules.cs" />
     <Compile Include="CommandsDialogs\FormBrowseTests.LeftPanel.Remotes.cs" />
     <Compile Include="CommandsDialogs\FormBrowseTests.cs" />
+    <Compile Include="CommandsDialogs\FormFileHistoryTests.cs" />
     <Compile Include="CommandsDialogs\FormOpenDirectoryTests.cs" />
     <Compile Include="CommandsDialogs\FormPullTests.cs" />
     <Compile Include="CommandsDialogs\FormInitTests.cs" />
