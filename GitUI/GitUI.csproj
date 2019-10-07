@@ -468,6 +468,7 @@
     <Compile Include="SpellChecker\WordAtCursorExtractor.cs" />
     <Compile Include="Strings.cs" />
     <Compile Include="TaskbarProgress.cs" />
+    <Compile Include="UserControls\EnterEventArgs.cs" />
     <Compile Include="UserControls\NativeTreeViewDoubleClickDecorator.cs" />
     <Compile Include="UserControls\NativeTreeViewExplorerNavigationDecorator.cs" />
     <Compile Include="UserControls\FileStatusItem.cs" />

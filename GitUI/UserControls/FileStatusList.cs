@@ -48,11 +48,14 @@ namespace GitUI
 
         private bool _updatingColumnWidth;
 
+        public delegate void EnterEventHandler(object sender, EnterEventArgs e);
+
         public event EventHandler SelectedIndexChanged;
         public event EventHandler DataSourceChanged;
 
         public new event EventHandler DoubleClick;
         public new event KeyEventHandler KeyDown;
+        public new event EnterEventHandler Enter;
 
         public FileStatusList()
         {
@@ -80,6 +83,8 @@ namespace GitUI
 
             _fullPathResolver = new FullPathResolver(() => Module.WorkingDir);
             _revisionTester = new GitRevisionTester(_fullPathResolver);
+
+            base.Enter += FileStatusList_Enter;
 
             return;
 
@@ -1250,6 +1255,26 @@ namespace GitUI
                         break;
                     }
             }
+        }
+
+        private bool _mouseEntered;
+
+        private void FileStatusList_Enter(object sender, EventArgs e)
+        {
+            Enter?.Invoke(this, new EnterEventArgs(_mouseEntered));
+            _mouseEntered = false;
+        }
+
+        private const int WM_MOUSEACTIVATE = 0x0021;
+
+        protected override void WndProc(ref Message m)
+        {
+            if (m.Msg == WM_MOUSEACTIVATE)
+            {
+                _mouseEntered = true;
+            }
+
+            base.WndProc(ref m);
         }
 
         private void FileStatusListView_MouseDown(object sender, MouseEventArgs e)
