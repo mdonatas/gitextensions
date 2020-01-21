@@ -24,7 +24,6 @@
     <ProjectGuid>{E8C01071-3B47-4A3F-9168-AA58A4635638}</ProjectGuid>
     <RootNamespace>SshAskPass</RootNamespace>
     <Keyword>Win32Proj</Keyword>
-    <VCTargetsPath>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V140</VCTargetsPath>
     <ProjectName>GitExtSshAskPass</ProjectName>
 	<WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
