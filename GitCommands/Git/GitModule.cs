@@ -1985,37 +1985,54 @@ namespace GitCommands
 
         public IReadOnlyList<PatchFile> GetInteractiveRebasePatchFiles()
         {
-            string todoFile = GetRebaseDir() + "git-rebase-todo";
+            var rebaseDir = GetRebaseDir();
+            string todoFile = rebaseDir + "git-rebase-todo";
             string[] todoCommits = File.Exists(todoFile) ? File.ReadAllText(todoFile).Trim().Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries) : null;
 
-            var patchFiles = new List<PatchFile>();
-
-            if (todoCommits != null)
+            if (todoCommits == null)
             {
-                string commentChar = EffectiveConfigFile.GetString("core.commentChar", "#");
+                return Array.Empty<PatchFile>();
+            }
 
-                foreach (string todoCommit in todoCommits)
+            var patchFiles = new List<PatchFile>(todoCommits.Length + 1);
+
+            string doneFile = rebaseDir + "done";
+            string lastDoneCommit = File.ReadLines(doneFile).Last(l => !string.IsNullOrWhiteSpace(l));
+            string[] parts = lastDoneCommit.Split(' ');
+
+            CommitData data = _commitDataManager.GetCommitData(parts[1], out var error);
+            patchFiles.Add(new PatchFile
+            {
+                Author = error ?? data.Author,
+                Subject = error ?? data.Body,
+                Name = parts[0],
+                Date = error ?? data.CommitDate.LocalDateTime.ToString(),
+                IsNext = true
+            });
+
+            string commentChar = EffectiveConfigFile.GetString("core.commentChar", "#");
+
+            foreach (string todoCommit in todoCommits)
+            {
+                if (todoCommit.StartsWith(commentChar))
                 {
-                    if (todoCommit.StartsWith(commentChar))
+                    continue;
+                }
+
+                parts = todoCommit.Split(' ');
+
+                if (parts.Length >= 3)
+                {
+                    data = _commitDataManager.GetCommitData(parts[1], out error);
+
+                    patchFiles.Add(new PatchFile
                     {
-                        continue;
-                    }
-
-                    string[] parts = todoCommit.Split(' ');
-
-                    if (parts.Length >= 3)
-                    {
-                        CommitData data = _commitDataManager.GetCommitData(parts[1], out var error);
-
-                        patchFiles.Add(new PatchFile
-                        {
-                            Author = error ?? data.Author,
-                            Subject = error ?? data.Body,
-                            Name = parts[0],
-                            Date = error ?? data.CommitDate.LocalDateTime.ToString(),
-                            IsNext = patchFiles.Count == 0
-                        });
-                    }
+                        Author = error ?? data.Author,
+                        Subject = error ?? data.Body,
+                        Name = parts[0],
+                        Date = error ?? data.CommitDate.LocalDateTime.ToString(),
+                        IsNext = false
+                    });
                 }
             }
 
