@@ -72,9 +72,10 @@ namespace GitUI
         private readonly TranslationString _sortOrder = new("&Sort order...");
 
         private readonly TranslationString _diffSelectedWithRememberedFile = new("Diff with \"{0}\"");
-        private readonly TranslationString _diffWithParent = new("Diff with a/");
-        private readonly TranslationString _diffBaseToB = new("Unique diff BASE with b/");
-        private readonly TranslationString _diffCommonBase = new("Common diff with BASE a/");
+        private readonly TranslationString _diffWithParent = new("Diff with A: ");
+        private readonly TranslationString _diffBaseToA = new("BASE to A: ");
+        private readonly TranslationString _diffBaseToB = new("BASE to B: ");
+        private readonly TranslationString _diffCommonBase = new("Common files A to B diff");
         private readonly TranslationString _diffRange = new("Range diff");
         private readonly TranslationString _combinedDiff = new("Combined diff");
 
@@ -195,6 +196,7 @@ namespace GitUI
 
         public static string DiffSelectedWithRememberedFile => _instance.Value._diffSelectedWithRememberedFile.Text;
         public static string DiffWithParent => _instance.Value._diffWithParent.Text;
+        public static string DiffBaseToA => _instance.Value._diffBaseToA.Text;
         public static string DiffBaseToB => _instance.Value._diffBaseToB.Text;
         public static string DiffCommonBase => _instance.Value._diffCommonBase.Text;
         public static string DiffRange => _instance.Value._diffRange.Text;

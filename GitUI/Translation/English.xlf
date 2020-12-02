@@ -9654,11 +9654,11 @@ Select this commit to populate the full message.</source>
         <target />
       </trans-unit>
       <trans-unit id="_diffBaseToB.Text">
-        <source>Unique diff BASE with b/</source>
+        <source>BASE to B: </source>
         <target />
       </trans-unit>
       <trans-unit id="_diffCommonBase.Text">
-        <source>Common diff with BASE a/</source>
+        <source>Common files A to B diff</source>
         <target />
       </trans-unit>
       <trans-unit id="_diffRange.Text">
@@ -9670,7 +9670,7 @@ Select this commit to populate the full message.</source>
         <target />
       </trans-unit>
       <trans-unit id="_diffWithParent.Text">
-        <source>Diff with a/</source>
+        <source>Diff with A: </source>
         <target />
       </trans-unit>
       <trans-unit id="_directoryIsNotAValidRepository.Text">

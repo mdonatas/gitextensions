@@ -82,19 +82,22 @@ namespace GitUI
                 ? revisions[2]
                 : revisions.Last();
 
+            var allAtoB = module.GetDiffFilesWithSubmodulesStatus(firstRev.ObjectId, selectedRev.ObjectId, selectedRev.FirstParentId);
+            if (allAtoB.Count == 0)
+            {
+                return fileStatusDescs;
+            }
+
             fileStatusDescs.Add(new FileStatusWithDescription(
                 firstRev: firstRev,
                 secondRev: selectedRev,
                 summary: TranslatedStrings.DiffWithParent + GetDescriptionForRevision(describeRevision, firstRev.ObjectId),
-                statuses: module.GetDiffFilesWithSubmodulesStatus(firstRev.ObjectId, selectedRev.ObjectId, selectedRev.FirstParentId)));
+                statuses: allAtoB));
 
             if (!AppSettings.ShowDiffForAllParents || revisions.Count > maxMultiCompare)
             {
                 return fileStatusDescs;
             }
-
-            // Extra information with limited selection
-            var allAToB = fileStatusDescs[0].Statuses;
 
             // Get base commit, add as parent if unique
             Lazy<ObjectId> head = getRevision is not null
@@ -156,28 +159,31 @@ namespace GitUI
             // For the following diff:  A->B a,c,d; BASE->B a,b,c; BASE->A a,b,d
             // (the file a has unique changes, b has the same change and c,d is changed in one of the branches)
             // The following groups will be shown: A->B a,c,d; BASE->B a,c; BASE->A a,d; Common BASE b
-            var allBaseToB = module.GetDiffFilesWithSubmodulesStatus(baseRevGuid, selectedRev.ObjectId, selectedRev.FirstParentId);
-            var allBaseToA = module.GetDiffFilesWithSubmodulesStatus(baseRevGuid, firstRev.ObjectId, firstRev.FirstParentId);
+            var allBaseToB = module
+                .GetDiffFilesWithSubmodulesStatus(baseRevGuid, selectedRev.ObjectId, selectedRev.FirstParentId)
+                .Intersect(allAtoB, GitItemStatusNameEqualityComparer.Instance);
+            var allBaseToA = module
+                .GetDiffFilesWithSubmodulesStatus(baseRevGuid, firstRev.ObjectId, firstRev.FirstParentId)
+                .Intersect(allAtoB, GitItemStatusNameEqualityComparer.Instance);
 
-            var comparer = new GitItemStatusNameEqualityComparer();
-            var commonBaseToAandB = allBaseToB.Intersect(allBaseToA, comparer).Except(allAToB, comparer).ToList();
+            var commonAToB = allBaseToB.Intersect(allBaseToA, GitItemStatusNameEqualityComparer.Instance).ToList();
 
             var revBase = new GitRevision(baseRevGuid);
             fileStatusDescs.Add(new FileStatusWithDescription(
                 firstRev: revBase,
                 secondRev: selectedRev,
                 summary: TranslatedStrings.DiffBaseToB + GetDescriptionForRevision(describeRevision, selectedRev.ObjectId),
-                statuses: allBaseToB.Except(commonBaseToAandB, comparer).ToList()));
+                statuses: commonAToB));
             fileStatusDescs.Add(new FileStatusWithDescription(
                 firstRev: revBase,
                 secondRev: firstRev,
-                summary: TranslatedStrings.DiffBaseToB + GetDescriptionForRevision(describeRevision, firstRev.ObjectId),
-                statuses: allBaseToA.Except(commonBaseToAandB, comparer).ToList()));
+                summary: TranslatedStrings.DiffBaseToA + GetDescriptionForRevision(describeRevision, firstRev.ObjectId),
+                statuses: commonAToB));
             fileStatusDescs.Add(new FileStatusWithDescription(
-                firstRev: revBase,
+                firstRev: firstRev,
                 secondRev: selectedRev,
-                summary: TranslatedStrings.DiffCommonBase + GetDescriptionForRevision(describeRevision, baseRevGuid),
-                statuses: commonBaseToAandB));
+                summary: TranslatedStrings.DiffCommonBase,
+                statuses: commonAToB));
 
             // Add rangeDiff as a separate group (range is not the same as diff with artificial commits)
             var statuses = new List<GitItemStatus> { new GitItemStatus(name: TranslatedStrings.DiffRange) { IsRangeDiff = true } };
