@@ -7,6 +7,12 @@ namespace GitCommands.Git;
 /// </summary>
 public class GitItemStatusNameEqualityComparer : EqualityComparer<GitItemStatus?>
 {
+    public static readonly GitItemStatusNameEqualityComparer Instance = new();
+
+    private GitItemStatusNameEqualityComparer()
+    {
+    }
+
     public override bool Equals(GitItemStatus? x, GitItemStatus? y)
     {
         if (x is null && y is null)
