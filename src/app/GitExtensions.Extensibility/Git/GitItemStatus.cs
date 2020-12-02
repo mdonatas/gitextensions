@@ -281,6 +281,20 @@ public sealed class GitItemStatus
         return value;
     }
 
+    public GitItemStatus Clone()
+    {
+        return new GitItemStatus(Name)
+        {
+            OldName = OldName,
+            ErrorMessage = ErrorMessage,
+            TreeGuid = TreeGuid,
+            RenameCopyPercentage = RenameCopyPercentage,
+            Staged = Staged,
+            DiffStatus = DiffStatus,
+            _flags = _flags,
+        };
+    }
+
     public override string ToString()
     {
         StringBuilder str = new();
