@@ -140,11 +140,17 @@ namespace GitUI
                 ? revisions[2]
                 : revisions[^1];
 
+            IReadOnlyList<GitItemStatus> allAtoB = module.GetDiffFilesWithSubmodulesStatus(firstRev.ObjectId, selectedRev.ObjectId, selectedRev.FirstParentId, cancellationToken);
+            if (allAtoB.Count == 0)
+            {
+                return fileStatusDescs;
+            }
+
             fileStatusDescs.Add(new FileStatusWithDescription(
                 firstRev: firstRev,
                 secondRev: selectedRev,
                 summary: TranslatedStrings.DiffWithParent + GetDescriptionForRevision(firstRev.ObjectId),
-                statuses: module.GetDiffFilesWithSubmodulesStatus(firstRev.ObjectId, selectedRev.ObjectId, selectedRev.FirstParentId, cancellationToken)));
+                statuses: allAtoB));
 
             if (!AppSettings.ShowDiffForAllParents || revisions.Count > maxMultiCompare || !allowMultiDiff)
             {
@@ -225,32 +231,42 @@ namespace GitUI
                 return fileStatusDescs;
             }
 
-            IReadOnlyList<GitItemStatus> allAToB = fileStatusDescs[0].Statuses;
-            IReadOnlyList<GitItemStatus> allBaseToB = module.GetDiffFilesWithSubmodulesStatus(baseRevId, selectedRev.ObjectId, selectedRev.FirstParentId, cancellationToken);
-            IReadOnlyList<GitItemStatus> allBaseToA = module.GetDiffFilesWithSubmodulesStatus(baseRevId, firstRev.ObjectId, firstRev.FirstParentId, cancellationToken);
+            GitItemStatusNameEqualityComparer comparer = GitItemStatusNameEqualityComparer.Instance;
+            IReadOnlyList<GitItemStatus> allBaseToB = module
+                .GetDiffFilesWithSubmodulesStatus(baseRevId, selectedRev.ObjectId, selectedRev.FirstParentId, cancellationToken)
+                .Intersect(allAtoB, comparer)
+                .ToList();
+            IReadOnlyList<GitItemStatus> allBaseToA = module
+                .GetDiffFilesWithSubmodulesStatus(baseRevId, firstRev.ObjectId, firstRev.FirstParentId, cancellationToken)
+                .Intersect(allAtoB, comparer)
+                .ToList();
 
-            GitItemStatusNameEqualityComparer comparer = new();
-            GitItemStatus[] allAToBExceptExactRenameCopy = [.. allAToB.Where(i => !((i.IsRenamed || i.IsCopied) && i.RenameCopyPercentage == "100"))];
-            GitItemStatus[] sameBaseToAandB = [.. allBaseToB.Intersect(allBaseToA, comparer).Except(allAToBExceptExactRenameCopy, comparer)];
-            GitItemStatus[] onlyA = [.. allBaseToA.Except(allBaseToB, comparer)];
-            GitItemStatus[] onlyB = [.. allBaseToB.Except(allBaseToA, comparer)];
+            IReadOnlyList<GitItemStatus> commonAToB = allBaseToB.Intersect(allBaseToA, comparer).ToList();
 
-            foreach (IReadOnlyList<GitItemStatus> l in new[] { allAToB, allBaseToB, allBaseToA })
+            GitItemStatus[] allAToBExceptExactRenameCopy = [.. allAtoB.Where(i => !((i.IsRenamed || i.IsCopied) && i.RenameCopyPercentage == "100"))];
+            HashSet<string> sameBaseToAandB = [.. allBaseToB.Intersect(allBaseToA, comparer).Except(allAToBExceptExactRenameCopy, comparer).Select(i => i.Name)];
+            HashSet<string> onlyA = [.. allBaseToA.Except(allBaseToB, comparer).Select(i => i.Name)];
+            HashSet<string> onlyB = [.. allBaseToB.Except(allBaseToA, comparer).Select(i => i.Name)];
+
+            void SetDiffStatus(IReadOnlyList<GitItemStatus> gitItemStatuses)
             {
-                foreach (GitItemStatus f in l)
+                foreach (GitItemStatus status in gitItemStatuses)
                 {
-                    f.DiffStatus = GetDiffStatus(f, l == allAToB);
+                    status.DiffStatus = GetDiffStatus(status);
                 }
             }
 
-            DiffBranchStatus GetDiffStatus(GitItemStatus f, bool atoBDiff)
+            SetDiffStatus(allAtoB);
+            SetDiffStatus(commonAToB);
+
+            DiffBranchStatus GetDiffStatus(GitItemStatus item)
             {
                 // Always show where the change is done
                 // This means that if a file is added in A it is shown as removed in the A->B diff,
                 // but marked with A
-                return sameBaseToAandB.Any(i => comparer.Equals(i, f)) ? DiffBranchStatus.SameChange
-                    : onlyA.Any(i => comparer.Equals(i, f)) ? DiffBranchStatus.OnlyAChange
-                    : onlyB.Any(i => comparer.Equals(i, f)) ? DiffBranchStatus.OnlyBChange
+                return sameBaseToAandB.Contains(item.Name) ? DiffBranchStatus.SameChange
+                    : onlyA.Contains(item.Name) ? DiffBranchStatus.OnlyAChange
+                    : onlyB.Contains(item.Name) ? DiffBranchStatus.OnlyBChange
                     : DiffBranchStatus.UnequalChange;
             }
 
@@ -258,15 +274,33 @@ namespace GitUI
             fileStatusDescs.Add(new FileStatusWithDescription(
                 firstRev: revBase,
                 secondRev: selectedRev,
-                summary: $"{TranslatedStrings.DiffBaseWith} B {GetDescriptionForRevision(selectedRev.ObjectId)}",
-                statuses: allBaseToB,
+                summary: TranslatedStrings.DiffBaseToB + GetDescriptionForRevision(selectedRev.ObjectId),
+                statuses: commonAToB,
                 iconName: nameof(Images.DiffB)));
             fileStatusDescs.Add(new FileStatusWithDescription(
                 firstRev: revBase,
                 secondRev: firstRev,
-                summary: $"{TranslatedStrings.DiffBaseWith} A {GetDescriptionForRevision(firstRev.ObjectId)}",
-                statuses: allBaseToA,
+                summary: TranslatedStrings.DiffBaseToA + GetDescriptionForRevision(firstRev.ObjectId),
+                statuses: commonAToB,
                 iconName: nameof(Images.DiffA)));
+            fileStatusDescs.Add(new FileStatusWithDescription(
+                firstRev: firstRev,
+                secondRev: selectedRev,
+                summary: TranslatedStrings.DiffCommonBase,
+                statuses: commonAToB.Select(s =>
+                {
+                    if (!s.IsNew)
+                    {
+                        return s;
+                    }
+
+                    GitItemStatus updatedStatus = s.Clone();
+                    updatedStatus.IsNew = false;
+                    updatedStatus.IsChanged = true;
+
+                    return updatedStatus;
+                }).ToArray(),
+                iconName: nameof(Images.Diff)));
 
             if (!module.GitVersion.SupportRangeDiffTool)
             {
