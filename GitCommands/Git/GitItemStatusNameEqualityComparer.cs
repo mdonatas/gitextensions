@@ -7,6 +7,12 @@ namespace GitCommands.Git
     /// </summary>
     public class GitItemStatusNameEqualityComparer : EqualityComparer<GitItemStatus?>
     {
+        public static readonly GitItemStatusNameEqualityComparer Instance = new GitItemStatusNameEqualityComparer();
+
+        private GitItemStatusNameEqualityComparer()
+        {
+        }
+
         public override bool Equals(GitItemStatus? x, GitItemStatus? y)
         {
             return x?.Name == y?.Name;
