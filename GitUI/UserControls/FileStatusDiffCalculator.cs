@@ -103,11 +103,17 @@ namespace GitUI
                 ? revisions[2]
                 : revisions.Last();
 
+            var allAtoB = module.GetDiffFilesWithSubmodulesStatus(firstRev.ObjectId, selectedRev.ObjectId, selectedRev.FirstParentId, cancellationToken);
+            if (allAtoB.Count == 0)
+            {
+                return fileStatusDescs;
+            }
+
             fileStatusDescs.Add(new FileStatusWithDescription(
                 firstRev: firstRev,
                 secondRev: selectedRev,
                 summary: TranslatedStrings.DiffWithParent + GetDescriptionForRevision(firstRev.ObjectId),
-                statuses: module.GetDiffFilesWithSubmodulesStatus(firstRev.ObjectId, selectedRev.ObjectId, selectedRev.FirstParentId, cancellationToken)));
+                statuses: allAtoB));
 
             if (!AppSettings.ShowDiffForAllParents || revisions.Count > maxMultiCompare || !allowMultiDiff)
             {
@@ -190,31 +196,41 @@ namespace GitUI
                 return fileStatusDescs;
             }
 
-            var allAToB = fileStatusDescs[0].Statuses;
-            var allBaseToB = module.GetDiffFilesWithSubmodulesStatus(baseRevId, selectedRev.ObjectId, selectedRev.FirstParentId, cancellationToken);
-            var allBaseToA = module.GetDiffFilesWithSubmodulesStatus(baseRevId, firstRev.ObjectId, firstRev.FirstParentId, cancellationToken);
+            var comparer = GitItemStatusNameEqualityComparer.Instance;
+            var allBaseToB = module
+                .GetDiffFilesWithSubmodulesStatus(baseRevId, selectedRev.ObjectId, selectedRev.FirstParentId, cancellationToken)
+                .Intersect(allAtoB, comparer)
+                .ToList();
+            var allBaseToA = module
+                .GetDiffFilesWithSubmodulesStatus(baseRevId, firstRev.ObjectId, firstRev.FirstParentId, cancellationToken)
+                .Intersect(allAtoB, comparer)
+                .ToList();
 
-            GitItemStatusNameEqualityComparer comparer = new();
-            var sameBaseToAandB = allBaseToB.Intersect(allBaseToA, comparer).Except(allAToB, comparer).ToList();
-            var onlyA = allBaseToA.Except(allBaseToB, comparer).ToList();
-            var onlyB = allBaseToB.Except(allBaseToA, comparer).ToList();
+            var commonAToB = allBaseToB.Intersect(allBaseToA, comparer).ToList();
 
-            foreach (var l in new[] { allAToB, allBaseToB, allBaseToA })
+            var sameBaseToAandB = allBaseToB.Intersect(allBaseToA, comparer).Except(allAtoB, comparer).Select(i => i.Name).ToHashSet();
+            var onlyA = allBaseToA.Except(allBaseToB, comparer).Select(i => i.Name).ToHashSet();
+            var onlyB = allBaseToB.Except(allBaseToA, comparer).Select(i => i.Name).ToHashSet();
+
+            void SetDiffStatus(IReadOnlyList<GitItemStatus> gitItemStatuses)
             {
-                foreach (var f in l)
+                foreach (var status in gitItemStatuses)
                 {
-                    f.DiffStatus = GetDiffStatus(f, l == allAToB);
+                    status.DiffStatus = GetDiffStatus(status);
                 }
             }
 
-            DiffBranchStatus GetDiffStatus(GitItemStatus f, bool atoBDiff)
+            SetDiffStatus(allAtoB);
+            SetDiffStatus(commonAToB);
+
+            DiffBranchStatus GetDiffStatus(GitItemStatus item)
             {
                 // Always show where the change is done
                 // This means that if a file is added in A it is shown as removed in the A->B diff,
                 // but marked with A
-                return sameBaseToAandB.Any(i => i.Name == f.Name) ? DiffBranchStatus.SameChange
-                    : onlyA.Any(i => i.Name == f.Name) ? DiffBranchStatus.OnlyAChange
-                    : onlyB.Any(i => i.Name == f.Name) ? DiffBranchStatus.OnlyBChange
+                return sameBaseToAandB.Contains(item.Name) ? DiffBranchStatus.SameChange
+                    : onlyA.Contains(item.Name) ? DiffBranchStatus.OnlyAChange
+                    : onlyB.Contains(item.Name) ? DiffBranchStatus.OnlyBChange
                     : DiffBranchStatus.UnequalChange;
             }
 
@@ -222,13 +238,30 @@ namespace GitUI
             fileStatusDescs.Add(new FileStatusWithDescription(
                 firstRev: revBase,
                 secondRev: selectedRev,
-                summary: $"{TranslatedStrings.DiffBaseWith} B {GetDescriptionForRevision(selectedRev.ObjectId)}",
-                statuses: allBaseToB));
+                summary: TranslatedStrings.DiffBaseToB + GetDescriptionForRevision(selectedRev.ObjectId),
+                statuses: commonAToB));
             fileStatusDescs.Add(new FileStatusWithDescription(
                 firstRev: revBase,
                 secondRev: firstRev,
-                summary: $"{TranslatedStrings.DiffBaseWith} A {GetDescriptionForRevision(firstRev.ObjectId)}",
-                statuses: allBaseToA));
+                summary: TranslatedStrings.DiffBaseToA + GetDescriptionForRevision(firstRev.ObjectId),
+                statuses: commonAToB));
+            fileStatusDescs.Add(new FileStatusWithDescription(
+                firstRev: firstRev,
+                secondRev: selectedRev,
+                summary: TranslatedStrings.DiffCommonBase,
+                statuses: commonAToB.Select(s =>
+                {
+                    if (!s.IsNew)
+                    {
+                        return s;
+                    }
+
+                    GitItemStatus updatedStatus = s.Clone();
+                    updatedStatus.IsNew = false;
+                    updatedStatus.IsChanged = true;
+
+                    return updatedStatus;
+                }).ToArray()));
 
             if (!module.GitVersion.SupportRangeDiffTool)
             {
@@ -243,14 +276,14 @@ namespace GitUI
             // first and selected has a common merge base and count must be available
             // Only a printout, so no Validates
             var desc = $"{TranslatedStrings.DiffRange} {baseToFirstCount ?? -1}↓ {baseToSecondCount ?? -1}↑ BASE {GetDescriptionForRevision(baseRevId)}";
-            allAToB = allAToB.Append(new GitItemStatus(name: desc) { IsRangeDiff = true }).ToList();
+            allAtoB = allAtoB.Append(new GitItemStatus(name: desc) { IsRangeDiff = true }).ToList();
 
             // Replace the A->B group with new statuses
             fileStatusDescs[0] = new(
                 firstRev: fileStatusDescs[0].FirstRev,
                 secondRev: fileStatusDescs[0].SecondRev,
                 summary: fileStatusDescs[0].Summary,
-                statuses: allAToB,
+                statuses: allAtoB,
                 baseA: baseA,
                 baseB: baseB);
 
