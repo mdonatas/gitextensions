@@ -10295,8 +10295,16 @@ Select this commit to populate the full message.</source>
         <source>{0:Delete file|Delete files}</source>
         <target />
       </trans-unit>
-      <trans-unit id="_diffBaseWith.Text">
-        <source>Diff BASE with</source>
+      <trans-unit id="_diffBaseToA.Text">
+        <source>BASE to A: </source>
+        <target />
+      </trans-unit>
+      <trans-unit id="_diffBaseToB.Text">
+        <source>BASE to B: </source>
+        <target />
+      </trans-unit>
+      <trans-unit id="_diffCommonBase.Text">
+        <source>Common files A to B diff</source>
         <target />
       </trans-unit>
       <trans-unit id="_diffContent.Text">
@@ -10312,7 +10320,7 @@ Select this commit to populate the full message.</source>
         <target />
       </trans-unit>
       <trans-unit id="_diffWithParent.Text">
-        <source>Diff with A </source>
+        <source>Diff with A: </source>
         <target />
       </trans-unit>
       <trans-unit id="_directoryIsNotAValidRepository.Text">
