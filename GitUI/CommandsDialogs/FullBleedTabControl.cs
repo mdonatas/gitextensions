@@ -15,9 +15,9 @@ namespace GitUI.CommandsDialogs
             {
                 var rc = (RECT)m.GetLParam(typeof(RECT));
                 rc.Left -= 3;
-                rc.Right += 3;
+                rc.Right += 1;
                 rc.Top -= 1;
-                rc.Bottom += 3;
+                rc.Bottom += 2;
                 Marshal.StructureToPtr(rc, m.LParam, true);
             }
 
