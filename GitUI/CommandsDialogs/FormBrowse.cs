@@ -262,8 +262,6 @@ namespace GitUI.CommandsDialogs
 
             BackColor = OtherColors.BackgroundColor;
 
-            WorkaroundPaddingIncreaseBug();
-
             _appTitleGenerator = ManagedExtensibility.GetExport<IAppTitleGenerator>().Value;
             _windowsJumpListManager = ManagedExtensibility.GetExport<IWindowsJumpListManager>().Value;
 
@@ -429,13 +427,6 @@ namespace GitUI.CommandsDialogs
             }
 
             bool IsMinimized() => WindowState == FormWindowState.Minimized;
-
-            void WorkaroundPaddingIncreaseBug()
-            {
-                MainSplitContainer.Panel1.Padding = new Padding(1);
-                RevisionsSplitContainer.Panel1.Padding = new Padding(1);
-                RevisionsSplitContainer.Panel2.Padding = new Padding(1);
-            }
         }
 
         protected override void Dispose(bool disposing)
