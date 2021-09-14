@@ -14,7 +14,7 @@ namespace GitUI.UserControls
         private readonly int _circleRadius = DpiUtil.Scale(18);
 
         private readonly Color _color = SystemColors.ControlDarkDark;
-        private readonly Timer _timer;
+        private readonly System.Windows.Forms.Timer _timer;
         private readonly IReadOnlyList<Brush> _brushes;
         private readonly (float sin, float cos)[] _angles;
 
@@ -51,7 +51,7 @@ namespace GitUI.UserControls
             _angles = GetAngles();
             UpdateCentre();
 
-            _timer = new Timer { Interval = 1000 / 30 }; // 30 fps
+            _timer = new System.Windows.Forms.Timer { Interval = 1000 / 30 }; // 30 fps
             _timer.Tick += delegate
             {
                 _progress = (_progress + 1) % _dotCount;

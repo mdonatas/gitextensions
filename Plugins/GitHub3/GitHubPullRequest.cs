@@ -31,6 +31,7 @@ namespace GitExtensions.Plugins.GitHub3
         {
             if (_diffData is null)
             {
+#pragma warning disable SYSLIB0014
                 var request = (HttpWebRequest)WebRequest.Create(_pullRequest.DiffUrl);
                 using var response = await request.GetResponseAsync();
                 using StreamReader reader = new(response.GetResponseStream(), Encoding.UTF8);

@@ -63,7 +63,7 @@ namespace GitUI.Avatars
         private static string ComputeHash(string email)
         {
             // Hash specified at http://en.gravatar.com/site/implement/hash/
-            using MD5CryptoServiceProvider md5 = new();
+            using var md5 = MD5.Create();
 
             // Gravatar doesn't specify an encoding
             var emailBytes = Encoding.UTF8.GetBytes(email.Trim().ToLowerInvariant());

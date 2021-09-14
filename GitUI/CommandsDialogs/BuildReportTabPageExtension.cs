@@ -268,6 +268,7 @@ namespace GitUI.CommandsDialogs
 
         private static async Task<Stream?> DownloadRemoteImageFileAsync(string uri)
         {
+#pragma warning disable SYSLIB0014
             var request = (HttpWebRequest)WebRequest.Create(uri);
 
             var response = await GetWebResponseAsync(request).ConfigureAwait(false);

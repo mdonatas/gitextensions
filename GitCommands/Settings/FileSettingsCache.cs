@@ -15,7 +15,7 @@ namespace GitCommands.Settings
         private readonly FileSystemWatcher _fileWatcher = new();
         private readonly bool _canEnableFileWatcher;
 
-        private Timer? _saveTimer;
+        private System.Timers.Timer? _saveTimer;
         private readonly bool _autoSave;
 
         public string SettingsFilePath { get; }
@@ -25,7 +25,7 @@ namespace GitCommands.Settings
             SettingsFilePath = settingsFilePath;
             _autoSave = autoSave;
 
-            _saveTimer = new Timer(SaveTime);
+            _saveTimer = new System.Timers.Timer(SaveTime);
             _saveTimer.Enabled = false;
             _saveTimer.AutoReset = false;
             _saveTimer.Elapsed += OnSaveTimer;

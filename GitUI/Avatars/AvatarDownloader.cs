@@ -70,6 +70,7 @@ namespace GitUI.Avatars
 
             try
             {
+#pragma warning disable SYSLIB0014
                 using WebClient webClient = new() { Proxy = WebRequest.DefaultWebProxy };
                 webClient.Proxy.Credentials = CredentialCache.DefaultCredentials;
 

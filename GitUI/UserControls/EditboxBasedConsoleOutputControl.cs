@@ -197,7 +197,7 @@ namespace GitUI.UserControls
         private sealed class ProcessOutputThrottle : IDisposable
         {
             private readonly StringBuilder _textToAdd = new();
-            private readonly Timer _timer;
+            private readonly System.Windows.Forms.Timer _timer;
             private readonly Action<string> _doOutput;
 
             /// <param name="doOutput">Will be called on the UI thread.</param>
@@ -205,7 +205,7 @@ namespace GitUI.UserControls
             {
                 _doOutput = doOutput;
 
-                _timer = new Timer { Interval = 600, Enabled = true };
+                _timer = new System.Windows.Forms.Timer { Interval = 600, Enabled = true };
                 _timer.Tick += delegate { FlushOutput(); };
             }
 

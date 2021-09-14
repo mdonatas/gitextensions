@@ -153,7 +153,7 @@ namespace GitCommands
             Uri tempPath = new(path);
             if (!string.IsNullOrEmpty(relativePath))
             {
-                tempPath = new Uri(tempPath, Uri.EscapeUriString(relativePath));
+                tempPath = new Uri(tempPath, Uri.EscapeDataString(relativePath));
                 return Uri.UnescapeDataString(tempPath.LocalPath);
             }
 

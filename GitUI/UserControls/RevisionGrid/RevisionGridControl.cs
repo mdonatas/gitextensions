@@ -96,7 +96,7 @@ namespace GitUI
         private readonly AuthorRevisionHighlighting _authorHighlighting;
         private readonly Lazy<IndexWatcher> _indexWatcher;
         private readonly BuildServerWatcher _buildServerWatcher;
-        private readonly Timer _selectionTimer;
+        private readonly System.Windows.Forms.Timer _selectionTimer;
         private readonly RevisionGraphColumnProvider _revisionGraphColumnProvider;
         private readonly DataGridViewColumn _maximizedColumn;
         private DataGridViewColumn? _lastVisibleResizableColumn;
@@ -182,7 +182,7 @@ namespace GitUI
             // Delay raising the SelectionChanged event for a barely noticeable period to throttle
             // rapid changes, for example by holding the down arrow key in the revision grid.
             // 75ms is longer than the default keyboard repeat rate of 15 keypresses per second.
-            _selectionTimer = new Timer(components) { Interval = 75 };
+            _selectionTimer = new System.Windows.Forms.Timer(components) { Interval = 75 };
             _selectionTimer.Tick += (_, e) =>
             {
                 _selectionTimer.Enabled = false;

@@ -188,6 +188,7 @@ namespace GitExtensions.Plugins.Gource
             // classes throw exceptions upon error
             try
             {
+#pragma warning disable SYSLIB0014
                 WebClient webClient = new() { Proxy = WebRequest.DefaultWebProxy };
                 webClient.Proxy.Credentials = CredentialCache.DefaultCredentials;
 
@@ -237,6 +238,7 @@ namespace GitExtensions.Plugins.Gource
         {
             try
             {
+#pragma warning disable SYSLIB0014
                 WebClient webClient = new() { Proxy = WebRequest.DefaultWebProxy };
                 webClient.Proxy.Credentials = CredentialCache.DefaultCredentials;
                 webClient.Encoding = Encoding.UTF8;

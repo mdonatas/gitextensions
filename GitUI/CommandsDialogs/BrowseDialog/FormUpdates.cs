@@ -189,6 +189,7 @@ namespace GitUI.CommandsDialogs.BrowseDialog
 
                 try
                 {
+#pragma warning disable SYSLIB0014
                     using WebClient webClient = new();
                     await webClient.DownloadFileTaskAsync(new Uri(UpdateUrl), Environment.GetEnvironmentVariable("TEMP") + "\\" + fileName);
                 }

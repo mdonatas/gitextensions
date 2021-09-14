@@ -80,6 +80,7 @@ namespace TeamCityIntegration
                 return _teamCityNtlmAuthCookie;
             }
 
+#pragma warning disable SYSLIB0014
             string url = serverUrl + "ntlmLogin.html";
             CookieContainer cookieContainer = new();
             var request = (HttpWebRequest)WebRequest.Create(url);

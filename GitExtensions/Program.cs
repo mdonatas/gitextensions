@@ -32,6 +32,7 @@ namespace GitExtensions
                 SetProcessDPIAware();
             }
 
+            Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 

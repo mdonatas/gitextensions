@@ -15,7 +15,7 @@ namespace GitUI
     {
         private readonly Label _label;
         private readonly RevisionDataGridView _gridView;
-        private readonly Timer _quickSearchTimer;
+        private readonly System.Windows.Forms.Timer _quickSearchTimer;
         private readonly IGitRevisionTester _gitRevisionTester;
 
         private string _lastQuickSearchString = "";
@@ -39,7 +39,7 @@ namespace GitUI
                 UseMnemonic = false
             };
 
-            _quickSearchTimer = new Timer { Interval = AppSettings.RevisionGridQuickSearchTimeout };
+            _quickSearchTimer = new System.Windows.Forms.Timer { Interval = AppSettings.RevisionGridQuickSearchTimeout };
             _quickSearchTimer.Tick += (sender, e) =>
             {
                 _quickSearchTimer.Stop();
