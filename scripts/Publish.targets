@@ -10,17 +10,19 @@
       <Output ParameterType="Microsoft.Build.Framework.ITaskItem[]" Output="true"/>
     </ParameterGroup>
     <Task>
-      <Reference Include="$(PkgNETStandard_Library)\build\netstandard2.0\ref\System.Runtime.dll"/>
-      <Reference Include="$(PkgNETStandard_Library)\build\netstandard2.0\ref\System.Xml.ReaderWriter.dll"/>
+      <Reference Include="C:\Workplace\personal\gitextensions\Externals\conemu-inside\ConEmuWinForms\bin\Debug\net461\System.Runtime.dll"/>
+      <Reference Include="C:\Workplace\personal\gitextensions\Externals\conemu-inside\ConEmuWinForms\bin\Debug\net461\System.Xml.ReaderWriter.dll"/>
       <Reference Include="Microsoft.Build"/>
       <Using Namespace="Microsoft.Build.Construction"/>
       <Using Namespace="Microsoft.Build.Evaluation"/>
+      <Reference Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Xml.dll"/>
+      <Using Namespace="System.Xml"/>
       <Code Type="Fragment" Language="cs">
         <![CDATA[
-        var _solutionFile = SolutionFile.Parse(SolutionPath); 
+        var _solutionFile = SolutionFile.Parse(SolutionPath);
         Output = _solutionFile.ProjectsInOrder
             .Where(proj => proj.ProjectType == SolutionProjectType.KnownToBeMSBuildFormat)
-            .SelectMany(proj => 
+            .SelectMany(proj =>
                         {
                             var project = new Project(proj.AbsolutePath, null, null, new ProjectCollection());
                             project.SetGlobalProperty("Configuration", BuildConfiguration);

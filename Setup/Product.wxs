@@ -165,9 +165,6 @@
       <Component Id="Microsoft.VisualStudio.Composition.NetFxAttributes.dll" Guid="D4782F6D-044B-5BD2-858A-1A3D8510B277">
         <RemoveFile Name="Microsoft.VisualStudio.Composition.NetFxAttributes.dll" Id="Microsoft.VisualStudio.Composition.NetFxAttributes.dll" On="both" />
       </Component>
-      <Component Id="Microsoft.VisualStudio.Interop.dll" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\Microsoft.VisualStudio.Interop.dll" />
-      </Component>
       <Component Id="Microsoft.VisualStudio.Threading.dll" Guid="*">
         <File Source="$(var.ArtifactsPublishPath)\Microsoft.VisualStudio.Threading.dll" />
       </Component>
@@ -656,7 +653,6 @@
       <ComponentRef Id="Microsoft.Toolkit.HighPerformance.dll" />
       <ComponentRef Id="Microsoft.VisualStudio.Composition.dll" />
       <ComponentRef Id="Microsoft.VisualStudio.Composition.NetFxAttributes.dll" />
-      <ComponentRef Id="Microsoft.VisualStudio.Interop.dll" />
       <ComponentRef Id="Microsoft.VisualStudio.Threading.dll" />
       <ComponentRef Id="Microsoft.VisualStudio.Validation.dll" />
       <ComponentRef Id="Microsoft.WindowsAPICodePack.dll" />
