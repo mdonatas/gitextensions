@@ -236,6 +236,55 @@
       <Component Id="ZString.dll" Guid="*">
         <File Source="$(var.ArtifactsPublishPath)\ZString.dll" />
       </Component>
+      <!-- CUSTOM by Donatas -->
+      <Component Id="ApplicationInsights.config" Guid="*">
+        <File Source="$(var.ArtifactsPublishPath)\ApplicationInsights.config" />
+      </Component>
+      <Component Id="BugReporter.xml" Guid="*">
+        <File Source="$(var.ArtifactsPublishPath)\BugReporter.xml" />
+      </Component>
+      <Component Id="ConEmuWinForms.pdb" Guid="*">
+        <File Source="$(var.ArtifactsPublishPath)\ConEmuWinForms.pdb" />
+      </Component>
+      <Component Id="ConEmuWinForms.xml" Guid="*">
+        <File Source="$(var.ArtifactsPublishPath)\ConEmuWinForms.xml" />
+      </Component>
+      <Component Id="Git.hub.pdb" Guid="*">
+        <File Source="$(var.ArtifactsPublishPath)\Git.hub.pdb" />
+      </Component>
+      <Component Id="GitCommands.dll.config" Guid="*">
+        <File Source="$(var.ArtifactsPublishPath)\GitCommands.dll.config" />
+      </Component>
+      <Component Id="GitCommands.xml" Guid="*">
+        <File Source="$(var.ArtifactsPublishPath)\GitCommands.xml" />
+      </Component>
+      <Component Id="GitExtensions.xml" Guid="*">
+        <File Source="$(var.ArtifactsPublishPath)\GitExtensions.xml" />
+      </Component>
+      <Component Id="GitExtUtils.dll.config" Guid="*">
+        <File Source="$(var.ArtifactsPublishPath)\GitExtUtils.dll.config" />
+      </Component>
+      <Component Id="GitExtUtils.xml" Guid="*">
+        <File Source="$(var.ArtifactsPublishPath)\GitExtUtils.xml" />
+      </Component>
+      <Component Id="GitUI.dll.config" Guid="*">
+        <File Source="$(var.ArtifactsPublishPath)\GitUI.dll.config" />
+      </Component>
+      <Component Id="GitUI.xml" Guid="*">
+        <File Source="$(var.ArtifactsPublishPath)\GitUI.xml" />
+      </Component>
+      <Component Id="GitUIPluginInterfaces.xml" Guid="*">
+        <File Source="$(var.ArtifactsPublishPath)\GitUIPluginInterfaces.xml" />
+      </Component>
+      <Component Id="ICSharpCode.TextEditor.pdb" Guid="*">
+        <File Source="$(var.ArtifactsPublishPath)\ICSharpCode.TextEditor.pdb" />
+      </Component>
+      <Component Id="ResourceManager.xml" Guid="*">
+        <File Source="$(var.ArtifactsPublishPath)\ResourceManager.xml" />
+      </Component>
+      <Component Id="SpellChecker.pdb" Guid="*">
+        <File Source="$(var.ArtifactsPublishPath)\SpellChecker.pdb" />
+      </Component>
       <!-- Shell extensions -->
       <?define ShellExCLSID = "{3C16B20A-BA16-4156-916F-0A375ECFFE24}"?>
       <Component Id="GitExtensionsShellEx32.dll" Guid="*">
