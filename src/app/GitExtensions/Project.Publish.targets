@@ -114,7 +114,7 @@
         <RuntimeConfigJsonFiles Include="$(AppPublishDir)\*.runtimeconfig.json"/>
       </ItemGroup>
   
-      <Exec Command="powershell.exe $(RepoRoot)\eng\Patch-RuntimeConfigJsonFiles.ps1 '@(RuntimeConfigJsonFiles)'" />
+      <!--<Exec Command="powershell.exe $(RepoRoot)\eng\Patch-RuntimeConfigJsonFiles.ps1 '@(RuntimeConfigJsonFiles)'" />-->
     </Target>
 
   <!--
@@ -257,11 +257,11 @@
     </PropertyGroup>
 
     <!-- Mark the package as "portable" -->
-    <XmlPoke XmlInputPath="$(_PublishAppConfigPath)"
+    <!-- <XmlPoke XmlInputPath="$(_PublishAppConfigPath)"
             Query="configuration/applicationSettings/GitCommands.Properties.Settings/setting[@name='IsPortable']/value" 
             Value="True"
             ContinueOnError="ErrorAndStop"
-          />
+          /> -->
 
     <ZipDirectory
             SourceDirectory="$(_PublishedPath)"
