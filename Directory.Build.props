@@ -5,8 +5,8 @@
   <PropertyGroup>
     <!-- Enable C#13 keyword "field" -->
     <LangVersion>preview</LangVersion>
-    <NoWarn>$(NoWarn);1573;1591;1712</NoWarn>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn>$(NoWarn);1573;1591;1712;NU1903;NU1505;NU1507</NoWarn>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <Nullable>enable</Nullable>
 
     <ImplicitUsings>enable</ImplicitUsings>
