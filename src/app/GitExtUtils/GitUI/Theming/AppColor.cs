@@ -23,6 +23,7 @@ public enum AppColor
     GraphBranch6,
     GraphBranch7,
     GraphBranch8,
+    GraphBranch9,
     GraphNonRelativeBranch,
     Branch,
     RemoteBranch,

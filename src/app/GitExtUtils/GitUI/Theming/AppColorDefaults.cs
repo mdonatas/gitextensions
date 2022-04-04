@@ -13,14 +13,15 @@ public static class AppColorDefaults
             { AppColor.AuthoredHighlight, Color.FromArgb(0xea, 0xf1, 0xff) },
             { AppColor.HighlightAllOccurences, Color.FromArgb(0xe8, 0xe8, 0xff) },
             { AppColor.InactiveSelectionHighlight, Color.FromArgb(0xe6, 0xe6, 0xe6) },
-            { AppColor.GraphBranch1, Color.FromArgb(0xf0, 0x64, 0xa0) },
-            { AppColor.GraphBranch2, Color.FromArgb(0x78, 0xb4, 0xe6) },
-            { AppColor.GraphBranch3, Color.FromArgb(0x24, 0xc2, 0x21) },
-            { AppColor.GraphBranch4, Color.FromArgb(0xa0, 0x78, 0xf0) },
-            { AppColor.GraphBranch5, Color.FromArgb(0xdd, 0x32, 0x28) },
-            { AppColor.GraphBranch6, Color.FromArgb(0x1a, 0xc6, 0xa6) },
-            { AppColor.GraphBranch7, Color.FromArgb(0xe7, 0xb0, 0x0f) },
-            { AppColor.GraphBranch8, Color.Empty },
+            { AppColor.GraphBranch1, Color.FromArgb(0xf0, 0x64, 0xa0) }, // pink
+            { AppColor.GraphBranch2, Color.FromArgb(0x78, 0xb4, 0xe6) }, // light blue
+            { AppColor.GraphBranch3, Color.FromArgb(0x24, 0xc2, 0x21) }, // green
+            { AppColor.GraphBranch4, Color.FromArgb(0xe6, 0x24, 0x6b) }, // red-pink
+            { AppColor.GraphBranch5, Color.FromArgb(0x8e, 0x6c, 0xc1) }, // light violet
+            { AppColor.GraphBranch6, Color.FromArgb(0xdd, 0x4c, 0x3c) }, // red
+            { AppColor.GraphBranch7, Color.FromArgb(0x3c, 0x78, 0xdc) }, // dark blue
+            { AppColor.GraphBranch8, Color.FromArgb(0x1a, 0xc6, 0xa6) }, // cyan-green
+            { AppColor.GraphBranch9, Color.FromArgb(0xe7, 0xb0, 0x0f) }, // orange
             { AppColor.GraphNonRelativeBranch, Color.LightGray },
             { AppColor.Branch, Color.FromArgb(0x00, 0x80, 0x00) },
             { AppColor.RemoteBranch, Color.FromArgb(0x8b, 0x00, 0x09) },
