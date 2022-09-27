@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.Composition;
 using System.Reactive.Concurrency;
+using GitUI.BuildServerIntegration;
 using GitUIPluginInterfaces;
 using GitUIPluginInterfaces.BuildServerIntegration;
 
@@ -29,6 +30,10 @@ namespace GitExtensions.UITests.CommandsDialogs
         }
 
         public void Initialize(IBuildServerWatcher buildServerWatcher, ISettingsSource config, Action openSettings, Func<ObjectId, bool>? isCommitInRevisionGrid = null)
+        {
+        }
+
+        public void OpenCredentialsForm()
         {
         }
     }

@@ -164,6 +164,11 @@ namespace AppVeyorIntegration
             }
         }
 
+        public void OpenCredentialsForm()
+        {
+            _buildServerWatcher.GetBuildServerCredentials(this, false);
+        }
+
         private IEnumerable<AppVeyorBuildInfo> QueryBuildsResults(string projectId)
         {
             try

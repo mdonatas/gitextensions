@@ -24,5 +24,7 @@ namespace GitUIPluginInterfaces.BuildServerIntegration
         {
             // Default implementation: we do nothing
         }
+
+        void OpenCredentialsForm();
     }
 }

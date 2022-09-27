@@ -73,6 +73,10 @@ namespace TeamCityIntegration
 
         private Regex? BuildIdFilter { get; set; }
 
+        public TeamCityAdapter()
+        {
+        }
+
         private CookieContainer GetTeamCityNtlmAuthCookie(string serverUrl, IBuildServerCredentials? buildServerCredentials)
         {
             if (_teamCityNtlmAuthCookie is not null)
@@ -152,6 +156,11 @@ namespace TeamCityIntegration
         {
             CreateNewHttpClient(hostname);
             UpdateHttpClientOptionsGuestAuth();
+        }
+
+        public void OpenCredentialsForm()
+        {
+            _buildServerWatcher?.GetBuildServerCredentials(this, false);
         }
 
         private void CreateNewHttpClient(string hostName)

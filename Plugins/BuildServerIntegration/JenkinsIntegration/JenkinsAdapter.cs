@@ -184,6 +184,11 @@ namespace JenkinsIntegration
             };
         }
 
+        public void OpenCredentialsForm()
+        {
+            _buildServerWatcher.GetBuildServerCredentials(this, false);
+        }
+
         public IObservable<BuildInfo> GetFinishedBuildsSince(IScheduler scheduler, DateTime? sinceDate = null)
         {
             // GetBuilds() will return the same builds as for GetRunningBuilds().

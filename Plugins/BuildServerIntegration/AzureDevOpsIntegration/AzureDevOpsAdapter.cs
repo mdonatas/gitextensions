@@ -134,6 +134,11 @@ Detail of the error:");
             _buildsCache = null;
         }
 
+        public void OpenCredentialsForm()
+        {
+            _buildServerWatcher.GetBuildServerCredentials(this, false);
+        }
+
         private IObservable<BuildInfo> GetBuilds(IScheduler scheduler, DateTime? sinceDate = null, bool running = false)
             => Observable.Create<BuildInfo>((observer, cancellationToken) => ObserveBuildsAsync(sinceDate, running, observer, cancellationToken));
 

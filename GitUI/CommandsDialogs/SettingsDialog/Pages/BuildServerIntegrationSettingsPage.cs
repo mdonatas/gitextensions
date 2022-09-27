@@ -40,7 +40,8 @@ namespace GitUI.CommandsDialogs.SettingsDialog.Pages
                     var buildServerTypes = exports.Select(export =>
                         {
                             var canBeLoaded = export.Metadata.CanBeLoaded;
-                            return export.Metadata.BuildServerType.Combine(" - ", canBeLoaded);
+                            string title = export.Metadata.BuildServerType.Combine(" - ", canBeLoaded);
+                            return new BuildServerTypeItem(title, export.Value);
                         }).ToArray();
 
                     await this.SwitchToMainThreadAsync();
@@ -49,7 +50,7 @@ namespace GitUI.CommandsDialogs.SettingsDialog.Pages
                     checkBoxShowBuildResultPage.Enabled = true;
                     BuildServerType.Enabled = true;
 
-                    BuildServerType.DataSource = new[] { _noneItem.Text }.Concat(buildServerTypes).ToArray();
+                    BuildServerType.DataSource = new[] { new BuildServerTypeItem(_noneItem.Text, null) }.Concat(buildServerTypes).ToArray();
                     return BuildServerType.DataSource;
                 });
         }
@@ -72,7 +73,9 @@ namespace GitUI.CommandsDialogs.SettingsDialog.Pages
                     checkBoxEnableBuildServerIntegration.SetNullableChecked(buildServerSettings.IntegrationEnabled);
                     checkBoxShowBuildResultPage.SetNullableChecked(buildServerSettings.ShowBuildResultPage);
 
-                    BuildServerType.SelectedItem = buildServerSettings.ServerName ?? _noneItem.Text;
+                    string title = buildServerSettings.ServerName ?? _noneItem.Text;
+                    BuildServerTypeItem item = BuildServerType.Items.Cast<BuildServerTypeItem>().SingleOrDefault(i => i.Text == title);
+                    BuildServerType.SelectedItem = item;
                     ActivateBuildServerSettingsControl();
                 });
         }
@@ -147,7 +150,7 @@ namespace GitUI.CommandsDialogs.SettingsDialog.Pages
                 return null;
             }
 
-            return (string)BuildServerType.SelectedItem;
+            return (BuildServerType.SelectedItem as BuildServerTypeItem)?.Text;
         }
 
         private void BuildServerType_SelectedIndexChanged(object sender, EventArgs e)
@@ -170,6 +173,16 @@ namespace GitUI.CommandsDialogs.SettingsDialog.Pages
             public ComboBox BuildServerType => _form.BuildServerType;
             public CheckBox checkBoxEnableBuildServerIntegration => _form.checkBoxEnableBuildServerIntegration;
             public CheckBox checkBoxShowBuildResultPage => _form.checkBoxShowBuildResultPage;
+        }
+
+        private record BuildServerTypeItem(string Text, IBuildServerAdapter? Adapter)
+        {
+            public override string ToString() => Text;
+        }
+
+        private void buttonSetCredentials_Click(object sender, EventArgs e)
+        {
+            ((BuildServerTypeItem)BuildServerType.SelectedItem).Adapter?.OpenCredentialsForm();
         }
     }
 }
