@@ -24,6 +24,7 @@ namespace GitUI.CommandsDialogs.SettingsDialog.Pages
             this.labelBuildServerSettingsInfo = new System.Windows.Forms.Label();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.checkBoxShowBuildResultPage = new System.Windows.Forms.CheckBox();
+            this.buttonSetCredentials = new System.Windows.Forms.Button();
             this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -102,6 +103,7 @@ namespace GitUI.CommandsDialogs.SettingsDialog.Pages
             this.tableLayoutPanel1.Controls.Add(this.labelBuildServerType, 0, 2);
             this.tableLayoutPanel1.Controls.Add(this.buildServerSettingsPanel, 0, 3);
             this.tableLayoutPanel1.Controls.Add(this.BuildServerType, 1, 2);
+            this.tableLayoutPanel1.Controls.Add(this.buttonSetCredentials, 1, 5);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -129,6 +131,16 @@ namespace GitUI.CommandsDialogs.SettingsDialog.Pages
             this.checkBoxShowBuildResultPage.ThreeState = true;
             this.checkBoxShowBuildResultPage.UseVisualStyleBackColor = true;
             // 
+            // buttonSetCredentials
+            // 
+            this.buttonSetCredentials.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonSetCredentials.Location = new System.Drawing.Point(1429, 330);
+            this.buttonSetCredentials.Name = "buttonSetCredentials";
+            this.buttonSetCredentials.Size = new System.Drawing.Size(175, 43);
+            this.buttonSetCredentials.TabIndex = 6;
+            this.buttonSetCredentials.Text = "buttonSetCredentials";
+            this.buttonSetCredentials.UseVisualStyleBackColor = true;
+            // 
             // BuildServerIntegrationSettingsPage
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
@@ -153,5 +165,6 @@ namespace GitUI.CommandsDialogs.SettingsDialog.Pages
         private System.Windows.Forms.Label labelBuildServerSettingsInfo;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.CheckBox checkBoxShowBuildResultPage;
+        private System.Windows.Forms.Button buttonSetCredentials;
     }
 }
