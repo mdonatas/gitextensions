@@ -134,7 +134,7 @@ Detail of the error:");
             _buildsCache = null;
         }
 
-        public void OpenCredentialsForm()
+        public void OpenCredentialsForm(Control uiControl)
         {
             _buildServerWatcher.GetBuildServerCredentials(this, false);
         }

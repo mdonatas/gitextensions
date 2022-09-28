@@ -14,6 +14,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using GitCommands.Utils;
@@ -113,15 +114,15 @@ namespace TeamCityIntegration
 
         public void Initialize(IBuildServerWatcher buildServerWatcher, ISettingsSource config, Action openSettings, Func<ObjectId, bool>? isCommitInRevisionGrid = null)
         {
-            if (_buildServerWatcher is not null)
-            {
-                throw new InvalidOperationException("Already initialized");
-            }
+            // if (_buildServerWatcher is not null)
+            // {
+            //    throw new InvalidOperationException("Already initialized");
+            // }
 
             _buildServerWatcher = buildServerWatcher;
 
-            ProjectNames = buildServerWatcher.ReplaceVariables(config.GetString("ProjectName", ""))
-                .Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
+            ProjectNames = buildServerWatcher?.ReplaceVariables(config.GetString("ProjectName", ""))
+                .Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>();
 
             var buildIdFilerSetting = config.GetString("BuildIdFilter", "");
             if (!BuildServerSettingsHelper.IsRegexValid(buildIdFilerSetting))
@@ -158,9 +159,11 @@ namespace TeamCityIntegration
             UpdateHttpClientOptionsGuestAuth();
         }
 
-        public void OpenCredentialsForm()
+        public void OpenCredentialsForm(Control uiControl)
         {
-            _buildServerWatcher?.GetBuildServerCredentials(this, false);
+            var export = ManagedExtensibility.GetExport<IBuildServerCredentialStore?>();
+
+            export.Value?.GetBuildServerCredentials(uiControl, this, false);
         }
 
         private void CreateNewHttpClient(string hostName)
@@ -183,8 +186,10 @@ namespace TeamCityIntegration
         {
             get
             {
-                Validates.NotNull(_httpClient);
-                return _httpClient.BaseAddress.Host;
+                string uniqueKey = _httpClient?.BaseAddress?.Host ?? HostName;
+
+                Validates.NotNull(uniqueKey);
+                return uniqueKey;
             }
         }
 

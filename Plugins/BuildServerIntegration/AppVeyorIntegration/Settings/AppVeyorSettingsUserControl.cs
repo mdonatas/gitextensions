@@ -23,9 +23,13 @@ namespace AppVeyorIntegration.Settings
             Anchor = AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Top;
         }
 
-        public void Initialize(string defaultProjectName, IEnumerable<string?> remotes)
+        public void Initialize(string defaultProjectName, IEnumerable<string?> remotes, IGitUICommands? gitUiCommands)
         {
             _defaultProjectName = defaultProjectName;
+        }
+
+        public void OpenCredentialsForm(Control uiControl, IBuildServerSettings buildServerSettings)
+        {
         }
 
         public void LoadSettings(ISettingsSource buildServerConfig)

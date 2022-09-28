@@ -26,9 +26,9 @@ namespace GitUI.CommandsDialogs.SettingsDialog.Pages
             InitializeComplete();
         }
 
-        protected override void Init(ISettingsPageHost pageHost)
+        protected override void Init(ISettingsPageHost pageHost, IGitUICommands? gitUiCommands)
         {
-            base.Init(pageHost);
+            base.Init(pageHost, gitUiCommands);
 
             _remotesManager = new ConfigFileRemoteSettingsManager(() => Module);
             _populateBuildServerTypeTask = ThreadHelper.JoinableTaskFactory.RunAsync(
@@ -96,24 +96,26 @@ namespace GitUI.CommandsDialogs.SettingsDialog.Pages
             control?.SaveSettings(buildServerSettings.SettingsSource);
         }
 
+        private IBuildServerSettingsUserControl? _buildServerSettingsUserControl;
+
         private void ActivateBuildServerSettingsControl()
         {
             var controls = buildServerSettingsPanel.Controls.OfType<IBuildServerSettingsUserControl>().Cast<Control>();
             var previousControl = controls.SingleOrDefault();
             previousControl?.Dispose();
 
-            var control = CreateBuildServerSettingsUserControl();
+            _buildServerSettingsUserControl = CreateBuildServerSettingsUserControl();
 
             buildServerSettingsPanel.Controls.Clear();
 
-            if (control is not null)
+            if (_buildServerSettingsUserControl is not null)
             {
                 IBuildServerSettings buildServerSettings = GetCurrentSettings().GetBuildServerSettings();
 
-                control.LoadSettings(buildServerSettings.SettingsSource);
+                _buildServerSettingsUserControl.LoadSettings(buildServerSettings.SettingsSource);
 
-                buildServerSettingsPanel.Controls.Add((Control)control);
-                ((Control)control).Dock = DockStyle.Fill;
+                buildServerSettingsPanel.Controls.Add((Control)_buildServerSettingsUserControl);
+                ((Control)_buildServerSettingsUserControl).Dock = DockStyle.Fill;
             }
         }
 
@@ -136,7 +138,7 @@ namespace GitUI.CommandsDialogs.SettingsDialog.Pages
                 Validates.NotNull(_remotesManager);
                 var remoteUrls = _remotesManager.LoadRemotes(false).Select(r => string.IsNullOrEmpty(r.PushUrl) ? r.Url : r.PushUrl);
 
-                buildServerSettingsUserControl.Initialize(defaultProjectName, remoteUrls);
+                buildServerSettingsUserControl.Initialize(defaultProjectName, remoteUrls, GitUiCommands);
                 return buildServerSettingsUserControl;
             }
 
@@ -182,7 +184,8 @@ namespace GitUI.CommandsDialogs.SettingsDialog.Pages
 
         private void buttonSetCredentials_Click(object sender, EventArgs e)
         {
-            ((BuildServerTypeItem)BuildServerType.SelectedItem).Adapter?.OpenCredentialsForm();
+            IBuildServerSettings buildServerSettings = GetCurrentSettings().GetBuildServerSettings();
+            _buildServerSettingsUserControl?.OpenCredentialsForm(this, buildServerSettings);
         }
     }
 }

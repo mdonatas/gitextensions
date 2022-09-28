@@ -1,6 +1,7 @@
 ﻿using System;
 using GitCommands;
 using GitUI.Shells;
+using GitUIPluginInterfaces;
 
 namespace GitUI.CommandsDialogs.SettingsDialog.Pages
 {
@@ -15,11 +16,6 @@ namespace GitUI.CommandsDialogs.SettingsDialog.Pages
             Text = "Browse repository window";
             cboTerminal.DisplayMember = "Name";
             InitializeComplete();
-        }
-
-        protected override void Init(ISettingsPageHost pageHost)
-        {
-            base.Init(pageHost);
         }
 
         protected override void PageToSettings()

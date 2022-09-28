@@ -41,10 +41,14 @@ namespace AzureDevOpsIntegration.Settings
 
         private string? TokenManagementUrl => ProjectUrlHelper.TryGetTokenManagementUrlFromProject(_currentSettings.ProjectUrl).tokenManagementUrl;
 
-        public void Initialize(string defaultProjectName, IEnumerable<string?> remotes)
+        public void Initialize(string defaultProjectName, IEnumerable<string?> remotes, IGitUICommands? gitUiCommands)
         {
             _defaultProjectName = defaultProjectName;
             _remotes = remotes;
+        }
+
+        public void OpenCredentialsForm(Control uiControl, IBuildServerSettings buildServerSettings)
+        {
         }
 
         private void UpdateView()

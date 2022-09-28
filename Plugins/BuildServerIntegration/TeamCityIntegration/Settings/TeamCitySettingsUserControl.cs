@@ -31,10 +31,16 @@ namespace TeamCityIntegration.Settings
             Anchor = AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Top;
         }
 
-        public void Initialize(string defaultProjectName, IEnumerable<string?> remotes)
+        public void Initialize(string defaultProjectName, IEnumerable<string?> remotes, IGitUICommands? gitUiCommands = null)
         {
             _defaultProjectName = defaultProjectName;
             SetChooseBuildButtonState();
+        }
+
+        public void OpenCredentialsForm(Control uiControl, IBuildServerSettings buildServerSettings)
+        {
+            _teamCityAdapter.Initialize(null, buildServerSettings.SettingsSource, null, null);
+            _teamCityAdapter.OpenCredentialsForm(uiControl);
         }
 
         public void LoadSettings(ISettingsSource buildServerConfig)

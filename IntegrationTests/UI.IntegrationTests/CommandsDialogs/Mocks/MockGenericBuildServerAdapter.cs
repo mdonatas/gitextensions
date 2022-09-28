@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.Composition;
 using System.Reactive.Concurrency;
+using System.Windows.Forms;
 using GitUI.BuildServerIntegration;
 using GitUIPluginInterfaces;
 using GitUIPluginInterfaces.BuildServerIntegration;
@@ -33,7 +34,7 @@ namespace GitExtensions.UITests.CommandsDialogs
         {
         }
 
-        public void OpenCredentialsForm()
+        public void OpenCredentialsForm(Control uiControl)
         {
         }
     }

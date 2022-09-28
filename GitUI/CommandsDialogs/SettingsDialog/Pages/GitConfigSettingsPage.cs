@@ -41,9 +41,9 @@ namespace GitUI.CommandsDialogs.SettingsDialog.Pages
             _controller = new GitConfigSettingsPageController();
         }
 
-        protected override void Init(ISettingsPageHost pageHost)
+        protected override void Init(ISettingsPageHost pageHost, IGitUICommands? gitUiCommands)
         {
-            base.Init(pageHost);
+            base.Init(pageHost, gitUiCommands);
 
             _diffMergeToolConfigurationManager = new DiffMergeToolConfigurationManager(() => CurrentSettings);
 

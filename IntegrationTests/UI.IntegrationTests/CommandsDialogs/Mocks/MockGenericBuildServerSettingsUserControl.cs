@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Windows.Forms;
+using GitUI.BuildServerIntegration;
 using GitUIPluginInterfaces;
 using GitUIPluginInterfaces.BuildServerIntegration;
 using ResourceManager;
@@ -23,9 +24,13 @@ namespace GitExtensions.UITests.CommandsDialogs
             Anchor = AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Top;
         }
 
-        public void Initialize(string defaultProjectName, IEnumerable<string?> remotes)
+        public void Initialize(string defaultProjectName, IEnumerable<string?> remotes, IGitUICommands? gitUiCommands)
         {
             _defaultProjectName = defaultProjectName;
+        }
+
+        public void OpenCredentialsForm(Control uiControl, IBuildServerSettings buildServerSettings)
+        {
         }
 
         public void LoadSettings(ISettingsSource buildServerConfig)

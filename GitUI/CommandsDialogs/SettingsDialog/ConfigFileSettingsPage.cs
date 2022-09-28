@@ -9,9 +9,9 @@ namespace GitUI.CommandsDialogs.SettingsDialog
         protected ConfigFileSettingsSet ConfigFileSettingsSet => CommonLogic.ConfigFileSettingsSet;
         protected ConfigFileSettings? CurrentSettings { get; private set; }
 
-        protected override void Init(ISettingsPageHost pageHost)
+        protected override void Init(ISettingsPageHost pageHost, IGitUICommands? gitUiCommands)
         {
-            base.Init(pageHost);
+            base.Init(pageHost, gitUiCommands);
 
             CurrentSettings = CommonLogic.ConfigFileSettingsSet.EffectiveSettings;
         }

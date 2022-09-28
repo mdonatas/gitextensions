@@ -1,5 +1,6 @@
 using System;
 using System.Reactive.Concurrency;
+using System.Windows.Forms;
 
 namespace GitUIPluginInterfaces.BuildServerIntegration
 {
@@ -25,6 +26,6 @@ namespace GitUIPluginInterfaces.BuildServerIntegration
             // Default implementation: we do nothing
         }
 
-        void OpenCredentialsForm();
+        void OpenCredentialsForm(Control uiControl);
     }
 }

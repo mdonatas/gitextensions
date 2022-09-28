@@ -13,6 +13,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using GitCommands.Utils;
 using GitUI;
 using GitUIPluginInterfaces;
@@ -184,7 +185,7 @@ namespace JenkinsIntegration
             };
         }
 
-        public void OpenCredentialsForm()
+        public void OpenCredentialsForm(Control uiControl)
         {
             _buildServerWatcher.GetBuildServerCredentials(this, false);
         }

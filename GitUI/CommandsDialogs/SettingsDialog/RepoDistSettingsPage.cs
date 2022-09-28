@@ -9,9 +9,9 @@ namespace GitUI.CommandsDialogs.SettingsDialog
         protected RepoDistSettingsSet? RepoDistSettingsSet => CommonLogic.RepoDistSettingsSet;
         protected RepoDistSettings? CurrentSettings { get; private set; }
 
-        protected override void Init(ISettingsPageHost pageHost)
+        protected override void Init(ISettingsPageHost pageHost, IGitUICommands? gitUiCommands)
         {
-            base.Init(pageHost);
+            base.Init(pageHost, gitUiCommands);
 
             CurrentSettings = RepoDistSettingsSet?.EffectiveSettings;
         }

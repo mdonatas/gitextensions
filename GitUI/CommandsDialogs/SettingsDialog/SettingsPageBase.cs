@@ -18,6 +18,7 @@ namespace GitUI.CommandsDialogs.SettingsDialog
     {
         private readonly List<ISettingControlBinding> _controlBindings = new();
         private ISettingsPageHost? _pageHost;
+        protected IGitUICommands GitUiCommands;
 
         protected SettingsPageBase()
         {
@@ -45,12 +46,13 @@ namespace GitUI.CommandsDialogs.SettingsDialog
 
         protected ToolTip ToolTip => toolTip1;
 
-        protected virtual void Init(ISettingsPageHost pageHost)
+        protected virtual void Init(ISettingsPageHost pageHost, IGitUICommands gitUiCommands)
         {
             _pageHost = pageHost;
+            GitUiCommands = gitUiCommands;
         }
 
-        public static T Create<[MeansImplicitUse] T>(ISettingsPageHost pageHost) where T : SettingsPageBase, new()
+        public static T Create<[MeansImplicitUse] T>(ISettingsPageHost pageHost, IGitUICommands gitUiCommands) where T : SettingsPageBase, new()
         {
             T result = new();
 
@@ -58,7 +60,7 @@ namespace GitUI.CommandsDialogs.SettingsDialog
             result.EnableRemoveWordHotkey();
             result.FixVisualStyle();
 
-            result.Init(pageHost);
+            result.Init(pageHost, gitUiCommands);
             return result;
         }
 

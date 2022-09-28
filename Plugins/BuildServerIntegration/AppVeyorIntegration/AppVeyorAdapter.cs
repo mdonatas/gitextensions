@@ -9,6 +9,7 @@ using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using GitCommands.Utils;
 using GitUI;
 using GitUIPluginInterfaces;
@@ -164,7 +165,7 @@ namespace AppVeyorIntegration
             }
         }
 
-        public void OpenCredentialsForm()
+        public void OpenCredentialsForm(Control uiControl)
         {
             _buildServerWatcher.GetBuildServerCredentials(this, false);
         }

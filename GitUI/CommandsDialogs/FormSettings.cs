@@ -117,46 +117,46 @@ namespace GitUI.CommandsDialogs
 
             settingsTreeView.SuspendLayout();
 
-            ChecklistSettingsPage checklistSettingsPage = SettingsPageBase.Create<ChecklistSettingsPage>(this);
+            ChecklistSettingsPage checklistSettingsPage = SettingsPageBase.Create<ChecklistSettingsPage>(this, UICommands);
 
             // Git Extensions settings
             settingsTreeView.AddSettingsPage(new GitExtensionsSettingsGroup(), null, Images.GitExtensionsLogo16);
             var gitExtPageRef = GitExtensionsSettingsGroup.GetPageReference();
             settingsTreeView.AddSettingsPage(checklistSettingsPage, gitExtPageRef, icon: null, asRoot: true);
 
-            settingsTreeView.AddSettingsPage(SettingsPageBase.Create<GeneralSettingsPage>(this), gitExtPageRef, Images.GeneralSettings);
+            settingsTreeView.AddSettingsPage(SettingsPageBase.Create<GeneralSettingsPage>(this, UICommands), gitExtPageRef, Images.GeneralSettings);
 
             // >> Appearance
-            settingsTreeView.AddSettingsPage(SettingsPageBase.Create<AppearanceSettingsPage>(this), gitExtPageRef, Images.Appearance);
+            settingsTreeView.AddSettingsPage(SettingsPageBase.Create<AppearanceSettingsPage>(this, UICommands), gitExtPageRef, Images.Appearance);
             var appearanceSettingsPage = AppearanceSettingsPage.GetPageReference();
-            settingsTreeView.AddSettingsPage(SettingsPageBase.Create<ColorsSettingsPage>(this), appearanceSettingsPage, Images.Colors);
-            settingsTreeView.AddSettingsPage(SettingsPageBase.Create<AppearanceFontsSettingsPage>(this), appearanceSettingsPage, Images.Font.AdaptLightness());
-            settingsTreeView.AddSettingsPage(SettingsPageBase.Create<ConsoleStyleSettingsPage>(this), appearanceSettingsPage, Images.Console);
-            settingsTreeView.AddSettingsPage(SettingsPageBase.Create<RevisionLinksSettingsPage>(this), gitExtPageRef, Images.Link.AdaptLightness());
+            settingsTreeView.AddSettingsPage(SettingsPageBase.Create<ColorsSettingsPage>(this, UICommands), appearanceSettingsPage, Images.Colors);
+            settingsTreeView.AddSettingsPage(SettingsPageBase.Create<AppearanceFontsSettingsPage>(this, UICommands), appearanceSettingsPage, Images.Font.AdaptLightness());
+            settingsTreeView.AddSettingsPage(SettingsPageBase.Create<ConsoleStyleSettingsPage>(this, UICommands), appearanceSettingsPage, Images.Console);
+            settingsTreeView.AddSettingsPage(SettingsPageBase.Create<RevisionLinksSettingsPage>(this, UICommands), gitExtPageRef, Images.Link.AdaptLightness());
 
-            settingsTreeView.AddSettingsPage(SettingsPageBase.Create<BuildServerIntegrationSettingsPage>(this), gitExtPageRef, Images.Integration);
-            settingsTreeView.AddSettingsPage(SettingsPageBase.Create<ScriptsSettingsPage>(this), gitExtPageRef, Images.Console);
-            settingsTreeView.AddSettingsPage(SettingsPageBase.Create<HotkeysSettingsPage>(this), gitExtPageRef, Images.Hotkey);
+            settingsTreeView.AddSettingsPage(SettingsPageBase.Create<BuildServerIntegrationSettingsPage>(this, UICommands), gitExtPageRef, Images.Integration);
+            settingsTreeView.AddSettingsPage(SettingsPageBase.Create<ScriptsSettingsPage>(this, UICommands), gitExtPageRef, Images.Console);
+            settingsTreeView.AddSettingsPage(SettingsPageBase.Create<HotkeysSettingsPage>(this, UICommands), gitExtPageRef, Images.Hotkey);
 
             if (EnvUtils.RunningOnWindows())
             {
-                settingsTreeView.AddSettingsPage(SettingsPageBase.Create<ShellExtensionSettingsPage>(this), gitExtPageRef, Images.ShellExtensions);
+                settingsTreeView.AddSettingsPage(SettingsPageBase.Create<ShellExtensionSettingsPage>(this, UICommands), gitExtPageRef, Images.ShellExtensions);
             }
 
             // >> Advanced
-            settingsTreeView.AddSettingsPage(SettingsPageBase.Create<AdvancedSettingsPage>(this), gitExtPageRef, Images.AdvancedSettings);
+            settingsTreeView.AddSettingsPage(SettingsPageBase.Create<AdvancedSettingsPage>(this, UICommands), gitExtPageRef, Images.AdvancedSettings);
             SettingsPageReference advancedPageRef = AdvancedSettingsPage.GetPageReference();
-            settingsTreeView.AddSettingsPage(SettingsPageBase.Create<ConfirmationsSettingsPage>(this), advancedPageRef, Images.BisectGood);
+            settingsTreeView.AddSettingsPage(SettingsPageBase.Create<ConfirmationsSettingsPage>(this, UICommands), advancedPageRef, Images.BisectGood);
 
             // >> Detailed
-            settingsTreeView.AddSettingsPage(SettingsPageBase.Create<DetailedSettingsPage>(this), gitExtPageRef, Images.Settings);
+            settingsTreeView.AddSettingsPage(SettingsPageBase.Create<DetailedSettingsPage>(this, UICommands), gitExtPageRef, Images.Settings);
             var detailedSettingsPage = DetailedSettingsPage.GetPageReference();
-            settingsTreeView.AddSettingsPage(SettingsPageBase.Create<FormBrowseRepoSettingsPage>(this), detailedSettingsPage, Images.BranchFolder);
-            settingsTreeView.AddSettingsPage(SettingsPageBase.Create<CommitDialogSettingsPage>(this), detailedSettingsPage, Images.CommitSummary);
-            settingsTreeView.AddSettingsPage(SettingsPageBase.Create<DiffViewerSettingsPage>(this), detailedSettingsPage, Images.Diff);
-            settingsTreeView.AddSettingsPage(SettingsPageBase.Create<BlameViewerSettingsPage>(this), detailedSettingsPage, Images.Blame);
+            settingsTreeView.AddSettingsPage(SettingsPageBase.Create<FormBrowseRepoSettingsPage>(this, UICommands), detailedSettingsPage, Images.BranchFolder);
+            settingsTreeView.AddSettingsPage(SettingsPageBase.Create<CommitDialogSettingsPage>(this, UICommands), detailedSettingsPage, Images.CommitSummary);
+            settingsTreeView.AddSettingsPage(SettingsPageBase.Create<DiffViewerSettingsPage>(this, UICommands), detailedSettingsPage, Images.Diff);
+            settingsTreeView.AddSettingsPage(SettingsPageBase.Create<BlameViewerSettingsPage>(this, UICommands), detailedSettingsPage, Images.Blame);
 
-            var sshSettingsPage = SettingsPageBase.Create<SshSettingsPage>(this);
+            var sshSettingsPage = SettingsPageBase.Create<SshSettingsPage>(this, UICommands);
             settingsTreeView.AddSettingsPage(sshSettingsPage, gitExtPageRef, Images.Key);
             checklistSettingsPage.SshSettingsPage = sshSettingsPage;
 
@@ -164,21 +164,21 @@ namespace GitUI.CommandsDialogs
             settingsTreeView.AddSettingsPage(new GitSettingsGroup(), null, Images.GitLogo16);
             var gitPageRef = GitSettingsGroup.GetPageReference();
 
-            settingsTreeView.AddSettingsPage(SettingsPageBase.Create<GitSettingsPage>(this), gitPageRef, Images.FolderOpen);
-            settingsTreeView.AddSettingsPage(SettingsPageBase.Create<GitConfigSettingsPage>(this), gitPageRef, Images.GeneralSettings);
-            settingsTreeView.AddSettingsPage(SettingsPageBase.Create<GitConfigAdvancedSettingsPage>(this), gitPageRef, Images.AdvancedSettings);
-            settingsTreeView.AddSettingsPage(SettingsPageBase.Create<GitRootIntroductionPage>(this), gitPageRef, icon: null, asRoot: true);
+            settingsTreeView.AddSettingsPage(SettingsPageBase.Create<GitSettingsPage>(this, UICommands), gitPageRef, Images.FolderOpen);
+            settingsTreeView.AddSettingsPage(SettingsPageBase.Create<GitConfigSettingsPage>(this, UICommands), gitPageRef, Images.GeneralSettings);
+            settingsTreeView.AddSettingsPage(SettingsPageBase.Create<GitConfigAdvancedSettingsPage>(this, UICommands), gitPageRef, Images.AdvancedSettings);
+            settingsTreeView.AddSettingsPage(SettingsPageBase.Create<GitRootIntroductionPage>(this, UICommands), gitPageRef, icon: null, asRoot: true);
 
             // Plugins settings
             settingsTreeView.AddSettingsPage(new PluginsSettingsGroup(), null, Images.Plugin);
             SettingsPageReference pluginsPageRef = PluginsSettingsGroup.GetPageReference();
-            settingsTreeView.AddSettingsPage(SettingsPageBase.Create<PluginRootIntroductionPage>(this), pluginsPageRef, icon: null, asRoot: true);
+            settingsTreeView.AddSettingsPage(SettingsPageBase.Create<PluginRootIntroductionPage>(this, UICommands), pluginsPageRef, icon: null, asRoot: true);
 
             lock (PluginRegistry.Plugins)
             {
                 var pluginEntries = PluginRegistry.Plugins
                     .Where(p => p.HasSettings)
-                    .Select(plugin => (Plugin: plugin, Page: PluginSettingsPage.CreateSettingsPageFromPlugin(this, plugin)))
+                    .Select(plugin => (Plugin: plugin, Page: PluginSettingsPage.CreateSettingsPageFromPlugin(this, plugin, UICommands)))
                     .OrderBy(entry => entry.Page.GetTitle(), StringComparer.CurrentCultureIgnoreCase);
 
                 foreach (var entry in pluginEntries)
