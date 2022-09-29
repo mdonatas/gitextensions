@@ -24,7 +24,7 @@ namespace GitExtensions.UITests.CommandsDialogs
             Anchor = AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Top;
         }
 
-        public void Initialize(string defaultProjectName, IEnumerable<string?> remotes, IGitUICommands? gitUiCommands)
+        public void Initialize(string defaultProjectName, IEnumerable<string?> remotes, IGitUICommands gitUiCommands)
         {
             _defaultProjectName = defaultProjectName;
         }

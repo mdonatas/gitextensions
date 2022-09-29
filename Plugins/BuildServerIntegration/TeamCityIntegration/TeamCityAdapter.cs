@@ -57,7 +57,7 @@ namespace TeamCityIntegration
     internal class TeamCityAdapter : IBuildServerAdapter
     {
         public const string PluginName = "TeamCity";
-        private IBuildServerWatcher? _buildServerWatcher;
+        private IGitUICommands? _gitUiCommands;
 
         private HttpClientHandler? _httpClientHandler;
         private HttpClient? _httpClient;
@@ -112,16 +112,18 @@ namespace TeamCityIntegration
 
         public string? LogAsGuestUrlParameter { get; set; }
 
-        public void Initialize(IBuildServerWatcher buildServerWatcher, ISettingsSource config, Action openSettings, Func<ObjectId, bool>? isCommitInRevisionGrid = null)
+        public void Initialize(IGitUICommands gitUiCommands, ISettingsSource config, Action openSettings, Func<ObjectId, bool>? isCommitInRevisionGrid = null)
         {
-            // if (_buildServerWatcher is not null)
-            // {
-            //    throw new InvalidOperationException("Already initialized");
-            // }
+            if (_gitUiCommands is not null)
+            {
+                throw new InvalidOperationException("Already initialized");
+            }
 
-            _buildServerWatcher = buildServerWatcher;
+            _gitUiCommands = gitUiCommands;
 
-            ProjectNames = buildServerWatcher?.ReplaceVariables(config.GetString("ProjectName", ""))
+            IRepoNameExtractor extractor = ManagedExtensibility.GetExport<IRepoNameExtractor>().Value.Create(() => gitUiCommands.GitModule);
+            BuildServerVariableReplacer variableReplacer = new(extractor);
+            ProjectNames = variableReplacer.ReplaceVariables(config.GetString("ProjectName", ""))
                 .Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>();
 
             var buildIdFilerSetting = config.GetString("BuildIdFilter", "");
@@ -186,10 +188,8 @@ namespace TeamCityIntegration
         {
             get
             {
-                string uniqueKey = _httpClient?.BaseAddress?.Host ?? HostName;
-
-                Validates.NotNull(uniqueKey);
-                return uniqueKey;
+                Validates.NotNull(_httpClient);
+                return _httpClient!.BaseAddress!.Host;
             }
         }
 
@@ -429,9 +429,10 @@ namespace TeamCityIntegration
 
             if (unauthorized)
             {
-                Validates.NotNull(_buildServerWatcher);
+                Validates.NotNull(_gitUiCommands);
 
-                var buildServerCredentials = _buildServerWatcher.GetBuildServerCredentials(this, true);
+                IBuildServerCredentialStore buildServerCredentialStore = ManagedExtensibility.GetExport<IBuildServerCredentialStore>().Value;
+                var buildServerCredentials = buildServerCredentialStore.GetBuildServerCredentials(null, this, true);
                 var useBuildServerCredentials = buildServerCredentials is not null
                                                 && buildServerCredentials.BuildServerCredentialsType == BuildServerCredentialsType.UsernameAndPassword
                                                 && !string.IsNullOrWhiteSpace(buildServerCredentials.Username) && !string.IsNullOrWhiteSpace(buildServerCredentials.Password);

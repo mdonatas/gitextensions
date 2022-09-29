@@ -13,7 +13,6 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using GitCommands;
 using GitCommands.Config;
-using GitCommands.Remotes;
 using GitCommands.Settings;
 using GitUI.CommandsDialogs.SettingsDialog.Pages;
 using GitUI.HelperDialogs;
@@ -35,7 +34,6 @@ namespace GitUI.BuildServerIntegration
         private readonly RevisionGridControl _revisionGrid;
         private readonly RevisionDataGridView _revisionGridView;
         private readonly Func<GitModule> _module;
-        private readonly IRepoNameExtractor _repoNameExtractor;
         private IDisposable? _buildStatusCancellationToken;
         private IBuildServerAdapter? _buildServerAdapter;
         private readonly object _observerLock = new();
@@ -48,7 +46,6 @@ namespace GitUI.BuildServerIntegration
             _revisionGridView = revisionGridView;
             _module = module;
 
-            _repoNameExtractor = new RepoNameExtractor(_module);
             ColumnProvider = new BuildStatusColumnProvider(revisionGrid, revisionGridView, _module);
         }
 
@@ -238,23 +235,6 @@ namespace GitUI.BuildServerIntegration
             }
         }
 
-        public string ReplaceVariables(string projectNames)
-        {
-            var (repoProject, repoName) = _repoNameExtractor.Get();
-
-            if (!string.IsNullOrWhiteSpace(repoProject))
-            {
-                projectNames = projectNames.Replace("{cRepoProject}", repoProject);
-            }
-
-            if (!string.IsNullOrWhiteSpace(repoName))
-            {
-                projectNames = projectNames.Replace("{cRepoShortName}", repoName);
-            }
-
-            return projectNames;
-        }
-
         private async Task<IBuildServerCredentials?> ShowBuildServerCredentialsFormAsync(string buildServerUniqueKey, IBuildServerCredentials buildServerCredentials)
         {
             await _revisionGrid.SwitchToMainThreadAsync();
@@ -343,7 +323,7 @@ namespace GitUI.BuildServerIntegration
 
                     var buildServerAdapter = export.Value;
 
-                    buildServerAdapter.Initialize(this, buildServerSettings.SettingsSource,
+                    buildServerAdapter.Initialize(_revisionGrid.UICommands, buildServerSettings.SettingsSource,
                         () =>
                         {
                             // To run the `StartSettingsDialog()` in the UI Thread

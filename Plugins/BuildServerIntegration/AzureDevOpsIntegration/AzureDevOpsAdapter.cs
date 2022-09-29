@@ -39,7 +39,6 @@ namespace AzureDevOpsIntegration
         public const string PluginName = "Azure DevOps and Team Foundation Server (since TFS2015)";
 
         private bool _firstCallForFinishedBuildsWasIgnored = false;
-        private IBuildServerWatcher? _buildServerWatcher;
         private IntegrationSettings? _settings;
         private ApiClient? _apiClient;
         private static readonly IBuildDurationFormatter _buildDurationFormatter = new BuildDurationFormatter();
@@ -65,7 +64,9 @@ As a consequence, the build server integration has been disabled for this sessio
 
 Detail of the error:");
 
+        private IGitUICommands? _gitUiCommands;
         private Action? _openSettings;
+
         private string CacheKey
         {
             get
@@ -75,14 +76,14 @@ Detail of the error:");
             }
         }
 
-        public void Initialize(IBuildServerWatcher buildServerWatcher, ISettingsSource config, Action openSettings, Func<ObjectId, bool>? isCommitInRevisionGrid = null)
+        public void Initialize(IGitUICommands gitUiCommands, ISettingsSource config, Action openSettings, Func<ObjectId, bool>? isCommitInRevisionGrid = null)
         {
-            if (_buildServerWatcher is not null)
+            if (_gitUiCommands is not null)
             {
                 throw new InvalidOperationException("Already initialized");
             }
 
-            _buildServerWatcher = buildServerWatcher;
+            _gitUiCommands = gitUiCommands;
             _openSettings = openSettings;
             _settings = IntegrationSettings.ReadFrom(config);
 
@@ -91,7 +92,9 @@ Detail of the error:");
                 return;
             }
 
-            _projectUrl = _buildServerWatcher.ReplaceVariables(_settings.ProjectUrl);
+            IRepoNameExtractor extractor = ManagedExtensibility.GetExport<IRepoNameExtractor>().Value.Create(() => gitUiCommands.GitModule);
+            BuildServerVariableReplacer variableReplacer = new(extractor);
+            _projectUrl = variableReplacer.ReplaceVariables(_settings.ProjectUrl);
 
             if (!Uri.IsWellFormedUriString(_projectUrl, UriKind.Absolute) || string.IsNullOrWhiteSpace(_settings.ApiToken))
             {
@@ -136,7 +139,7 @@ Detail of the error:");
 
         public void OpenCredentialsForm(Control uiControl)
         {
-            _buildServerWatcher.GetBuildServerCredentials(this, false);
+            // _buildServerWatcher.GetBuildServerCredentials(this, false);
         }
 
         private IObservable<BuildInfo> GetBuilds(IScheduler scheduler, DateTime? sinceDate = null, bool running = false)

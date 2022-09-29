@@ -8,7 +8,6 @@ using AppVeyorIntegration;
 using CommonTestUtils;
 using FluentAssertions;
 using GitUIPluginInterfaces;
-using GitUIPluginInterfaces.BuildServerIntegration;
 using NSubstitute;
 using NUnit.Framework;
 using YamlDotNet.Core;
@@ -49,7 +48,7 @@ namespace AppVeyorIntegrationTests
             var resultString = EmbeddedResourceLoader.Load(Assembly.GetExecutingAssembly(),
                 $"{GetType().Namespace}.MockData.{filename}");
             AppVeyorAdapter appVeyorAdapter = new();
-            appVeyorAdapter.Initialize(Substitute.For<IBuildServerWatcher>(), Substitute.For<ISettingsSource>(), () => { },
+            appVeyorAdapter.Initialize(Substitute.For<IGitUICommands>(), Substitute.For<ISettingsSource>(), () => { },
                 id => true);
 
             var buildInfo = appVeyorAdapter.ExtractBuildInfo(_projectId, resultString).ToList();

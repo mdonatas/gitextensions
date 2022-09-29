@@ -15,6 +15,7 @@ namespace TeamCityIntegration.Settings
     public partial class TeamCitySettingsUserControl : GitExtensionsControl, IBuildServerSettingsUserControl
     {
         private string? _defaultProjectName;
+        private IGitUICommands _gitUiCommands;
         private readonly TeamCityAdapter _teamCityAdapter = new();
         private readonly TranslationString _failToLoadProjectMessage = new("Failed to load the projects and build list." + Environment.NewLine + "Please verify the server url.");
         private readonly TranslationString _failToLoadProjectCaption = new("Error when loading the projects and build list");
@@ -31,9 +32,10 @@ namespace TeamCityIntegration.Settings
             Anchor = AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Top;
         }
 
-        public void Initialize(string defaultProjectName, IEnumerable<string?> remotes, IGitUICommands? gitUiCommands = null)
+        public void Initialize(string defaultProjectName, IEnumerable<string?> remotes, IGitUICommands gitUiCommands)
         {
             _defaultProjectName = defaultProjectName;
+            _gitUiCommands = gitUiCommands;
             SetChooseBuildButtonState();
         }
 

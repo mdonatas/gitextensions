@@ -52,8 +52,6 @@ namespace AppVeyorIntegration
         private const string WebSiteUrl = "https://ci.appveyor.com";
         private const string ApiBaseUrl = WebSiteUrl + "/api/projects/";
 
-        private IBuildServerWatcher? _buildServerWatcher;
-
         private HttpClient? _httpClientAppVeyor;
 
         private List<AppVeyorBuildInfo>? _allBuilds = new();
@@ -62,17 +60,16 @@ namespace AppVeyorIntegration
         private bool _shouldLoadTestResults;
 
         public void Initialize(
-            IBuildServerWatcher buildServerWatcher,
+            IGitUICommands gitUiCommands,
             ISettingsSource config,
             Action openSettings,
             Func<ObjectId, bool>? isCommitInRevisionGrid = null)
         {
-            if (_buildServerWatcher is not null)
-            {
-                throw new InvalidOperationException("Already initialized");
-            }
+            // if (_buildServerWatcher is not null)
+            // {
+            //    throw new InvalidOperationException("Already initialized");
+            // }
 
-            _buildServerWatcher = buildServerWatcher;
             _isCommitInRevisionGrid = isCommitInRevisionGrid;
             string? accountName = config.GetString("AppVeyorAccountName", null);
             string? accountToken = config.GetString("AppVeyorAccountToken", null);
@@ -86,7 +83,9 @@ namespace AppVeyorIntegration
             // accountName may be any accessible project (for instance upstream)
             // if AppVeyorAccountName is set, projectNamesSetting may exclude the accountName part
             string projectNamesSetting = config.GetString("AppVeyorProjectName", "");
-            var projectNames = _buildServerWatcher.ReplaceVariables(projectNamesSetting)
+            IRepoNameExtractor extractor = ManagedExtensibility.GetExport<IRepoNameExtractor>().Value.Create(() => gitUiCommands.GitModule);
+            BuildServerVariableReplacer variableReplacer = new(extractor);
+            List<string> projectNames = variableReplacer.ReplaceVariables(projectNamesSetting)
                 .Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries)
                 .Where(p => p.Contains("/") || !string.IsNullOrEmpty(accountName))
                 .Select(p => p.Contains("/") ? p : accountName.Combine("/", p)!)
@@ -167,7 +166,7 @@ namespace AppVeyorIntegration
 
         public void OpenCredentialsForm(Control uiControl)
         {
-            _buildServerWatcher.GetBuildServerCredentials(this, false);
+            // _buildServerWatcher.GetBuildServerCredentials(this, false);
         }
 
         private IEnumerable<AppVeyorBuildInfo> QueryBuildsResults(string projectId)

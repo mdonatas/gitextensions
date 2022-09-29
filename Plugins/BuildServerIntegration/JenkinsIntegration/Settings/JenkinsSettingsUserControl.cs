@@ -14,6 +14,7 @@ namespace JenkinsIntegration.Settings
     public partial class JenkinsSettingsUserControl : GitExtensionsControl, IBuildServerSettingsUserControl
     {
         private string? _defaultProjectName;
+        private IGitUICommands _gitUiCommands;
 
         public JenkinsSettingsUserControl()
         {
@@ -23,9 +24,10 @@ namespace JenkinsIntegration.Settings
             Anchor = AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Top;
         }
 
-        public void Initialize(string defaultProjectName, IEnumerable<string?> remotes, IGitUICommands? gitUiCommands)
+        public void Initialize(string defaultProjectName, IEnumerable<string?> remotes, IGitUICommands gitUiCommands)
         {
             _defaultProjectName = defaultProjectName;
+            _gitUiCommands = gitUiCommands;
         }
 
         public void OpenCredentialsForm(Control uiControl, IBuildServerSettings buildServerSettings)

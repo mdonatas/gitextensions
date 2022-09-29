@@ -26,6 +26,7 @@ namespace AzureDevOpsIntegration.Settings
 
         private string? _defaultProjectName;
         private IEnumerable<string?>? _remotes;
+        private IGitUICommands _gitUiCommands;
 
         private bool _isUpdating;
         private IntegrationSettings _currentSettings = new();
@@ -41,10 +42,11 @@ namespace AzureDevOpsIntegration.Settings
 
         private string? TokenManagementUrl => ProjectUrlHelper.TryGetTokenManagementUrlFromProject(_currentSettings.ProjectUrl).tokenManagementUrl;
 
-        public void Initialize(string defaultProjectName, IEnumerable<string?> remotes, IGitUICommands? gitUiCommands)
+        public void Initialize(string defaultProjectName, IEnumerable<string?> remotes, IGitUICommands gitUiCommands)
         {
             _defaultProjectName = defaultProjectName;
             _remotes = remotes;
+            _gitUiCommands = gitUiCommands;
         }
 
         public void OpenCredentialsForm(Control uiControl, IBuildServerSettings buildServerSettings)

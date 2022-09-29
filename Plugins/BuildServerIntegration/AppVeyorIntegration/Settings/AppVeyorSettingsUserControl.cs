@@ -14,6 +14,7 @@ namespace AppVeyorIntegration.Settings
     public partial class AppVeyorSettingsUserControl : GitExtensionsControl, IBuildServerSettingsUserControl
     {
         private string? _defaultProjectName;
+        private IGitUICommands _gitUiCommands;
 
         public AppVeyorSettingsUserControl()
         {
@@ -23,9 +24,10 @@ namespace AppVeyorIntegration.Settings
             Anchor = AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Top;
         }
 
-        public void Initialize(string defaultProjectName, IEnumerable<string?> remotes, IGitUICommands? gitUiCommands)
+        public void Initialize(string defaultProjectName, IEnumerable<string?> remotes, IGitUICommands gitUiCommands)
         {
             _defaultProjectName = defaultProjectName;
+            _gitUiCommands = gitUiCommands;
         }
 
         public void OpenCredentialsForm(Control uiControl, IBuildServerSettings buildServerSettings)

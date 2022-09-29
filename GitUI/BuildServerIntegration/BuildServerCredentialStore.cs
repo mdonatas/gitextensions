@@ -14,6 +14,7 @@ using GitUIPluginInterfaces.BuildServerIntegration;
 namespace GitUI.BuildServerIntegration
 {
     [Export(typeof(IBuildServerCredentialStore))]
+    [PartCreationPolicy(CreationPolicy.Shared)]
     public class BuildServerCredentialStore : IBuildServerCredentialStore
     {
         private readonly object _buildServerCredentialsLock = new();

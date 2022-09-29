@@ -5,24 +5,18 @@ using GitUIPluginInterfaces;
 
 namespace GitCommands.Remotes
 {
-    public interface IRepoNameExtractor
-    {
-        /// <summary>
-        /// Get a "repo shortname" from the current repo URL
-        /// There is no official Git repo shortname, this is one possible definition:
-        ///  The filename without extension for the remote URL
-        /// This function could have been included in GitModule
-        /// </summary>
-        (string repoProject, string repoName) Get();
-    }
-
     public sealed class RepoNameExtractor : IRepoNameExtractor
     {
         private readonly Func<IGitModule> _getModule;
 
-        public RepoNameExtractor(Func<IGitModule> getModule)
+        private RepoNameExtractor(Func<IGitModule> getModule)
         {
             _getModule = getModule;
+        }
+
+        public IRepoNameExtractor Create(Func<IGitModule> getModule)
+        {
+            return new RepoNameExtractor(getModule);
         }
 
         /// <summary>
@@ -57,7 +51,7 @@ namespace GitCommands.Remotes
             {
                 try
                 {
-                    return Path.GetFileNameWithoutExtension(Path.GetDirectoryName(remoteUrl));
+                    return Path.GetFileNameWithoutExtension(Path.GetDirectoryName(remoteUrl))!;
                 }
                 catch
                 {

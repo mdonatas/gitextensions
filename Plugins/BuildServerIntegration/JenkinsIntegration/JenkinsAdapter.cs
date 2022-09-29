@@ -54,7 +54,7 @@ namespace JenkinsIntegration
     {
         public const string PluginName = "Jenkins";
         private static readonly IBuildDurationFormatter _buildDurationFormatter = new BuildDurationFormatter();
-        private IBuildServerWatcher? _buildServerWatcher;
+        private IGitUICommands? _gitUiCommands;
 
         private HttpClient? _httpClient;
 
@@ -62,14 +62,14 @@ namespace JenkinsIntegration
         private readonly Dictionary<string, long> _lastProjectBuildTime = new();
         private Regex? _ignoreBuilds;
 
-        public void Initialize(IBuildServerWatcher buildServerWatcher, ISettingsSource config, Action openSettings, Func<ObjectId, bool>? isCommitInRevisionGrid = null)
+        public void Initialize(IGitUICommands gitUiCommands, ISettingsSource config, Action openSettings, Func<ObjectId, bool>? isCommitInRevisionGrid = null)
         {
-            if (_buildServerWatcher is not null)
+            if (_gitUiCommands is not null)
             {
                 throw new InvalidOperationException("Already initialized");
             }
 
-            _buildServerWatcher = buildServerWatcher;
+            _gitUiCommands = gitUiCommands;
 
             var projectName = config.GetString("ProjectName", null);
             var hostName = config.GetString("BuildServerUrl", null);
@@ -86,11 +86,15 @@ namespace JenkinsIntegration
                     BaseAddress = baseAddress
                 };
 
-                var buildServerCredentials = buildServerWatcher.GetBuildServerCredentials(this, true);
+                Lazy<IBuildServerCredentialStore> export = ManagedExtensibility.GetExport<IBuildServerCredentialStore>();
+                IBuildServerCredentials? buildServerCredentials =
+                    export.Value.GetBuildServerCredentials(null, this, true);
 
                 UpdateHttpClientOptions(buildServerCredentials);
 
-                string[] projectUrls = _buildServerWatcher.ReplaceVariables(projectName)
+                IRepoNameExtractor extractor = ManagedExtensibility.GetExport<IRepoNameExtractor>().Value.Create(() => gitUiCommands.GitModule);
+                BuildServerVariableReplacer variableReplacer = new(extractor);
+                string[] projectUrls = variableReplacer.ReplaceVariables(projectName)
                     .Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
                 foreach (var projectUrl in projectUrls.Select(s => baseAddress + "job/" + s.Trim() + "/"))
                 {
@@ -187,7 +191,7 @@ namespace JenkinsIntegration
 
         public void OpenCredentialsForm(Control uiControl)
         {
-            _buildServerWatcher.GetBuildServerCredentials(this, false);
+            // _buildServerWatcher.GetBuildServerCredentials(this, false);
         }
 
         public IObservable<BuildInfo> GetFinishedBuildsSince(IScheduler scheduler, DateTime? sinceDate = null)
@@ -530,9 +534,10 @@ namespace JenkinsIntegration
                     throw new HttpRequestException(resp.ReasonPhrase);
                 }
 
-                Validates.NotNull(_buildServerWatcher);
+                Validates.NotNull(_gitUiCommands);
 
-                var buildServerCredentials = _buildServerWatcher.GetBuildServerCredentials(this, false);
+                IBuildServerCredentialStore buildServerCredentialStore = ManagedExtensibility.GetExport<IBuildServerCredentialStore?>().Value;
+                var buildServerCredentials = buildServerCredentialStore.GetBuildServerCredentials(null, this, false);
 
                 if (buildServerCredentials is null)
                 {
