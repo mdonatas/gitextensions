@@ -945,7 +945,7 @@ partial class FileStatusList
             }
         }
 
-        ResetSelectedItemsWithConfirmation(resetToParent: sender == tsmiResetFileToParent);
+        ResetSelectedItemsTo(resetToParent: sender == tsmiResetFileToParent, resetAndDelete: false);
     }
 
     public void ResetSelectedItemsWithConfirmation(bool resetToParent)
@@ -974,41 +974,41 @@ partial class FileStatusList
         return;
 
         static bool IsRenamedIndexItem(FileStatusItem item) => item.Item.IsRenamed && item.Item.Staged == StagedStatus.Index;
+    }
 
-        void ResetSelectedItemsTo(bool resetToParent, bool resetAndDelete)
+    private void ResetSelectedItemsTo(bool resetToParent, bool resetAndDelete)
+    {
+        FileStatusItem[] selectedItems = [.. SelectedItems];
+
+        if (selectedItems.Length == 0)
         {
-            FileStatusItem[] selectedItems = [.. SelectedItems];
+            return;
+        }
 
-            if (selectedItems.Length == 0)
+        try
+        {
+            foreach (ObjectId id in resetToParent ? selectedItems.FirstIds() : selectedItems.SecondIds())
             {
-                return;
-            }
-
-            try
-            {
-                foreach (ObjectId id in resetToParent ? selectedItems.FirstIds() : selectedItems.SecondIds())
+                if (resetToParent ? !CanResetToFirst(id, selectedItems) : !CanResetToSecond(id))
                 {
-                    if (resetToParent ? !CanResetToFirst(id, selectedItems) : !CanResetToSecond(id))
-                    {
-                        // Cannot reset to artificial commit, may be included in multi selections
-                        continue;
-                    }
+                    // Cannot reset to artificial commit, may be included in multi selections
+                    continue;
+                }
 
-                    GitItemStatus[] resetItems = [.. resetToParent
+                GitItemStatus[] resetItems = [.. resetToParent
                         ? selectedItems.Items()
                         : selectedItems.Items().Select(item => item.InvertStatus())];
-                    Module.ResetChanges(id, resetItems, resetAndDelete: resetAndDelete, _fullPathResolver, out StringBuilder output, progressAction: null);
+                Module.ResetChanges(id, resetItems, resetAndDelete: resetAndDelete, _fullPathResolver, out StringBuilder output, progressAction: null);
 
-                    if (output.Length > 0)
-                    {
-                        MessageBox.Show(this, output.ToString(), TranslatedStrings.ResetChangesCaption, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
+                if (output.Length > 0)
+                {
+                    MessageBox.Show(this, output.ToString(), TranslatedStrings.ResetChangesCaption, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
-            finally
-            {
-                RequestRefresh();
-            }
+        }
+        finally
+        {
+            RequestRefresh();
         }
     }
 
