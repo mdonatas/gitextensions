@@ -1131,7 +1131,7 @@ namespace GitUI.CommandsDialogs
 
         private void resetFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ResetSelectedItemsWithConfirmation(resetToParent: sender == resetFileToParentToolStripMenuItem);
+            ResetSelectedItemsTo(resetToParent: sender != resetFileToSelectedToolStripMenuItem, resetAndDelete: false);
         }
 
         private void resetFileToToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
