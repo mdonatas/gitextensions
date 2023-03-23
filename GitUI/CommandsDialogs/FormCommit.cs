@@ -331,11 +331,11 @@ namespace GitUI.CommandsDialogs
             SolveMergeconflicts.BackColor = OtherColors.MergeConflictsColor;
             SolveMergeconflicts.SetForeColorForBackColor();
 
-            if (AppSettings.DontConfirmAmend)
-            {
-                ResetSoft.BackColor = OtherColors.AmendButtonForcedColor;
-                ResetSoft.SetForeColorForBackColor();
-            }
+            ////if (AppSettings.DontConfirmAmend)
+            ////{
+            ////    ResetSoft.BackColor = OtherColors.AmendButtonForcedColor;
+            ////    ResetSoft.SetForeColorForBackColor();
+            ////}
 
             toolStripStatusBranchIcon.AdaptImageLightness();
 
