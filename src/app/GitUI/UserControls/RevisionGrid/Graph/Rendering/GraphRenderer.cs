@@ -89,10 +89,14 @@ namespace GitUI.UserControls.RevisionGrid.Graph.Rendering
                     }
                 }
 
-                if (currentRow.GetCurrentRevisionLane() < MaxLanes)
+                int currentRevisionLane = currentRow.GetCurrentRevisionLane();
+                if (currentRevisionLane < MaxLanes)
                 {
-                    int centerX = g.RenderingOrigin.X + (int)((currentRow.GetCurrentRevisionLane() + 0.5) * LaneWidth);
-                    Rectangle nodeRect = new(centerX - (NodeDimension / 2), p.Center.Y - (NodeDimension / 2), NodeDimension, NodeDimension);
+                    int centerX = g.RenderingOrigin.X + (int)((currentRevisionLane + 0.5) * LaneWidth);
+                    double centerX2 = g.RenderingOrigin.X + (currentRevisionLane * LaneWidth) + (LaneWidth * 0.5);
+                    int rectCenterX = centerX - (NodeDimension / 2);
+                    int rectCenterX2 = (int)Math.Floor(centerX2 - ((double)NodeDimension / 2));
+                    Rectangle nodeRect = new(rectCenterX2, p.Center.Y - (NodeDimension / 2), NodeDimension, NodeDimension);
 
                     bool square = currentRow.Revision.GitRevision.Refs.Count > 0;
                     bool hasOutline = currentRow.Revision.GitRevision.ObjectId == headId;
