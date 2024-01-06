@@ -166,7 +166,7 @@ internal abstract class Tree : NodeBase, IDisposable
         HashSet<string> expandedNodesState = firstTime ? [] : TreeViewNode.GetExpandedNodesState();
         Nodes.FillTreeViewNode(TreeViewNode);
 
-        TreeNode selectedNode = TreeViewNode.TreeView.SelectedNode;
+        TreeNode? selectedNode = TreeViewNode.TreeView.SelectedNode;
 
         if (originalSelectedNodeFullNamePath != selectedNode?.GetFullNamePath())
         {
