@@ -63,7 +63,7 @@ namespace GitUI.CommandsDialogs.BrowseDialog.DashboardControl
 
             void ApplyTheme()
             {
-                BackgroundImage = selectedTheme.BackgroundImage;
+                ////BackgroundImage = selectedTheme.BackgroundImage;
 
                 BackColor = selectedTheme.Primary;
                 pnlLogo.BackColor = selectedTheme.PrimaryVeryDark;
