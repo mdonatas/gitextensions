@@ -493,7 +493,9 @@
             // Rescan
             // 
             Rescan.AutoSize = true;
+            Rescan.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             Rescan.Location = new Point(838, 3);
+            Rescan.MinimumSize = new Size(150, 30);
             Rescan.Name = "Rescan";
             Rescan.Size = new Size(150, 30);
             Rescan.TabIndex = 0;
