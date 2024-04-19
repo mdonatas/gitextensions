@@ -62,7 +62,7 @@ public partial class Dashboard : GitModuleControl
 
         void ApplyTheme()
         {
-            BackgroundImage = selectedTheme.BackgroundImage;
+            ////BackgroundImage = selectedTheme.BackgroundImage;
 
             BackColor = SystemColors.Window;
             pnlLogo.BackColor = selectedTheme.LogoBackColor;
