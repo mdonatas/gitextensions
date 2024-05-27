@@ -42,7 +42,7 @@
 .EditorBackground { color: #ffffff; }
 .LineNumberBackground { color: #ffffff; }
 .AuthoredHighlight { color: #eaf1ff; }
-.HighlightAllOccurences { color: #e8e8ff; }
+.HighlightAllOccurences  { color: #ffffe0; }
 .InactiveSelectionHighlight { color: #e6e6e6; }
 
 .GraphBranch1            { color: #f064a0; }
