@@ -11,7 +11,7 @@
                 { AppColor.EditorBackground, SystemColors.Window },
                 { AppColor.LineNumberBackground, SystemColors.Window },
                 { AppColor.AuthoredHighlight, Color.FromArgb(0xea, 0xf1, 0xff) },
-                { AppColor.HighlightAllOccurences, Color.FromArgb(0xe8, 0xe8, 0xff) },
+                { AppColor.HighlightAllOccurences, Color.LightYellow },
                 { AppColor.InactiveSelectionHighlight, Color.FromArgb(0xe6, 0xe6, 0xe6) },
                 { AppColor.GraphBranch1, Color.FromArgb(0xf0, 0x64, 0xa0) }, // pink
                 { AppColor.GraphBranch2, Color.FromArgb(0x78, 0xb4, 0xe6) }, // light blue
