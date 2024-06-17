@@ -115,7 +115,7 @@ internal static class VisualStudioIntegration
         return false;
     }
 
-    public static bool IsVisualStudioInstalled => _devEnvPath is not null;
+    public static bool IsVisualStudioInstalled => false;
 
     private static string? _devEnvPath;
 
