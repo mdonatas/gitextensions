@@ -1,4 +1,5 @@
-﻿using GitCommands.ExternalLinks;
+﻿using GitCommands;
+using GitCommands.ExternalLinks;
 using GitExtensions.Extensibility.Git;
 using GitExtensions.Extensibility.Settings;
 using GitExtUtils.GitUI;
@@ -11,6 +12,8 @@ namespace GitUI.CommandsDialogs.SettingsDialog.Pages
     public sealed partial class RevisionLinksSettingsPage : DistributedSettingsPage
     {
         private readonly TranslationString _addTemplate = new("Add {0} templates");
+        private readonly TranslationString _revisionLinksHelpTooltip = new(
+            $"Configure how parts of a revision data are converted into clickable links.\r\n\r\nClick here to read more.");
         private ExternalLinksManager? _externalLinksManager;
 
         public RevisionLinksSettingsPage(IServiceProvider serviceProvider)
@@ -24,6 +27,13 @@ namespace GitUI.CommandsDialogs.SettingsDialog.Pages
             CaptionCol.DataPropertyName = nameof(ExternalLinkFormat.Caption);
             URICol.DataPropertyName = nameof(ExternalLinkFormat.Format);
             LoadTemplatesInMenu();
+        }
+
+        protected override void OnRuntimeLoad()
+        {
+            base.OnRuntimeLoad();
+
+            ToolTip.SetToolTip(revisionLinksHelp, _revisionLinksHelpTooltip.Text);
         }
 
         protected override void SettingsToPage()
@@ -336,5 +346,8 @@ namespace GitUI.CommandsDialogs.SettingsDialog.Pages
                 SelectedLinkDefinition.UseOnlyFirstRemote = chkOnlyFirstRemote.Checked;
             }
         }
+
+        private void revisionLinksHelp_Click(object sender, EventArgs e)
+            => OsShellUtil.OpenUrlInDefaultBrowser(UserManual.UserManual.UrlFor("settings", "revision-links"));
     }
 }

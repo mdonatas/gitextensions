@@ -70,7 +70,7 @@
             flowLayoutPanel2 = new FlowLayoutPanel();
             _NO_TRANSLATE_Name = new TextBox();
             EnabledChx = new CheckBox();
-            gotoUserManualControl1 = new UserControls.GotoUserManualControl();
+            revisionLinksHelp = new PictureBox();
             ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
             splitContainer1.Panel1.SuspendLayout();
             splitContainer1.Panel2.SuspendLayout();
@@ -89,6 +89,7 @@
             tableLayoutPanel4.SuspendLayout();
             flowLayoutPanel3.SuspendLayout();
             flowLayoutPanel2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)revisionLinksHelp).BeginInit();
             SuspendLayout();
             // 
             // splitContainer1
@@ -200,14 +201,14 @@
             LinksGrid.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             LinksGrid.Columns.AddRange(new DataGridViewColumn[] { CaptionCol, URICol });
             LinksGrid.Dock = DockStyle.Fill;
-            LinksGrid.Location = new Point(0, 322);
+            LinksGrid.Location = new Point(0, 321);
             LinksGrid.Margin = new Padding(2, 3, 2, 3);
             LinksGrid.MultiSelect = false;
             LinksGrid.Name = "LinksGrid";
             LinksGrid.RowHeadersVisible = false;
             LinksGrid.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             LinksGrid.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            LinksGrid.Size = new Size(1324, 466);
+            LinksGrid.Size = new Size(1324, 467);
             LinksGrid.TabIndex = 8;
             // 
             // CaptionCol
@@ -228,7 +229,7 @@
             panel1.BackColor = SystemColors.Control;
             panel1.Controls.Add(label6);
             panel1.Dock = DockStyle.Top;
-            panel1.Location = new Point(0, 304);
+            panel1.Location = new Point(0, 303);
             panel1.MinimumSize = new Size(0, 18);
             panel1.Name = "panel1";
             panel1.Padding = new Padding(0, 0, 0, 3);
@@ -256,7 +257,7 @@
             detailPanel.Location = new Point(0, 0);
             detailPanel.Name = "detailPanel";
             detailPanel.Padding = new Padding(0, 3, 0, 6);
-            detailPanel.Size = new Size(1324, 304);
+            detailPanel.Size = new Size(1324, 303);
             detailPanel.TabIndex = 6;
             // 
             // tableLayoutPanel3
@@ -595,11 +596,11 @@
             flowLayoutPanel2.BackColor = SystemColors.Control;
             flowLayoutPanel2.Controls.Add(_NO_TRANSLATE_Name);
             flowLayoutPanel2.Controls.Add(EnabledChx);
-            flowLayoutPanel2.Controls.Add(gotoUserManualControl1);
+            flowLayoutPanel2.Controls.Add(revisionLinksHelp);
             flowLayoutPanel2.Location = new Point(43, 0);
             flowLayoutPanel2.Margin = new Padding(0);
             flowLayoutPanel2.Name = "flowLayoutPanel2";
-            flowLayoutPanel2.Size = new Size(426, 29);
+            flowLayoutPanel2.Size = new Size(372, 29);
             flowLayoutPanel2.TabIndex = 24;
             // 
             // _NO_TRANSLATE_Name
@@ -623,18 +624,19 @@
             EnabledChx.UseVisualStyleBackColor = true;
             EnabledChx.CheckedChanged += EnabledChx_CheckedChanged;
             // 
-            // gotoUserManualControl1
+            // revisionLinksHelp
             // 
-            gotoUserManualControl1.AutoSize = true;
-            gotoUserManualControl1.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            gotoUserManualControl1.Dock = DockStyle.Right;
-            gotoUserManualControl1.Location = new Point(353, 3);
-            gotoUserManualControl1.ManualSectionAnchorName = "revision-links";
-            gotoUserManualControl1.ManualSectionSubfolder = "settings";
-            gotoUserManualControl1.MinimumSize = new Size(70, 20);
-            gotoUserManualControl1.Name = "gotoUserManualControl1";
-            gotoUserManualControl1.Size = new Size(70, 23);
-            gotoUserManualControl1.TabIndex = 26;
+            revisionLinksHelp.Cursor = Cursors.Hand;
+            revisionLinksHelp.Dock = DockStyle.Right;
+            revisionLinksHelp.Image = Properties.Resources.information;
+            revisionLinksHelp.Location = new Point(353, 5);
+            revisionLinksHelp.Margin = new Padding(3, 5, 3, 3);
+            revisionLinksHelp.Name = "revisionLinksHelp";
+            revisionLinksHelp.Size = new Size(16, 21);
+            revisionLinksHelp.SizeMode = PictureBoxSizeMode.AutoSize;
+            revisionLinksHelp.TabIndex = 26;
+            revisionLinksHelp.TabStop = false;
+            revisionLinksHelp.Click += revisionLinksHelp_Click;
             // 
             // RevisionLinksSettingsPage
             // 
@@ -677,6 +679,7 @@
             flowLayoutPanel3.PerformLayout();
             flowLayoutPanel2.ResumeLayout(false);
             flowLayoutPanel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)revisionLinksHelp).EndInit();
             ResumeLayout(false);
         }
 
@@ -707,7 +710,7 @@
         private FlowLayoutPanel flowLayoutPanel2;
         private TextBox _NO_TRANSLATE_Name;
         private CheckBox EnabledChx;
-        private UserControls.GotoUserManualControl gotoUserManualControl1;
+        private PictureBox revisionLinksHelp;
         private GroupBox remoteGrp;
         private TableLayoutPanel tableLayoutPanel2;
         private TextBox _NO_TRANSLATE_RemotePatern;
