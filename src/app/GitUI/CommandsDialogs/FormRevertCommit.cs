@@ -20,7 +20,7 @@ namespace GitUI.CommandsDialogs
 
         private const int _parentsListItemHeight = 18;
 
-        public GitRevision Revision { get; }
+        public GitRevision Revision { get; private set; }
 
         public FormRevertCommit(IGitUICommands commands, GitRevision revision)
             : base(commands, enablePositionRestore: false)
@@ -42,7 +42,7 @@ namespace GitUI.CommandsDialogs
             _parentsLabelControlHeight = ParentsLabel.Size.Height;
             _lvParentsListControlHeight = lvParentsList.Size.Height;
 
-            LoadRevisionInfo();
+            OnRevisionChanged();
         }
 
         private void Form_Shown(object? sender, EventArgs e)
@@ -57,7 +57,7 @@ namespace GitUI.CommandsDialogs
             }
         }
 
-        private void LoadRevisionInfo()
+        private void OnRevisionChanged()
         {
             try
             {
@@ -169,6 +169,19 @@ namespace GitUI.CommandsDialogs
         private void btnAbort_Click(object sender, EventArgs e)
         {
             DialogResult = DialogResult.Cancel;
+        }
+
+        private void btnChooseRevision_Click(object sender, EventArgs e)
+        {
+            using (FormChooseCommit chooseForm = new(UICommands, Revision?.Guid))
+            {
+                if (chooseForm.ShowDialog(this) == DialogResult.OK && chooseForm.SelectedRevision is not null)
+                {
+                    Revision = chooseForm.SelectedRevision;
+                }
+            }
+
+            OnRevisionChanged();
         }
     }
 }

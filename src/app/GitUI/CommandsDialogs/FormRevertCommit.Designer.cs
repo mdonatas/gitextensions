@@ -30,6 +30,7 @@
         {
             Revert = new Button();
             btnAbort = new Button();
+            btnChooseRevision = new Button();
             ParentsLabel = new Label();
             lvParentsList = new UserControls.NativeListView();
             columnHeader1 = new ColumnHeader();
@@ -40,9 +41,12 @@
             BranchInfo = new Label();
             commitSummaryUserControl1 = new UserControls.CommitSummaryUserControl();
             tlPnlMain = new TableLayoutPanel();
-            ControlsPanel.SuspendLayout();
+            chooseRevPanel = new FlowLayoutPanel();
+            lblAnotherRev = new Label();
             MainPanel.SuspendLayout();
+            ControlsPanel.SuspendLayout();
             tlPnlMain.SuspendLayout();
+            chooseRevPanel.SuspendLayout();
             SuspendLayout();
             // 
             // MainPanel
@@ -50,7 +54,7 @@
             MainPanel.AutoSize = true;
             MainPanel.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             MainPanel.Controls.Add(tlPnlMain);
-            MainPanel.Size = new Size(614, 311);
+            MainPanel.Size = new Size(614, 347);
             MainPanel.TabIndex = 0;
             // 
             // ControlsPanel
@@ -83,14 +87,25 @@
             btnAbort.UseVisualStyleBackColor = true;
             btnAbort.Click += btnAbort_Click;
             // 
+            // btnChooseRevision
+            // 
+            btnChooseRevision.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnChooseRevision.Image = Properties.Images.SelectRevision;
+            btnChooseRevision.Location = new Point(556, 3);
+            btnChooseRevision.Name = "btnChooseRevision";
+            btnChooseRevision.Size = new Size(25, 24);
+            btnChooseRevision.TabIndex = 5;
+            btnChooseRevision.UseVisualStyleBackColor = true;
+            btnChooseRevision.Click += btnChooseRevision_Click;
+            // 
             // ParentsLabel
             // 
             ParentsLabel.AutoSize = true;
             ParentsLabel.Dock = DockStyle.Fill;
-            ParentsLabel.Location = new Point(3, 181);
+            ParentsLabel.Location = new Point(3, 217);
             ParentsLabel.Name = "ParentsLabel";
             ParentsLabel.Size = new Size(584, 15);
-            ParentsLabel.TabIndex = 3;
+            ParentsLabel.TabIndex = 6;
             ParentsLabel.Text = "This commit is a merge, select &parent:";
             // 
             // lvParentsList
@@ -98,12 +113,12 @@
             lvParentsList.Columns.AddRange(new ColumnHeader[] { columnHeader1, columnHeader2, columnHeader3, columnHeader4 });
             lvParentsList.Dock = DockStyle.Fill;
             lvParentsList.FullRowSelect = true;
-            lvParentsList.Location = new Point(6, 202);
+            lvParentsList.Location = new Point(6, 238);
             lvParentsList.Margin = new Padding(6);
             lvParentsList.MultiSelect = false;
             lvParentsList.Name = "lvParentsList";
             lvParentsList.Size = new Size(578, 54);
-            lvParentsList.TabIndex = 4;
+            lvParentsList.TabIndex = 7;
             lvParentsList.UseCompatibleStateImageBehavior = false;
             lvParentsList.View = View.Details;
             // 
@@ -131,10 +146,10 @@
             // 
             AutoCommit.AutoSize = true;
             AutoCommit.Dock = DockStyle.Fill;
-            AutoCommit.Location = new Point(3, 265);
+            AutoCommit.Location = new Point(3, 301);
             AutoCommit.Name = "AutoCommit";
             AutoCommit.Size = new Size(584, 19);
-            AutoCommit.TabIndex = 5;
+            AutoCommit.TabIndex = 8;
             AutoCommit.Text = "&Automatically create a commit";
             AutoCommit.UseVisualStyleBackColor = true;
             // 
@@ -169,21 +184,47 @@
             tlPnlMain.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
             tlPnlMain.Controls.Add(BranchInfo, 0, 0);
             tlPnlMain.Controls.Add(commitSummaryUserControl1, 0, 1);
-            tlPnlMain.Controls.Add(ParentsLabel, 0, 2);
-            tlPnlMain.Controls.Add(lvParentsList, 0, 3);
-            tlPnlMain.Controls.Add(AutoCommit, 0, 4);
+            tlPnlMain.Controls.Add(chooseRevPanel, 0, 2);
+            tlPnlMain.Controls.Add(ParentsLabel, 0, 3);
+            tlPnlMain.Controls.Add(lvParentsList, 0, 4);
+            tlPnlMain.Controls.Add(AutoCommit, 0, 5);
             tlPnlMain.Dock = DockStyle.Fill;
             tlPnlMain.Location = new Point(12, 12);
             tlPnlMain.Margin = new Padding(0);
             tlPnlMain.Name = "tlPnlMain";
-            tlPnlMain.RowCount = 5;
+            tlPnlMain.RowCount = 6;
+            tlPnlMain.RowStyles.Add(new RowStyle());
             tlPnlMain.RowStyles.Add(new RowStyle());
             tlPnlMain.RowStyles.Add(new RowStyle());
             tlPnlMain.RowStyles.Add(new RowStyle());
             tlPnlMain.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
             tlPnlMain.RowStyles.Add(new RowStyle());
-            tlPnlMain.Size = new Size(590, 287);
+            tlPnlMain.Size = new Size(590, 323);
             tlPnlMain.TabIndex = 0;
+            // 
+            // chooseRevPanel
+            // 
+            chooseRevPanel.AutoSize = true;
+            chooseRevPanel.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            chooseRevPanel.Controls.Add(btnChooseRevision);
+            chooseRevPanel.Controls.Add(lblAnotherRev);
+            chooseRevPanel.Dock = DockStyle.Fill;
+            chooseRevPanel.FlowDirection = FlowDirection.RightToLeft;
+            chooseRevPanel.Location = new Point(3, 184);
+            chooseRevPanel.Name = "chooseRevPanel";
+            chooseRevPanel.Size = new Size(584, 30);
+            chooseRevPanel.TabIndex = 3;
+            // 
+            // lblAnotherRev
+            // 
+            lblAnotherRev.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
+            lblAnotherRev.AutoSize = true;
+            lblAnotherRev.Location = new Point(412, 0);
+            lblAnotherRev.Name = "lblAnotherRev";
+            lblAnotherRev.Size = new Size(138, 30);
+            lblAnotherRev.TabIndex = 4;
+            lblAnotherRev.Text = "C&hoose another revision:";
+            lblAnotherRev.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // FormRevertCommit
             // 
@@ -192,7 +233,7 @@
             AutoScaleMode = AutoScaleMode.Dpi;
             AutoSize = true;
             CancelButton = btnAbort;
-            ClientSize = new Size(614, 352);
+            ClientSize = new Size(614, 388);
             MaximizeBox = false;
             MinimizeBox = false;
             MinimumSize = new Size(630, 362);
@@ -207,6 +248,8 @@
             ControlsPanel.ResumeLayout(false);
             tlPnlMain.ResumeLayout(false);
             tlPnlMain.PerformLayout();
+            chooseRevPanel.ResumeLayout(false);
+            chooseRevPanel.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -214,6 +257,7 @@
         #endregion
 
         private Label BranchInfo;
+        private Label lblAnotherRev;
         private Button Revert;
         private Button btnAbort;
         private CheckBox AutoCommit;
@@ -224,6 +268,8 @@
         private ColumnHeader columnHeader3;
         private ColumnHeader columnHeader4;
         private GitUI.UserControls.CommitSummaryUserControl commitSummaryUserControl1;
+        private Button btnChooseRevision;
         private TableLayoutPanel tlPnlMain;
+        private FlowLayoutPanel chooseRevPanel;
     }
 }
