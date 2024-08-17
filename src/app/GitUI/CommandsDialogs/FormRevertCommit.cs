@@ -42,6 +42,7 @@ namespace GitUI.CommandsDialogs
             _parentsLabelControlHeight = ParentsLabel.Size.Height;
             _lvParentsListControlHeight = lvParentsList.Size.Height;
 
+            LoadSettings();
             OnRevisionChanged();
         }
 
@@ -54,6 +55,24 @@ namespace GitUI.CommandsDialogs
             else
             {
                 AutoCommit.Focus();
+            }
+        }
+
+        private void Form_Closing(object sender, FormClosingEventArgs e)
+        {
+            SaveSettings();
+        }
+
+        private void LoadSettings()
+        {
+            AutoCommit.Checked = AppSettings.CommitAutomaticallyAfterRevert;
+        }
+
+        private void SaveSettings()
+        {
+            if (DialogResult == DialogResult.OK)
+            {
+                AppSettings.CommitAutomaticallyAfterRevert = AutoCommit.Checked;
             }
         }
 

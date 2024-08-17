@@ -241,6 +241,7 @@
             SizeGripStyle = SizeGripStyle.Hide;
             StartPosition = FormStartPosition.CenterParent;
             Text = "Revert commit";
+            FormClosing += Form_Closing;
             Load += Form_Load;
             Shown += Form_Shown;
             MainPanel.ResumeLayout(false);

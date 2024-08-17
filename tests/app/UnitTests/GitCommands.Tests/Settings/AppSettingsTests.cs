@@ -348,6 +348,7 @@ namespace GitCommandsTests.Settings
                 yield return (properties[nameof(AppSettings.CreateLocalBranchForRemote)], false, false, false);
                 yield return (properties[nameof(AppSettings.UseFormCommitMessage)], true, false, false);
                 yield return (properties[nameof(AppSettings.CommitAutomaticallyAfterCherryPick)], false, false, false);
+                yield return (properties[nameof(AppSettings.CommitAutomaticallyAfterRevert)], false, false, false);
                 yield return (properties[nameof(AppSettings.AddCommitReferenceToCherryPick)], false, false, false);
                 yield return (properties[nameof(AppSettings.LastUpdateCheck)], default(DateTime), false, false);
                 yield return (properties[nameof(AppSettings.CheckForUpdates)], true, false, false);

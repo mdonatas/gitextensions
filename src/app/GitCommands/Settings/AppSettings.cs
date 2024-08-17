@@ -1831,6 +1831,12 @@ namespace GitCommands
             set => SetBool("CommitAutomaticallyAfterCherryPick", value);
         }
 
+        public static bool CommitAutomaticallyAfterRevert
+        {
+            get => GetBool("CommitAutomaticallyAfterRevert", false);
+            set => SetBool("CommitAutomaticallyAfterRevert", value);
+        }
+
         public static bool AddCommitReferenceToCherryPick
         {
             get => GetBool("AddCommitReferenceToCherryPick", false);
