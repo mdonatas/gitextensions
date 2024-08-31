@@ -137,13 +137,13 @@
         [TestCase("\\usr\\bin", true, "\\usr\\bin")]
         [TestCase("C:\\Program Files (x86)\\Microsoft Visual Studio\\Installer\\setup.exe", true, "C:\\Program Files (x86)\\Microsoft Visual Studio\\Installer\\setup.exe")]
         [TestCase("echo \"Hello world\"", false, "echo \\\"Hello world\\\"")]
-        [TestCase("echo \"Hello world\"", true, "echo \"\"Hello world\"\"")]
+        [TestCase("echo \"Hello world\"", true, "echo \\\"Hello world\\\"")]
         [TestCase("echo \'Hello world\'", false, "echo \\\'Hello world\\\'")]
         [TestCase("echo \'Hello world\'", true, "echo \'Hello world\'")]
         [TestCase("cmd /c \"echo \\\"Hello world\\\"\"", false, "cmd /c \\\"echo \\\\\\\"Hello world\\\\\\\"\\\"")]
-        [TestCase("cmd /c \"echo \\\"Hello world\\\"\"", true, "cmd /c \"\"echo \\\"\"Hello world\\\"\"\"\"")]
+        [TestCase("cmd /c \"echo \\\"Hello world\\\"\"", true, "cmd /c \\\"echo \\\\\\\"Hello world\\\\\\\"\\\"")]
         [TestCase("cmd /c \"echo \"\"Hello world\"\"\"", false, "cmd /c \\\"echo \\\"\\\"Hello world\\\"\\\"\\\"")]
-        [TestCase("cmd /c \"echo \"\"Hello world\"\"\"", true, "cmd /c \"\"echo \"\"\"\"Hello world\"\"\"\"\"\"")]
+        [TestCase("cmd /c \"echo \"\"Hello world\"\"\"", true, "cmd /c \\\"echo \\\"\\\"Hello world\\\"\\\"\\\"")]
         public void EscapeForCommandLine_works_as_expected(string s, bool forWindows, string expected)
         {
             Assert.AreEqual(expected, s.EscapeForCommandLine(forWindows));
