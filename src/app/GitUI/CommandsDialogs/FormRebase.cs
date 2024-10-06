@@ -138,7 +138,7 @@ public partial class FormRebase : GitExtensionsDialog
         chkStash.Checked = AppSettings.RebaseAutoStash;
         if (_startRebaseImmediately)
         {
-            OkClick(this, EventArgs.Empty);
+            btnRebase_Click(this, EventArgs.Empty);
         }
         else
         {
@@ -314,7 +314,7 @@ public partial class FormRebase : GitExtensionsDialog
         }
     }
 
-    private void OkClick(object sender, EventArgs e)
+    private void btnRebase_Click(object sender, EventArgs e)
     {
         using (WaitCursorScope.Enter())
         {

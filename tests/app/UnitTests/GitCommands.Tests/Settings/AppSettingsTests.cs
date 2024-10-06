@@ -247,6 +247,7 @@ internal sealed class AppSettingsTests
             yield return (properties[nameof(AppSettings.DefaultPullAction)], GitPullAction.Merge, false, false);
             yield return (properties[nameof(AppSettings.FormPullAction)], GitPullAction.Merge, false, false);
             yield return (properties[nameof(AppSettings.AutoStash)], false, false, false);
+            yield return (properties[nameof(AppSettings.MergeAutoStash)], false, false, false);
             yield return (properties[nameof(AppSettings.RebaseAutoStash)], false, false, false);
             yield return (properties[nameof(AppSettings.CheckoutBranchAction)], LocalChangesAction.DontChange, false, false);
             yield return (properties[nameof(AppSettings.CheckoutOtherBranchAfterReset)], true, isNotNullable, isISetting);

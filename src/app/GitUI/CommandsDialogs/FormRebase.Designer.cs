@@ -642,7 +642,7 @@ partial class FormRebase
         btnRebase.TextAlign = ContentAlignment.MiddleRight;
         btnRebase.TextImageRelation = TextImageRelation.ImageBeforeText;
         btnRebase.UseVisualStyleBackColor = true;
-        btnRebase.Click += OkClick;
+        btnRebase.Click += btnRebase_Click;
         // 
         // FormRebase
         // 

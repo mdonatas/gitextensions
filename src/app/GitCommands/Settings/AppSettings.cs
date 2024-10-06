@@ -1006,6 +1006,12 @@ public static partial class AppSettings
         set => SetBool("RebaseAutostash", value);
     }
 
+    public static bool MergeAutoStash
+    {
+        get => GetBool("MergeAutostash", false);
+        set => SetBool("MergeAutostash", value);
+    }
+
     public static LocalChangesAction CheckoutBranchAction
     {
         get => GetEnum("checkoutbranchaction", LocalChangesAction.DontChange);
