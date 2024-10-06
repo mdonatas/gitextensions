@@ -575,7 +575,8 @@ namespace GitUI.Editor
             FileStatusItem? item = null,
             int? line = null,
             Action? openWithDifftool = null,
-            bool checkGitAttributes = false)
+            bool checkGitAttributes = false,
+            Encoding? textEncoding = null)
         {
             return ShowOrDeferAsync(
                 text.Length,
@@ -601,6 +602,11 @@ namespace GitUI.Editor
                     }
                     else
                     {
+                        if (textEncoding == GitModule.LosslessEncoding)
+                        {
+                            text = GitModule.ReEncodeStringFromLossless(text, Encoding);
+                        }
+
                         // If the file seem to be a diff, color with escape sequences if they exist
                         bool useGitColoring = _viewMode.IsDiffView() && text.Contains('\u001b');
                         internalFileViewer.SetText(text, openWithDifftool, _viewMode, useGitColoring, contentIdentification: fileName);
@@ -692,17 +698,27 @@ namespace GitUI.Editor
                 getSubmoduleText: () => LocalizationHelpers.GetSubmoduleText(Module, file.Name.TrimEnd('/'), sha, cache: true),
                 item: item,
                 line: line,
-                openWithDifftool: openWithDifftool);
+                openWithDifftool: openWithDifftool,
+                textEncoding: GitModule.LosslessEncoding);
 
-            string GetFileTextIfBlobExists()
+            TextWithEncoding GetFileTextIfBlobExists()
             {
                 // If the file blob seem to be a diff file, get also escape sequences, that possibly are stored in the diff
                 // _viewMode is not set yet, similar check there
                 bool stripAnsiEscapeCodes = string.IsNullOrEmpty(file.Name)
-                    || (!file.Name.EndsWith(".diff", StringComparison.OrdinalIgnoreCase)
-                       && !file.Name.EndsWith(".patch", StringComparison.OrdinalIgnoreCase));
+                    || file.Name.EndsWith(".diff", StringComparison.OrdinalIgnoreCase)
+                    || file.Name.EndsWith(".patch", StringComparison.OrdinalIgnoreCase);
                 FilePreamble = [];
-                return file.TreeGuid is not null ? Module.GetFileText(file.TreeGuid, Encoding, stripAnsiEscapeCodes) : string.Empty;
+                byte[] rawFile = Module.GetFileRaw(file.TreeGuid);
+                string text = GitModule.LosslessEncoding.GetString(rawFile);
+                if (stripAnsiEscapeCodes)
+                {
+                    text = ExecutableExtensions.StripAnsiEscapeCodes(text);
+                }
+
+                return new TextWithEncoding(
+                    Text: file.TreeGuid is not null ? text : string.Empty,
+                    Encoding: GitModule.LosslessEncoding);
             }
 
             Image? GetImage()
@@ -769,7 +785,8 @@ namespace GitUI.Editor
                     getSubmoduleText: () => LocalizationHelpers.GetSubmoduleText(Module, fileName.TrimEnd('/'), "", cache: false),
                     item: item,
                     line: line,
-                    openWithDifftool));
+                    openWithDifftool,
+                    textEncoding: GitModule.LosslessEncoding));
 
             Image? GetImage()
             {
@@ -784,7 +801,7 @@ namespace GitUI.Editor
                 }
             }
 
-            string GetFileText()
+            TextWithEncoding GetFileText()
             {
                 using FileStream stream = File.Open(fullPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
                 using StreamReader reader = FileReader.OpenStream(stream, GitModule.LosslessEncoding);
@@ -792,7 +809,7 @@ namespace GitUI.Editor
                 string content = reader.ReadToEnd();
 #pragma warning restore VSTHRD103 // Call async methods when in an async method
                 FilePreamble = reader.CurrentEncoding.GetPreamble();
-                return content;
+                return new TextWithEncoding(content, reader.CurrentEncoding);
             }
         }
 
@@ -1179,7 +1196,8 @@ namespace GitUI.Editor
             }
         }
 
-        private Task ViewItemAsync(string fileName, bool isSubmodule, Func<Image?> getImage, Func<string> getFileText, Func<string> getSubmoduleText, FileStatusItem? item, int? line, Action? openWithDifftool)
+        private Task ViewItemAsync(string fileName, bool isSubmodule, Func<Image?> getImage, Func<TextWithEncoding> getFileText, Func<string> getSubmoduleText,
+            FileStatusItem? item, int? line, Action? openWithDifftool, Encoding textEncoding)
         {
             FilePreamble = null;
 
@@ -1187,41 +1205,41 @@ namespace GitUI.Editor
             {
                 return _async.LoadAsync(
                     getSubmoduleText,
-                    text => ThreadHelper.JoinableTaskFactory.Run(() => ViewTextAsync(fileName, text, item, line: null, openWithDifftool)));
+                    text => ThreadHelper.JoinableTaskFactory.Run(() => ViewTextAsync(fileName, text, item, line: null, openWithDifftool, textEncoding: textEncoding)));
             }
             else if (FileHelper.IsImage(fileName))
             {
                 return _async.LoadAsync(getImage,
-                            image =>
-                            {
-                                if (image is null)
-                                {
-                                    ResetView(ViewMode.Text, fileName, item);
-                                    string text = getFileText();
-                                    DisplayAsHexDump(_cannotViewImage.Text, fileName, text, openWithDifftool);
-                                    return;
-                                }
+                    image =>
+                    {
+                        if (image is null)
+                        {
+                            ResetView(ViewMode.Text, fileName, item);
+                            TextWithEncoding textWithEncoding = getFileText();
+                            DisplayAsHexDump(_cannotViewImage.Text, fileName, textWithEncoding.Text, openWithDifftool);
+                            return;
+                        }
 
-                                ResetView(ViewMode.Image, fileName, item);
-                                Size size = DpiUtil.Scale(image.Size);
-                                if (size.Height > PictureBox.Size.Height || size.Width > PictureBox.Size.Width)
-                                {
-                                    PictureBox.SizeMode = PictureBoxSizeMode.Zoom;
-                                }
-                                else
-                                {
-                                    PictureBox.SizeMode = PictureBoxSizeMode.CenterImage;
-                                }
+                        ResetView(ViewMode.Image, fileName, item);
+                        Size size = DpiUtil.Scale(image.Size);
+                        if (size.Height > PictureBox.Size.Height || size.Width > PictureBox.Size.Width)
+                        {
+                            PictureBox.SizeMode = PictureBoxSizeMode.Zoom;
+                        }
+                        else
+                        {
+                            PictureBox.SizeMode = PictureBoxSizeMode.CenterImage;
+                        }
 
-                                PictureBox.Image = DpiUtil.Scale(image);
-                                internalFileViewer.SetText("", openWithDifftool);
-                            });
+                        PictureBox.Image = DpiUtil.Scale(image);
+                        internalFileViewer.SetText("", openWithDifftool);
+                    });
             }
             else
             {
                 return _async.LoadAsync(
                     getFileText,
-                    text => ThreadHelper.JoinableTaskFactory.Run(() => ViewTextAsync(fileName, text, item, line, openWithDifftool, checkGitAttributes: true)));
+                    text => ThreadHelper.JoinableTaskFactory.Run(() => ViewTextAsync(fileName, text.Text, item, line, openWithDifftool, checkGitAttributes: true, textEncoding: text.Encoding)));
             }
         }
 
