@@ -436,6 +436,8 @@ public interface IGitModule
 
     string GetFileText(ObjectId id, Encoding encoding, bool stripAnsiEscapeCodes);
 
+    byte[] GetFileRaw(ObjectId id);
+
     MemoryStream? GetFileStream(string blob);
 
     IReadOnlyList<GitItemStatus> GitStatus(UntrackedFilesMode untrackedFilesMode, IgnoreSubmodulesMode ignoreSubmodulesMode = IgnoreSubmodulesMode.None);
