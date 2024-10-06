@@ -138,7 +138,7 @@ namespace GitUI.CommandsDialogs
             chkStash.Checked = AppSettings.RebaseAutoStash;
             if (_startRebaseImmediately)
             {
-                OkClick(this, EventArgs.Empty);
+                btnRebase_Click(this, EventArgs.Empty);
             }
             else
             {
@@ -316,7 +316,7 @@ namespace GitUI.CommandsDialogs
             }
         }
 
-        private void OkClick(object sender, EventArgs e)
+        private void btnRebase_Click(object sender, EventArgs e)
         {
             using (WaitCursorScope.Enter())
             {

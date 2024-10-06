@@ -37,6 +37,7 @@
             mergeMessage = new TextBox();
             allowUnrelatedHistories = new CheckBox();
             squash = new CheckBox();
+            autoStash = new CheckBox();
             NonDefaultMergeStrategy = new CheckBox();
             flowLayoutPanel1 = new FlowLayoutPanel();
             _NO_TRANSLATE_mergeStrategy = new ComboBox();
@@ -71,7 +72,7 @@
             Ok.TabIndex = 2;
             Ok.Text = "&Merge";
             Ok.UseVisualStyleBackColor = true;
-            Ok.Click += OkClick;
+            Ok.Click += Ok_Click;
             // 
             // tableLayoutPanel1
             // 
@@ -144,8 +145,9 @@
             advancedPanel.ColumnStyles.Add(new ColumnStyle());
             advancedPanel.ColumnStyles.Add(new ColumnStyle());
             advancedPanel.Controls.Add(mergeMessage, 0, 6);
-            advancedPanel.Controls.Add(allowUnrelatedHistories, 0, 2);
+            advancedPanel.Controls.Add(allowUnrelatedHistories, 0, 3);
             advancedPanel.Controls.Add(squash, 0, 1);
+            advancedPanel.Controls.Add(autoStash, 0, 2);
             advancedPanel.Controls.Add(NonDefaultMergeStrategy, 0, 0);
             advancedPanel.Controls.Add(flowLayoutPanel1, 1, 0);
             advancedPanel.Controls.Add(nbMessages, 1, 4);
@@ -154,7 +156,7 @@
             advancedPanel.Dock = DockStyle.Fill;
             advancedPanel.Location = new Point(3, 165);
             advancedPanel.Name = "advancedPanel";
-            advancedPanel.RowCount = 6;
+            advancedPanel.RowCount = 7;
             advancedPanel.RowStyles.Add(new RowStyle());
             advancedPanel.RowStyles.Add(new RowStyle());
             advancedPanel.RowStyles.Add(new RowStyle());
@@ -162,7 +164,7 @@
             advancedPanel.RowStyles.Add(new RowStyle());
             advancedPanel.RowStyles.Add(new RowStyle());
             advancedPanel.RowStyles.Add(new RowStyle());
-            advancedPanel.Size = new Size(449, 204);
+            advancedPanel.Size = new Size(449, 241);
             advancedPanel.TabIndex = 0;
             // 
             // mergeMessage
@@ -198,6 +200,18 @@
             squash.TabIndex = 2;
             squash.Text = "Squash commits";
             squash.UseVisualStyleBackColor = true;
+            // 
+            // autoStash
+            // 
+            autoStash.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            autoStash.AutoSize = true;
+            advancedPanel.SetColumnSpan(autoStash, 2);
+            autoStash.Location = new Point(3, 57);
+            autoStash.Name = "autoStash";
+            autoStash.Size = new Size(134, 19);
+            autoStash.TabIndex = 2;
+            autoStash.Text = "Auto stash";
+            autoStash.UseVisualStyleBackColor = true;
             // 
             // NonDefaultMergeStrategy
             // 
@@ -454,6 +468,7 @@
         private ComboBox _NO_TRANSLATE_mergeStrategy;
         private LinkLabel strategyHelp;
         private CheckBox squash;
+        private CheckBox autoStash;
         private CheckBox allowUnrelatedHistories;
         private CheckBox addLogMessages;
         private NumericUpDown nbMessages;

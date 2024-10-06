@@ -374,7 +374,7 @@ namespace GitCommands.Git
             }
         }
 
-        public static ArgumentString MergeBranch(string branch, bool allowFastForward, bool squash, bool noCommit, string strategy, bool allowUnrelatedHistories, string? mergeCommitFilePath, Func<string, string?> getPathForGitExecution, int? log)
+        public static ArgumentString MergeBranch(string branch, bool allowFastForward, bool squash, bool noCommit, bool autoStash, string strategy, bool allowUnrelatedHistories, string? mergeCommitFilePath, Func<string, string?> getPathForGitExecution, int? log)
         {
             return new GitArgumentBuilder("merge")
             {
@@ -382,6 +382,7 @@ namespace GitCommands.Git
                 { !string.IsNullOrEmpty(strategy), $"--strategy={strategy}" },
                 { squash, "--squash" },
                 { noCommit, "--no-commit" },
+                { autoStash, "--autostash" },
                 { allowUnrelatedHistories, "--allow-unrelated-histories" },
 
                  // let git fail, if the file doesn't exist

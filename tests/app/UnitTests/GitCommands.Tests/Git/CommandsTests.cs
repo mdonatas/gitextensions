@@ -354,24 +354,24 @@ namespace GitCommandsTests_Git
         }
 
         // Don't care about permutations because the args aren't correlated
-        [TestCase(false, false, false, null, false, null, null, "merge --no-ff branch")]
-        [TestCase(true, true, true, null, true, null, null, "merge --squash --no-commit --allow-unrelated-histories branch")]
+        [TestCase(false, false, false, false, null, false, null, null, "merge --no-ff branch")]
+        [TestCase(true, true, true, true, null, true, null, null, "merge --squash --no-commit --autostash --allow-unrelated-histories branch")]
 
         // mergeCommitFilePath parameter
-        [TestCase(false, true, false, null, false, "", null, "merge --no-ff --squash branch")]
-        [TestCase(false, true, false, null, false, "   ", null, "merge --no-ff --squash branch")]
-        [TestCase(false, true, false, null, false, "\t", null, "merge --no-ff --squash branch")]
-        [TestCase(false, true, false, null, false, "\n", null, "merge --no-ff --squash branch")]
-        [TestCase(false, true, false, null, false, "foo", null, "merge --no-ff --squash -F \"foo\" branch")]
-        [TestCase(false, true, false, null, false, "D:\\myrepo\\.git\\file", null, "merge --no-ff --squash -F \"D:/myrepo/.git/file\" branch")]
+        [TestCase(false, true, false, false, null, false, "", null, "merge --no-ff --squash branch")]
+        [TestCase(false, true, false, false, null, false, "   ", null, "merge --no-ff --squash branch")]
+        [TestCase(false, true, false, false, null, false, "\t", null, "merge --no-ff --squash branch")]
+        [TestCase(false, true, false, false, null, false, "\n", null, "merge --no-ff --squash branch")]
+        [TestCase(false, true, false, false, null, false, "foo", null, "merge --no-ff --squash -F \"foo\" branch")]
+        [TestCase(false, true, false, false, null, false, "D:\\myrepo\\.git\\file", null, "merge --no-ff --squash -F \"D:/myrepo/.git/file\" branch")]
 
         // log parameter
-        [TestCase(true, true, false, null, false, null, -1, "merge --squash branch")]
-        [TestCase(true, true, false, null, false, null, 0, "merge --squash branch")]
-        [TestCase(true, true, false, null, false, null, 5, "merge --squash --log=5 branch")]
-        public void MergeBranchCmd(bool allowFastForward, bool squash, bool noCommit, string strategy, bool allowUnrelatedHistories, string mergeCommitFilePath, int? log, string expected)
+        [TestCase(true, true, false, false, null, false, null, -1, "merge --squash branch")]
+        [TestCase(true, true, false, false, null, false, null, 0, "merge --squash branch")]
+        [TestCase(true, true, false, false, null, false, null, 5, "merge --squash --log=5 branch")]
+        public void MergeBranchCmd(bool allowFastForward, bool squash, bool noCommit, bool autoStash, string strategy, bool allowUnrelatedHistories, string mergeCommitFilePath, int? log, string expected)
         {
-            Assert.AreEqual(expected, Commands.MergeBranch("branch", allowFastForward, squash, noCommit, strategy, allowUnrelatedHistories, mergeCommitFilePath, PathUtil.ToPosixPath, log).Arguments);
+            Assert.AreEqual(expected, Commands.MergeBranch("branch", allowFastForward, squash, noCommit, autoStash, strategy, allowUnrelatedHistories, mergeCommitFilePath, PathUtil.ToPosixPath, log).Arguments);
         }
 
         [Test]

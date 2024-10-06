@@ -240,6 +240,7 @@ namespace GitCommandsTests.Settings
                 yield return (properties[nameof(AppSettings.SmtpPort)], 465, false, false);
                 yield return (properties[nameof(AppSettings.SmtpUseSsl)], true, false, false);
                 yield return (properties[nameof(AppSettings.AutoStash)], false, false, false);
+                yield return (properties[nameof(AppSettings.MergeAutoStash)], false, false, false);
                 yield return (properties[nameof(AppSettings.RebaseAutoStash)], false, false, false);
                 yield return (properties[nameof(AppSettings.CheckoutBranchAction)], LocalChangesAction.DontChange, false, false);
                 yield return (properties[nameof(AppSettings.UseDefaultCheckoutBranchAction)], false, false, false);
