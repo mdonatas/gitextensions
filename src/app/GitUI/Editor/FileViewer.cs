@@ -593,14 +593,6 @@ public partial class FileViewer : GitModuleControl
         CancellationToken cancellationToken = default)
         => ViewPrivateAsync(item, item?.Item?.Name, text, line: null, openWithDifftool: null, ViewMode.Grep, useGitColoring: true, cancellationToken);
 
-    public void ViewText(string? fileName,
-        string text,
-        Action? openWithDifftool = null)
-    {
-        ThreadHelper.JoinableTaskFactory.Run(
-            () => ViewTextAsync(fileName, text, openWithDifftool: openWithDifftool));
-    }
-
     /// <summary>
     /// Present the text in the file viewer.
     /// </summary>
@@ -617,9 +609,28 @@ public partial class FileViewer : GitModuleControl
         bool checkGitAttributes = false,
         CancellationToken cancellationToken = default)
     {
+        return ViewTextAsync(fileName, new EncodedText(text, Encoding), item, line, openWithDifftool, checkGitAttributes, cancellationToken);
+    }
+
+    /// <summary>
+    /// Present the text in the file viewer.
+    /// </summary>
+    /// <param name="fileName">The fileName to present.</param>
+    /// <param name="encodedText">The patch text.</param>
+    /// <param name="line">The line to display.</param>
+    /// <param name="openWithDifftool">The action to open the difftool.</param>
+    /// <param name="checkGitAttributes">Check Git attributes to check for binary files.</param>
+    public Task ViewTextAsync(string? fileName,
+        EncodedText encodedText,
+        FileStatusItem? item = null,
+        int? line = null,
+        Action? openWithDifftool = null,
+        bool checkGitAttributes = false,
+        CancellationToken cancellationToken = default)
+    {
         cancellationToken.ThrowIfCancellationRequested();
         return ShowOrDeferAsync(
-            text.Length,
+            encodedText.Text.Length,
             () =>
             {
                 cancellationToken.ThrowIfCancellationRequested();
@@ -628,13 +639,13 @@ public partial class FileViewer : GitModuleControl
                 // Check for binary file. Using gitattributes could be misleading for a changed file,
                 // but not much else can be done
                 bool isBinary = (checkGitAttributes && FileHelper.IsBinaryFileName(Module, fileName))
-                                || FileHelper.IsBinaryFileAccordingToContent(text);
+                                || FileHelper.IsBinaryFileAccordingToContent(encodedText.Text);
 
                 if (isBinary)
                 {
                     try
                     {
-                        DisplayAsHexDump(_binaryFile.Text, fileName, text, openWithDifftool);
+                        DisplayAsHexDump(_binaryFile.Text, fileName, encodedText.Text, openWithDifftool);
                     }
                     catch
                     {
@@ -643,9 +654,14 @@ public partial class FileViewer : GitModuleControl
                 }
                 else
                 {
+                    if (encodedText.Encoding == GitModule.LosslessEncoding)
+                    {
+                        encodedText = new EncodedText(GitModule.ReEncodeStringFromLossless(encodedText.Text, Encoding), Encoding);
+                    }
+
                     // If the file seem to be a diff, color with escape sequences if they exist
-                    bool useGitColoring = _viewMode.IsDiffView() && text.Contains('\u001b');
-                    internalFileViewer.SetText(text, openWithDifftool, _viewMode, useGitColoring, contentIdentification: fileName);
+                    bool useGitColoring = _viewMode.IsDiffView() && encodedText.Text.Contains('\u001b');
+                    internalFileViewer.SetText(encodedText.Text, openWithDifftool, _viewMode, useGitColoring, contentIdentification: fileName);
 
                     if (line is not null)
                     {
@@ -729,15 +745,24 @@ public partial class FileViewer : GitModuleControl
                 openWithDifftool: openWithDifftool,
                 cancellationToken: cancellationToken);
 
-        string GetFileText()
+        EncodedText GetFileText()
         {
             // If the file blob seem to be a diff file, get also escape sequences, that possibly are stored in the diff
             // _viewMode is not set yet, similar check there
             bool stripAnsiEscapeCodes = string.IsNullOrEmpty(file.Name)
-                || (!file.Name.EndsWith(".diff", StringComparison.OrdinalIgnoreCase)
-                   && !file.Name.EndsWith(".patch", StringComparison.OrdinalIgnoreCase));
+                || file.Name.EndsWith(".diff", StringComparison.OrdinalIgnoreCase)
+                || file.Name.EndsWith(".patch", StringComparison.OrdinalIgnoreCase);
             FilePreamble = [];
-            return Module.GetFileText(blobId, Encoding, stripAnsiEscapeCodes) is string s ? s : "";
+            byte[] fileBytes = Module.GetFileRaw(blobId);
+            string text = GitModule.LosslessEncoding.GetString(fileBytes);
+            if (stripAnsiEscapeCodes)
+            {
+                text = ExecutableExtensions.StripAnsiEscapeCodes(text);
+            }
+
+            return new EncodedText(
+                Text: blobId is not null ? text : "",
+                Encoding: GitModule.LosslessEncoding);
         }
 
         async Task<Image?> GetImageAsync()
@@ -827,13 +852,13 @@ public partial class FileViewer : GitModuleControl
             }
         }
 
-        string GetFileText()
+        EncodedText GetFileText()
         {
             using FileStream stream = File.Open(fullPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
             using StreamReader reader = FileReader.OpenStream(stream, GitModule.LosslessEncoding);
             string content = reader.ReadToEnd();
             FilePreamble = reader.CurrentEncoding.GetPreamble();
-            return content;
+            return new EncodedText(content, reader.CurrentEncoding);
         }
     }
 
@@ -1229,7 +1254,7 @@ public partial class FileViewer : GitModuleControl
     private Task ViewItemAsync(string fileName,
         bool isSubmodule,
         Func<Image?> getImage,
-        Func<string> getFileText,
+        Func<EncodedText> getFileText,
         Func<string> getSubmoduleText,
         FileStatusItem? item,
         int? line,
@@ -1253,8 +1278,8 @@ public partial class FileViewer : GitModuleControl
                             if (image is null)
                             {
                                 ResetView(ViewMode.Text, fileName, item);
-                                string text = getFileText();
-                                DisplayAsHexDump(_cannotViewImage.Text, fileName, text, openWithDifftool);
+                                EncodedText textWithEncoding = getFileText();
+                                DisplayAsHexDump(_cannotViewImage.Text, fileName, textWithEncoding.Text, openWithDifftool);
                                 return;
                             }
 

@@ -3544,6 +3544,17 @@ public sealed partial class GitModule : IGitModule
         return exec.StandardOutput;
     }
 
+    public byte[] GetFileRaw(ObjectId id)
+    {
+        GitArgumentBuilder args = new("cat-file")
+        {
+            "blob",
+            id.ToString().QuoteNE()
+        };
+
+        return _gitExecutable.GetOutputRaw(args);
+    }
+
     public ObjectId? GetFileBlobHash(string fileName, ObjectId objectId)
     {
         IObjectGitItem[] items = [.. GetTree(objectId, full: true, fileName)];
@@ -3836,8 +3847,8 @@ public sealed partial class GitModule : IGitModule
     /// <summary>
     /// header part of show result is encoded in logoutputencoding (including re-encoded commit message).
     /// diff part is raw data in file's original encoding.
-    /// s should be encoded in LosslessEncoding.
     /// </summary>
+    /// <param name="s">A string encoded in LosslessEncoding</param>
     [return: NotNullIfNotNull(nameof(s))]
     public string? ReEncodeShowString(string? s)
     {
