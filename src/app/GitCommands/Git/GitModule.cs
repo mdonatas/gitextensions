@@ -3483,6 +3483,17 @@ namespace GitCommands
                 stripAnsiEscapeCodes: stripAnsiEscapeCodes);
         }
 
+        public byte[] GetFileRaw(ObjectId id)
+        {
+            GitArgumentBuilder args = new("cat-file")
+            {
+                "blob",
+                id.ToString().QuoteNE()
+            };
+
+            return _gitExecutable.GetOutputRaw(args);
+        }
+
         public ObjectId? GetFileBlobHash(string fileName, ObjectId objectId)
         {
             if (objectId == ObjectId.WorkTreeId || objectId == ObjectId.CombinedDiffId)
@@ -3883,9 +3894,9 @@ namespace GitCommands
         /// <summary>
         /// header part of show result is encoded in logoutputencoding (including re-encoded commit message).
         /// diff part is raw data in file's original encoding.
-        /// s should be encoded in LosslessEncoding.
         /// </summary>
-        [return: NotNullIfNotNull("s")]
+        /// <param name="s">A string encoded in LosslessEncoding</param>
+        [return: NotNullIfNotNull(nameof(s))]
         public string? ReEncodeShowString(string? s)
         {
             if (string.IsNullOrEmpty(s))

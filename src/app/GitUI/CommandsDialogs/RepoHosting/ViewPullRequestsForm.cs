@@ -518,7 +518,8 @@ namespace GitUI.CommandsDialogs.RepoHosting
 
             if (gis.IsSubmodule)
             {
-                _diffViewer.ViewText(gis.Name, text: data);
+                ThreadHelper.JoinableTaskFactory.Run(
+                    () => _diffViewer.ViewTextAsync(gis.Name, text: data));
             }
             else
             {
