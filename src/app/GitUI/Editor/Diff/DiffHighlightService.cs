@@ -392,11 +392,11 @@ public abstract class DiffHighlightService : TextHighlightService
             int lengthDifferentAdded = startIndexIdenticalAtEndAdded - lengthIdenticalAtStart;
             if (lengthDifferentRemoved == 0 && lengthDifferentAdded > 0)
             {
-                markers.Add(CreateAnchorMarker(offsetRemoved + lengthIdenticalAtStart, _addedForeColor));
+                ////markers.Add(CreateAnchorMarker(offsetRemoved + lengthIdenticalAtStart, _addedForeColor));
             }
             else if (lengthDifferentRemoved > 0 && lengthDifferentAdded == 0)
             {
-                markers.Add(CreateAnchorMarker(offsetAdded + lengthIdenticalAtStart, _removedForeColor));
+                ////markers.Add(CreateAnchorMarker(offsetAdded + lengthIdenticalAtStart, _removedForeColor));
             }
         }
 
