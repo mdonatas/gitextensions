@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using System.Text.RegularExpressions;
 using GitExtensions.Extensibility;
@@ -44,6 +45,16 @@ namespace GitCommands
         {
             return GitUI.ThreadHelper.JoinableTaskFactory.Run(
                 () => executable.GetOutputAsync(arguments, input, outputEncoding, cache, stripAnsiEscapeCodes));
+        }
+
+        [MustUseReturnValue("If output text is not required, use " + nameof(RunCommand) + " instead")]
+        public static byte[] GetOutputRaw(
+            this IExecutable executable,
+            ArgumentString arguments = default,
+            byte[]? input = null)
+        {
+            return GitUI.ThreadHelper.JoinableTaskFactory.Run(
+                () => executable.GetOutputRawAsync(arguments, input));
         }
 
         /// <summary>
@@ -137,6 +148,42 @@ namespace GitCommands
             }
 
             return outputStr;
+        }
+
+        public static async Task<byte[]> GetOutputRawAsync(
+            this IExecutable executable,
+            ArgumentString arguments = default,
+            byte[]? input = null)
+        {
+            using IProcess process = executable.Start(
+                arguments,
+                createWindow: false,
+                redirectInput: input is not null,
+                redirectOutput: true,
+                Encoding.Latin1,
+                throwOnErrorExit: true);
+            if (input is not null)
+            {
+#if DEBUG
+                System.Diagnostics.Debug.WriteLine($"git {arguments} {Encoding.UTF8.GetString(input)}");
+#endif
+                await process.StandardInput.BaseStream.WriteAsync(input, 0, input.Length);
+                process.StandardInput.Close();
+            }
+#if DEBUG
+            else
+            {
+                System.Diagnostics.Debug.WriteLine($"git {arguments}");
+            }
+#endif
+
+            MemoryStream outputBuffer = new();
+            Task outputTask = process.StandardOutput.BaseStream.CopyToAsync(outputBuffer);
+            Task<int> exitTask = process.WaitForExitAsync();
+
+            await Task.WhenAll(outputTask, exitTask);
+
+            return outputBuffer.ToArray();
         }
 
         /// <summary>
@@ -379,8 +426,16 @@ namespace GitCommands
         {
             // NOTE Regex returns the original string if no ANSI codes are found (no allocation)
             return stripAnsiEscapeCodes
-                ? AnsiCodeRegex().Replace(s, "")
+                ? StripAnsiEscapeCodes(s)
                 : s;
+        }
+
+        [return: NotNullIfNotNull(nameof(s))]
+        public static string? StripAnsiEscapeCodes(string? s)
+        {
+            return string.IsNullOrEmpty(s)
+                ? s
+                : AnsiCodeRegex().Replace(s, "");
         }
     }
 }
