@@ -15,7 +15,7 @@
       <Reference Include="Microsoft.Build"/>
       <Using Namespace="Microsoft.Build.Construction"/>
       <Using Namespace="Microsoft.Build.Evaluation"/>
-      <Reference Include="C:\Users\mdonatas\.nuget\packages\microsoft.netcore.app.ref\6.0.20\ref\net6.0\System.Xml.dll"/>
+      <Reference Include="C:\Users\mdonatas\.nuget\packages\microsoft.netcore.app.ref\9.0.0\ref\net9.0\System.Xml.dll"/>
       <Using Namespace="System.Xml"/>
       <Code Type="Fragment" Language="cs">
         <![CDATA[
