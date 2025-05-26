@@ -215,12 +215,18 @@ public class MultiSelectTreeView : NativeTreeView
             return;
         }
 
+        TreeNode? newFocusedNode = hitTestInfo.Node;
         if (// no node clicked
-            hitTestInfo.Node is not TreeNode newFocusedNode
+            newFocusedNode is null
 
             // or starting drag operation
             || (_selectedNodes.Contains(newFocusedNode) && modifierKeys == Keys.None && !ShallHandleRootIconClick(e.X, newFocusedNode, modifierKeys)))
         {
+            if (newFocusedNode != null && _selectedNodes.Contains(newFocusedNode))
+            {
+                UpdateSelection(newFocusedNode, replace: !modifierKeys.HasFlag(Keys.Control), addRange: modifierKeys.HasFlag(Keys.Shift));
+            }
+
             _mouseClickHandled = false;
             base.OnMouseDown(e);
             return;
@@ -336,11 +342,8 @@ public class MultiSelectTreeView : NativeTreeView
 
         if (replace)
         {
-            if (_selectedNodes.Count != 1 || _selectedNodes.First() != newFocusedNode)
-            {
-                changed = true;
-                _selectedNodes = [newFocusedNode];
-            }
+            changed = true;
+            _selectedNodes = [newFocusedNode];
         }
         else
         {
