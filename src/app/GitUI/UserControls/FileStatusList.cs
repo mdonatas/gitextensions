@@ -968,18 +968,22 @@ public sealed partial class FileStatusList : GitModuleControl
 
     public void StoreNextItemToSelect()
     {
+        int foundIndex = -1;
+        TreeNode[] items = FileStatusListView.Items().ToArray();
+
         if (FileStatusListView.SelectedNodes.Count > 0)
         {
-            bool found = false;
-            foreach (TreeNode node in FileStatusListView.Items())
+            for (int i = 0; i < items.Length; i++)
             {
+                TreeNode node = items[i];
+
                 if (FileStatusListView.SelectedNodes.Contains(node))
                 {
-                    found = true;
+                    foundIndex = i;
                     continue;
                 }
 
-                if (found && node.Tag is FileStatusItem fileStatusItem)
+                if (foundIndex != -1 && node.Tag is FileStatusItem fileStatusItem)
                 {
                     _nextItemToSelect = fileStatusItem.Item;
                     return;
@@ -987,7 +991,13 @@ public sealed partial class FileStatusList : GitModuleControl
             }
         }
 
-        _nextItemToSelect = FileStatusListView.Items()
+        IEnumerable<TreeNode> items2 = items;
+        if (foundIndex != -1)
+        {
+            items2 = items2.Reverse().Skip(items.Length - foundIndex);
+        }
+
+        _nextItemToSelect = items2
             .Select(node => (node.Tag as FileStatusItem)?.Item)
             .FirstOrDefault(item => item is not null);
     }
