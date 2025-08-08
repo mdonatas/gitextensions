@@ -2055,12 +2055,12 @@ public sealed partial class FileStatusList : GitModuleControl
         FindInCommitFilesGitGrep(cboFindInCommitFilesGitGrep.Text);
     }
 
-    private void FindInCommitFilesGitGrep(string search, int delay = 0)
+    private JoinableTask FindInCommitFilesGitGrep(string search, int delay = 0)
     {
         SetDeleteSearchButtonVisibility();
 
         CancellationToken cancellationToken = _reloadSequence.Next();
-        ThreadHelper.FileAndForget(async () =>
+        return ThreadHelper.JoinableTaskFactory.RunAsync(async () =>
         {
             // delay to handle keypresses
             await Task.Delay(delay, cancellationToken);
