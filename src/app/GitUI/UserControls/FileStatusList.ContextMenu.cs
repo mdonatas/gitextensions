@@ -1,6 +1,7 @@
 ﻿#nullable enable
 
 using System.Text;
+using System.Threading;
 using GitCommands;
 using GitCommands.Git;
 using GitCommands.Git.Extended;
@@ -14,6 +15,7 @@ using GitUI.ScriptsEngine;
 using GitUI.UserControls;
 using GitUI.UserControls.RevisionGrid;
 using GitUIPluginInterfaces;
+using Microsoft.VisualStudio.Threading;
 using ResourceManager;
 
 namespace GitUI;
@@ -1117,6 +1119,19 @@ partial class FileStatusList
         {
             _openInFileTreeTab_AsBlame?.Invoke(false);
         }
+        else if (FindInCommitFilesGitGrepActive)
+        {
+            RelativePath name = SelectedFolder ?? RelativePath.From(SelectedItems.First().Item.Name);
+
+            cboFindInCommitFilesGitGrep.Text = "";
+            JoinableTask joinableTask = FindInCommitFilesGitGrep(cboFindInCommitFilesGitGrep.Text, delay: 0);
+
+            joinableTask.Task.ContinueWith(async t =>
+            {
+                await this.SwitchToMainThreadAsync();
+                SelectFileOrFolder(name, notify: false);
+            }, TaskScheduler.Current);
+        }
     }
 
     private void ShowInFolder_Click(object sender, EventArgs e)
@@ -1257,7 +1272,7 @@ partial class FileStatusList
         tsmiCopyPaths.Enabled = _revisionDiffController.ShouldShowMenuCopyFileName(selectionInfo);
         tsmiShowInFolder.Enabled = selectedItems.Any(item => _fullPathResolver.Resolve(item.Item.Name) is string filePath && FormBrowseUtil.FileOrParentDirectoryExists(filePath));
 
-        tsmiShowInFileTree.Visible = !_isFileTreeMode && _openInFileTreeTab_AsBlame is not null && _revisionDiffController.ShouldShowMenuShowInFileTree(selectionInfo);
+        tsmiShowInFileTree.Visible = (!_isFileTreeMode || FindInCommitFilesGitGrepActive) && _openInFileTreeTab_AsBlame is not null && _revisionDiffController.ShouldShowMenuShowInFileTree(selectionInfo);
         tsmiFilterFileInGrid.Enabled = _filterFileInGrid is not null && _revisionDiffController.ShouldShowMenuFileHistory(selectionInfo);
         tsmiFileHistory.Enabled = _revisionDiffController.ShouldShowMenuFileHistory(selectionInfo);
         tsmiBlame.Enabled = AppSettings.UseDiffViewerForBlame.Value || _blame is null
