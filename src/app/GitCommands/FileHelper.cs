@@ -60,10 +60,13 @@ namespace GitCommands
                        ?? HasMatchingExtension(BinaryExtensions, fileName));
         }
 
+        private static readonly HashSet<string>.AlternateLookup<ReadOnlySpan<char>> _diffModeLookup =
+            new HashSet<string>(["set", "astextplain", "ada", "bibtext", "cpp", "csharp", "css", "dts", "elixir", "fortran", "html", "java", "kotlin", "markdown", "matlab", "objc", "pascal", "perl", "php", "python", "ruby", "rust", "scheme", "tex"], StringComparer.Ordinal)
+            .GetAlternateLookup<ReadOnlySpan<char>>();
+
         /// <returns>null if no info in .gitattributes (or ambiguous). True if marked as binary, false if marked as text</returns>
         private static bool? IsBinaryAccordingToGitAttributes(IGitModule module, string fileName)
         {
-            string[] diffValues = { "set", "astextplain", "ada", "bibtext", "cpp", "csharp", "css", "dts", "elixir", "fortran", "html", "java", "kotlin", "markdown", "matlab", "objc", "pascal", "perl", "php", "python", "ruby", "rust", "scheme", "tex" };
             GitArgumentBuilder cmd = new("check-attr")
             {
                 "-z",
@@ -80,51 +83,43 @@ namespace GitCommands
                 return null;
             }
 
-            string[] lines = result.StandardOutput.Split(Delimiters.NullAndLineFeed);
-            Dictionary<string, string> attributes = [];
-            for (int i = 0; i < lines.Length - 2; i += 3)
+            ReadOnlySpan<char> span = result.StandardOutput.AsSpan();
+
+            MemoryExtensions.SpanSplitEnumerator<char> enumerator = span.Split(Delimiters.Null);
+
+            // diff
+            MoveToNextValue(ref enumerator);
+            ReadOnlySpan<char> value = span[enumerator.Current];
+
+            if (value.SequenceEqual("unset"))
             {
-                attributes[lines[i + 1].Trim()] = lines[i + 2].Trim();
+                return true;
             }
 
-            if (attributes.TryGetValue("diff", out string diff))
+            if (_diffModeLookup.Contains(value))
             {
-                if (diff == "unset")
-                {
-                    return true;
-                }
-
-                if (diffValues.Contains(diff))
-                {
-                    return false;
-                }
+                return false;
             }
 
-            if (attributes.TryGetValue("text", out string text))
+            // text, crlf, eol
+            while (MoveToNextValue(ref enumerator))
             {
-                if (text != "unset" && text != "unspecified")
-                {
-                    return false;
-                }
-            }
+                value = span[enumerator.Current];
 
-            if (attributes.TryGetValue("crlf", out string crlf))
-            {
-                if (crlf != "unset" && crlf != "unspecified")
-                {
-                    return false;
-                }
-            }
-
-            if (attributes.TryGetValue("eol", out string eol))
-            {
-                if (eol != "unset" && eol != "unspecified")
+                if (!value.SequenceEqual("unset") && !value.SequenceEqual("unspecified"))
                 {
                     return false;
                 }
             }
 
             return null;
+
+            static bool MoveToNextValue(ref MemoryExtensions.SpanSplitEnumerator<char> enumerator)
+            {
+                enumerator.MoveNext();
+                enumerator.MoveNext();
+                return enumerator.MoveNext();
+            }
         }
 
         public static bool IsImage(string fileName)
