@@ -1947,6 +1947,8 @@ public sealed partial class FormBrowse : GitModuleForm, IBrowseRepo
         FindFileInSelectedCommit = 9,
         QuickPullOrFetch = 48, // Default user action configured in toolbar
         QuickFetch = 11,
+        QuickFetchAll = 500,
+        QuickFetchAndPruneAll = 501,
         QuickPull = 12,
         QuickPush = 13,
         Stash = 16,
@@ -2072,6 +2074,8 @@ public sealed partial class FormBrowse : GitModuleForm, IBrowseRepo
             case Command.FindFileInSelectedCommit: FindFileInSelectedCommit(); break;
             case Command.CheckoutBranch: UICommands.StartCheckoutBranch(this); break;
             case Command.QuickFetch: QuickFetch(); break;
+            case Command.QuickFetchAll: UICommands.StartPullDialogAndPullImmediately(this, pullAction: GitPullAction.FetchAll); break;
+            case Command.QuickFetchAndPruneAll: UICommands.StartPullDialogAndPullImmediately(this, pullAction: GitPullAction.FetchPruneAll); break;
             case Command.QuickPull: DoPull(pullAction: GitPullAction.Merge, isSilent: true); break;
             case Command.QuickPullOrFetch: toolStripButtonPull.PerformButtonClick(); break;
             case Command.QuickPush: UICommands.StartPushDialog(this, true); break;
